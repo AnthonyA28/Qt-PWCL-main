@@ -115,8 +115,7 @@ void MainWindow::showRequest(const QString &req)
         ui->taudLabel->setNum(inputs[i_tauD]);
         ui->taufLabel->setNum(inputs[i_tauF]);
 
-
-      emit this->on_setButton_clicked();
+//      emit this->on_setButton_clicked();
     }
     else
         qDebug() << "ERROR Failed to deserialize array \n";
@@ -136,7 +135,8 @@ void MainWindow::on_setButton_clicked()
         /*
          * Lambda expression used to automate filling the output array from input in the textboxes
          */
-        auto fillArrayAtNextIndex = [&response, &valuesUpdated] (double oldVal, QString name, QLineEdit* textBox)
+        auto fillArrayAtNextIndex = [&response, &valuesUpdated]
+                (double oldVal, QString name, QLineEdit* textBox, double min = NAN, double max = NAN, bool force = false)
         {
             double eps = 0.01;
             QString valStr = textBox->text();
@@ -153,8 +153,28 @@ void MainWindow::on_setButton_clicked()
                     response.append("_");
                     return;
                 }
-                else{   // its okay.. lets see if it is different than last measured value
-                    if( qFabs(val - oldVal) > eps)
+                else{
+                    // ensure the value is with range
+                    if ( max != NAN && val > max )
+                    {
+                        QMessageBox msgBox;
+                        msgBox.setText(name + " of " + QString::number(val) + " is over the maximum of " + QString::number(max) );
+                        msgBox.exec();
+                        textBox->clear();
+                        response.append("_");
+                        return;
+                    }
+                    if  ( min != NAN && val < min )
+                    {
+                        QMessageBox msgBox;
+                        msgBox.setText(name + " of " + QString::number(val) + " is below the minimum of " + QString::number(min) );
+                        msgBox.exec();
+                        textBox->clear();
+                        response.append("_");
+                        return;
+                    }
+                    // its okay.. lets see if it is different than last measured value
+                    if( qFabs(val - oldVal) > eps || force )
                     {
                         response.append(valStr);
                         valuesUpdated = true;
@@ -171,11 +191,36 @@ void MainWindow::on_setButton_clicked()
                into the array if it is different than the last recieved value,
                otherwise it will send an underscore signifying not to change the val
             */
+
         response = "[";
-        fillArrayAtNextIndex(inputs[i_kc],   "Kc", ui->kcTextBox);     response.append(",");
-        fillArrayAtNextIndex(inputs[i_tauI], "TauI", ui->tauiTextBox); response.append(",");
-        fillArrayAtNextIndex(inputs[i_tauD], "tauD", ui->taudTextBox); response.append(",");
-        fillArrayAtNextIndex(inputs[i_tauF], "TauF", ui->taufTextBox); response.append(",");
+
+        bool autoMode = ( ui->tabWidget->currentIndex() ==  1 );
+        if( inputs[i_mode] < 0.01 && autoMode )
+            valuesUpdated = true;
+        if( inputs[i_mode] > 0.01 && !autoMode )
+            valuesUpdated = true;
+        if( autoMode )
+        {
+            response.append( "1," ); // automatic mode
+            fillArrayAtNextIndex(inputs[i_setPoint], "Set Point ", ui->setPointTextBox, 10, 60);  response.append(",");
+            response.append("_,");  // percent on
+            fillArrayAtNextIndex(inputs[i_kc],   "Kc", ui->kcTextBox); response.append(",");
+            fillArrayAtNextIndex(inputs[i_tauI], "TauI", ui->tauiTextBox, 0); response.append(",");
+            fillArrayAtNextIndex(inputs[i_tauD], "tauD", ui->taudTextBox, 0); response.append(",");
+            fillArrayAtNextIndex(inputs[i_tauF], "TauF", ui->taufTextBox, 0); response.append(",");
+            fillArrayAtNextIndex(inputs[i_fanSpeed], "Fan Speed", ui->A_fanSpeedTextBox, 0, 255); response.append(",");
+        }
+        else
+        {
+            response.append("0,");  //manual mode
+            response.append("_,");  //setpoint
+            fillArrayAtNextIndex(inputs[i_percentOn], "Percent Heater On", ui->percentOntTextBox, NAN, NAN, true); response.append(",");
+            response.append("_,");  // kc
+            response.append("_,");  // taui
+            response.append("_,");  //taud
+            response.append("_,");  //tauf
+            fillArrayAtNextIndex(inputs[i_fanSpeed], "Fan Speed", ui->M_fanSpeedTextBox); response.append(",");
+        }
 
             /* If checkboxxes reflect differen modes than last read
                 when unchecked tha values should be zero
@@ -189,7 +234,7 @@ void MainWindow::on_setButton_clicked()
         }
         if ( qFabs(inputs[i_filterAll]) > 0.1  && !ui->filterAllCheckBox->isChecked() )
         {
-            qDebug() << " diffs filter : old: " << inputs[i_filterAll] << "  and checked \n";
+            qDebug() << " diffs filter : old: " << inputs[i_filterAll] << "  and unchecked \n";
             valuesUpdated = true;
         }
         if ( qFabs(inputs[i_positionForm]) < 0.1  && ui->posFormCheckBox->isChecked() )
@@ -199,11 +244,11 @@ void MainWindow::on_setButton_clicked()
         }
         if ( qFabs(inputs[i_positionForm]) > 0.1  && !ui->posFormCheckBox->isChecked() )
         {
-            qDebug() << " diffs form : old: " << inputs[i_positionForm] << "  and checked \n";
+            qDebug() << " diffs form : old: " << inputs[i_positionForm] << "  and unchecked \n";
             valuesUpdated = true;
         }
-        response.append( ui->posFormCheckBox->isChecked()   ? "1," : "0," );
-        response.append( ui->filterAllCheckBox->isChecked() ? "1]" : "0]" );
+        response.append( ui->filterAllCheckBox->isChecked() ? "1," : "0," );
+        response.append( ui->posFormCheckBox->isChecked()   ? "1]" : "0]" );
 
         if ( valuesUpdated  )  // this must be checked after calling fillArrayAtNextIndex because that checked if values are updated
             emit this->response(response);
@@ -239,9 +284,9 @@ void MainWindow::timerEvent(QTimerEvent *event)
         killTimer(this->timerId); // no reason for the timer anymore
         if( ui->setButton->text() != "Set")   // change connect button to set button
         {
-            ui->setButton->setText("Connected");
-            ui->setButton->setEnabled(false);
-            ui->portComboBox->setEnabled(false);
+            ui->setButton->setText("Set");
+//            ui->setButton->setEnabled(false);
+//            ui->portComboBox->setEnabled(false);
         }
     }
 
@@ -304,14 +349,33 @@ bool MainWindow::deserializeArray(const char* const input, unsigned int output_s
 }
 
 
-
 void MainWindow::on_posFormCheckBox_stateChanged(int arg1)
 {
-    qDebug() << " checko\n";
     emit on_setButton_clicked();
 }
 
 void MainWindow::on_filterAllCheckBox_stateChanged(int arg1)
 {
+    emit on_setButton_clicked();
+}
+
+void MainWindow::on_tabWidget_currentChanged(int index)
+{
+    qDebug() << " current changed\n";
+    bool autoMode = ( index == 1 );
+    if( autoMode )
+    {
+        ui->kcTextBox->setText(QString::number(inputs[i_kc]));
+        ui->tauiTextBox->setText(QString::number(inputs[i_tauI]));
+        ui->taufTextBox->setText(QString::number(inputs[i_tauF]));
+        ui->taudTextBox->setText(QString::number(inputs[i_tauD]));
+        ui->setPointTextBox->setText(QString::number(inputs[i_setPoint]));
+        ui->A_fanSpeedTextBox->setText(QString::number(inputs[i_fanSpeed]));
+    }
+    else {
+        ui->percentOntTextBox->setText(QString::number(inputs[i_percentOn]));
+        ui->M_fanSpeedTextBox->setText(QString::number(inputs[i_fanSpeed]));
+    }
+
     emit on_setButton_clicked();
 }
