@@ -88,7 +88,13 @@ void MainWindow::showRequest(const QString &req)
         ui->outputTable->setItem(ui->outputTable->rowCount()-1, 1, new QTableWidgetItem(QString::number(inputs[i_percentOn])));
         ui->outputTable->setItem(ui->outputTable->rowCount()-1, 2, new QTableWidgetItem(QString::number(inputs[i_temperature])));
         ui->outputTable->setItem(ui->outputTable->rowCount()-1, 3, new QTableWidgetItem(QString::number(inputs[i_tempFiltered])));
-        ui->outputTable->setItem(ui->outputTable->rowCount()-1, 4, new QTableWidgetItem(QString::number(inputs[i_setPoint])));
+        if ( inputs[i_mode] > 0.01 )
+        {
+            ui->outputTable->setItem(ui->outputTable->rowCount()-1, 4,new QTableWidgetItem(QString::number(inputs[i_setPoint])));
+        } else
+        {
+            ui->outputTable->setItem(ui->outputTable->rowCount()-1, 4,new QTableWidgetItem(""));
+        }
         ui->outputTable->setItem(ui->outputTable->rowCount()-1, 5, new QTableWidgetItem(QString::number(inputs[i_fanSpeed])));
         ui->outputTable->scrollToBottom();   // scroll to the bottom to ensure the last value is visible
 
@@ -97,13 +103,24 @@ void MainWindow::showRequest(const QString &req)
         this->xldoc.write(ui->outputTable->rowCount(), 2, inputs[i_percentOn]);
         this->xldoc.write(ui->outputTable->rowCount(), 3, inputs[i_temperature]);
         this->xldoc.write(ui->outputTable->rowCount(), 4, inputs[i_tempFiltered]);
-        this->xldoc.write(ui->outputTable->rowCount(), 5, inputs[i_setPoint]);
+        if ( inputs[i_mode] > 0.01 )
+        {
+            this->xldoc.write(ui->outputTable->rowCount(), 5, inputs[i_setPoint]);
+        }
         this->xldoc.saveAs(this->excelFileName); // save the doc in case we crash
 
         // for writing to csv file
         char file_output_buffer[200]   = ""; // create a string to be sent to the file
-        snprintf(file_output_buffer, sizeof(file_output_buffer),"%6.2f,%6.2f,%6.2f,%6.2f,%6.2f\n",
-            inputs[i_time], inputs[i_percentOn], inputs[i_temperature], inputs[i_tempFiltered], inputs[i_setPoint]);
+        if( inputs[i_mode] > 0.01 ){   // if in manual mode then write the set point
+            snprintf(file_output_buffer, sizeof(file_output_buffer),"%6.2f,%6.2f,%6.2f,%6.2f,%6.2f\n",
+                inputs[i_time], inputs[i_percentOn], inputs[i_temperature], inputs[i_tempFiltered], inputs[i_setPoint]);
+        }
+        else   // if in automatic mode then write the set  point
+        {
+            snprintf(file_output_buffer, sizeof(file_output_buffer),"%6.2f,%6.2f,%6.2f,%6.2f,%\n",
+                inputs[i_time], inputs[i_percentOn], inputs[i_temperature], inputs[i_tempFiltered]);
+        }
+
         QTextStream stream(&this->csvdoc);
         stream << file_output_buffer;
         stream.flush();
