@@ -6,9 +6,12 @@ MainWindow::MainWindow(QWidget *parent) :
     QMainWindow(parent),
     ui(new Ui::MainWindow)
 {
-
     ui->setupUi(this);
+
+    this->validConnection = false;  // we arent connected yet
+
     this->timerId = startTimer(250);  // timer is used to repeatedly check for port data until we are connected
+
     this->inputs = std::vector<float>(this->numInputs); // initialize the input vector to hold the input values from the port
 
     connect(&port, &PORT::request, this, &MainWindow::showRequest);     // when the port recieves data it will emit PORT::request thus calling MainWindow::showRequest
@@ -53,6 +56,51 @@ MainWindow::MainWindow(QWidget *parent) :
         qDebug() << " Failed to open data.csv \n";
     }
 
+    /*
+     * setup the plot
+     */
+
+    // add two new graphs and set their look:
+    ui->plot->addGraph();
+    ui->plot->graph(0)->setName("Percent Heater on");
+    ui->plot->graph(0)->setPen(QPen(QColor("purple"))); // line color for the first graph
+    ui->plot->graph(0)->setValueAxis(ui->plot->yAxis2);
+
+    ui->plot->addGraph();
+    ui->plot->graph(1)->setName("Temperature");
+    ui->plot->graph(1)->setPen(QPen(Qt::green));
+
+    ui->plot->addGraph();
+    ui->plot->graph(2)->setName("Temperature Filtered");
+    ui->plot->graph(2)->setPen(QPen(Qt::blue));
+
+    // the set point must have a specil scatterstyle so it doesnt connect the lines
+    ui->plot->addGraph();
+    ui->plot->graph(3)->setName("Set Point");
+    ui->plot->graph(3)->setScatterStyle(QCPScatterStyle(QCPScatterStyle::ssDisc, QColor("orange"), 5));
+    ui->plot->graph(3)->setPen(QPen(Qt::white)); // so we dont see the line connecting the dots
+
+    /*
+     * If we want the user to be able to interact with graph
+     */
+    //    ui->plot->setInteractions(QCP::iRangeDrag | QCP::iRangeZoom | QCP::iSelectPlottables); // dont want user interactions
+
+    ui->plot->xAxis2->setVisible(true);  // show x ticks at top
+    ui->plot->xAxis2->setVisible(false); // dont show labels at top
+    ui->plot->yAxis2->setVisible(true);  // right y axis labels
+    ui->plot->yAxis2->setTickLabels(true);  // show y ticks on right side for % on
+
+    ui->plot->yAxis2->setLabel("Heater [%]");
+    ui->plot->yAxis->setLabel("Temperature [C]");
+    ui->plot->xAxis->setLabel("Time [min]");
+
+    // setup the legend
+    ui->plot->legend->setVisible(true);
+    ui->plot->legend->setFont(QFont("Helvetica", 8));
+    ui->plot->legend->setRowSpacing(-4);  // less space between words
+    ui->plot->axisRect()->insetLayout()->setInsetAlignment(0, Qt::AlignLeft|Qt::AlignTop);
+
+
 }
 
 
@@ -81,6 +129,11 @@ void MainWindow::showRequest(const QString &req)
 {
     if(this->deserializeArray(req.toStdString().c_str(), this->numInputs, this->inputs))
     {
+
+        this->validConnection = true;  // we can parse the string therfore it must be the correct arduino file uploaded
+
+        bool inAutoMode = (inputs[i_mode]);  // true if we are in automatic mode
+
         ui->outputTable->insertRow(ui->outputTable->rowCount()); // create a new row
 
         /* add a string of each value into each column at the last row in the outputTable */
@@ -88,13 +141,8 @@ void MainWindow::showRequest(const QString &req)
         ui->outputTable->setItem(ui->outputTable->rowCount()-1, 1, new QTableWidgetItem(QString::number(inputs[i_percentOn])));
         ui->outputTable->setItem(ui->outputTable->rowCount()-1, 2, new QTableWidgetItem(QString::number(inputs[i_temperature])));
         ui->outputTable->setItem(ui->outputTable->rowCount()-1, 3, new QTableWidgetItem(QString::number(inputs[i_tempFiltered])));
-        if ( inputs[i_mode] > 0.01 )
-        {
-            ui->outputTable->setItem(ui->outputTable->rowCount()-1, 4,new QTableWidgetItem(QString::number(inputs[i_setPoint])));
-        } else
-        {
-            ui->outputTable->setItem(ui->outputTable->rowCount()-1, 4,new QTableWidgetItem(""));
-        }
+        if ( inAutoMode) ui->outputTable->setItem(ui->outputTable->rowCount()-1, 4,new QTableWidgetItem(QString::number(inputs[i_setPoint])));
+        else ui->outputTable->setItem(ui->outputTable->rowCount()-1, 4,new QTableWidgetItem(""));
         ui->outputTable->setItem(ui->outputTable->rowCount()-1, 5, new QTableWidgetItem(QString::number(inputs[i_fanSpeed])));
         ui->outputTable->scrollToBottom();   // scroll to the bottom to ensure the last value is visible
 
@@ -103,21 +151,19 @@ void MainWindow::showRequest(const QString &req)
         this->xldoc.write(ui->outputTable->rowCount(), 2, inputs[i_percentOn]);
         this->xldoc.write(ui->outputTable->rowCount(), 3, inputs[i_temperature]);
         this->xldoc.write(ui->outputTable->rowCount(), 4, inputs[i_tempFiltered]);
-        if ( inputs[i_mode] > 0.01 )
-        {
-            this->xldoc.write(ui->outputTable->rowCount(), 5, inputs[i_setPoint]);
-        }
+        if ( inAutoMode ) this->xldoc.write(ui->outputTable->rowCount(), 5, inputs[i_setPoint]);
         this->xldoc.saveAs(this->excelFileName); // save the doc in case we crash
 
         // for writing to csv file
         char file_output_buffer[200]   = ""; // create a string to be sent to the file
-        if( inputs[i_mode] > 0.01 ){   // if in manual mode then write the set point
+        if( inAutoMode )      // if in automatic mode then write the set  point
+        {
             snprintf(file_output_buffer, sizeof(file_output_buffer),"%6.2f,%6.2f,%6.2f,%6.2f,%6.2f\n",
                 inputs[i_time], inputs[i_percentOn], inputs[i_temperature], inputs[i_tempFiltered], inputs[i_setPoint]);
         }
-        else   // if in automatic mode then write the set  point
+        else  // if in manual mode then write the set point
         {
-            snprintf(file_output_buffer, sizeof(file_output_buffer),"%6.2f,%6.2f,%6.2f,%6.2f,%\n",
+            snprintf(file_output_buffer, sizeof(file_output_buffer),"%6.2f,%6.2f,%6.2f,%6.2f,\n",
                 inputs[i_time], inputs[i_percentOn], inputs[i_temperature], inputs[i_tempFiltered]);
         }
 
@@ -132,7 +178,18 @@ void MainWindow::showRequest(const QString &req)
         ui->taudLabel->setNum(inputs[i_tauD]);
         ui->taufLabel->setNum(inputs[i_tauF]);
 
-//      emit this->on_setButton_clicked();
+
+        /*
+         * update the graph
+         *
+         */
+        ui->plot->graph(0)->addData(inputs[i_time], inputs[i_percentOn]);
+        ui->plot->graph(1)->addData(inputs[i_time], inputs[i_temperature]);
+        ui->plot->graph(2)->addData(inputs[i_time], inputs[i_tempFiltered]);
+        if( inAutoMode ) ui->plot->graph(3)->addData(inputs[i_time], inputs[i_setPoint]);
+        ui->plot->replot( QCustomPlot::rpQueuedReplot );
+        ui->plot->rescaleAxes(); // should be in a button or somethng
+
     }
     else
         qDebug() << "ERROR Failed to deserialize array \n";
@@ -378,9 +435,10 @@ void MainWindow::on_filterAllCheckBox_stateChanged(int arg1)
 
 void MainWindow::on_tabWidget_currentChanged(int index)
 {
-    qDebug() << " current changed\n";
-    bool autoMode = ( index == 1 );
-    if( autoMode )
+    if (!this->validConnection) return; // if we havent connected to the orrect port then stop
+
+    bool autoModeTab = ( index == 1 ); // we are in the automatic tab
+    if( autoModeTab )
     {
         ui->kcTextBox->setText(QString::number(inputs[i_kc]));
         ui->tauiTextBox->setText(QString::number(inputs[i_tauI]));

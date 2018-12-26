@@ -6,9 +6,9 @@
 
 QT       += core gui serialport
 
-greaterThan(QT_MAJOR_VERSION, 4): QT += widgets
+greaterThan(QT_MAJOR_VERSION, 4): QT += widgets printsupport
 
-TARGET = qt_test
+TARGET = qt_main
 TEMPLATE = app
 CONFIG += static
 # The following define makes your compiler emit warnings if you use
@@ -31,11 +31,13 @@ include(./QXlsx.pri)
 SOURCES += \
         main.cpp \
         mainwindow.cpp \
-    port.cpp
+        port.cpp \
+        qcustomplot.cpp
 
 HEADERS += \
         mainwindow.h \
-    port.h
+        port.h \
+        qcustomplot.h
 
 FORMS += \
         mainwindow.ui

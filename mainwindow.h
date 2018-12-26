@@ -57,9 +57,10 @@ private slots:
 private:
     Ui::MainWindow *ui;
     bool deserializeArray(const char* const input, unsigned int output_size, std::vector<float>& output);
-    int timerId;
+    int timerId; // for setting up and destroying a timer used to frquently check if port is connected until connected
     void timerEvent(QTimerEvent *event);
     PORT port;
+    bool validConnection;
 
     QString csvFileName;
     QString excelFileName;
