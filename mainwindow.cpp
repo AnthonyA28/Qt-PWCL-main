@@ -112,6 +112,23 @@ MainWindow::~MainWindow()
 {
     if( this->port.L_isConnected())
     {
+
+        /*
+         * Wont add a chart as I cant seem to make it look nice
+         */
+        // Add a scatterchart and save the excel file
+//        int numRows = ui->outputTable->rowCount();
+//        Chart *scatterchart = this->xldoc.insertChart(8, 5, QSize(600,400));
+//        scatterchart->setChartType(Chart::CT_Scatter);
+//        scatterchart->addSeries(CellRange(2,1,numRows, 2));
+//        scatterchart->addSeries(CellRange(3,1,numRows, 3));
+//        scatterchart->addSeries(CellRange(4,1,numRows, 4));
+//        scatterchart->setAxisTitle(Chart::Bottom, "Time" );
+//        scatterchart->setAxisTitle(Chart::Left, "Temperatures" );
+//        this->xldoc.saveAs(this->excelFileName);
+
+
+
         // ensure a backupfile directory exists, create one if it doesnt
         QDir backupDir("backupFiles");
         if( !backupDir.exists() )
@@ -119,13 +136,13 @@ MainWindow::~MainWindow()
         QDir::setCurrent("backupFiles");
 
         QDateTime currentTime(QDateTime::currentDateTime());
-        QString dateStr = currentTime.toString("d-MMM--h-m-s-A");  // create a date title for the backup file
+        QString dateStr = currentTime.toString("d-MMM--h-m-A");  // create a date title for the backup file
         dateStr.append(".csv"); // the 's' cant be used when formatting the time string
         this->csvdoc.copy(dateStr); // save a backup file of the csv file
     }
     this->csvdoc.close();
 
-    delete ui;
+        delete ui;
 }
 
 void MainWindow::showRequest(const QString &req)
