@@ -6,3 +6,9 @@ release/
 *.user
 *.xlsx
 *.csv
+*.stash
+Makefile
+Makefile.Release
+*.Debug
+*.Release
+qt_PWCL_main.pro.user.20
