@@ -12,3 +12,5 @@ Makefile.Release
 *.Debug
 *.Release
 qt_PWCL_main.pro.user.20
+port.h.bak
+port.cpp.bak

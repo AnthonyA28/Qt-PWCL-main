@@ -18,8 +18,8 @@ MainWindow::MainWindow(QWidget *parent) :
     this->inputs = std::vector<float>(this->numInputs); // initialize the input vector to hold the input values from the port
 
     connect(&port, &PORT::request, this, &MainWindow::showRequest);     // when the port recieves data it will emit PORT::request thus calling MainWindow::showRequest
+    connect(&port, &PORT::disconnected, this, &MainWindow::disonnectedPopUpWindow);
     connect(this, &MainWindow::response, &port, &PORT::L_processResponse);  // whn the set button is clicked, it will emit MainWindow::response thus calling PORT::L_processResponse
-
     ui->outputTable->horizontalHeader()->setSectionResizeMode(QHeaderView::Stretch);   // have the table resize with the window
 
     // need to ensure the files are opened in the correct directory
@@ -239,7 +239,7 @@ void MainWindow::on_setButton_clicked()
          * Lambda expression used to automate filling the output array from input in the textboxes
          */
         auto fillArrayAtNextIndex = [&response]
-                (double oldVal, QString name, QLineEdit* textBox, double min = NAN, double max = NAN)
+                ( QString name, QLineEdit* textBox, double min = NAN, double max = NAN)
         {
             QString valStr = textBox->text();
             bool isNumerical = false;
@@ -297,24 +297,24 @@ void MainWindow::on_setButton_clicked()
         if( autoMode )
         {
             response.append( "1," ); // automatic mode
-            fillArrayAtNextIndex(inputs[i_setPoint], "Set Point ", ui->setPointTextBox, 10, 60);  response.append(",");
+            fillArrayAtNextIndex("Set Point ", ui->setPointTextBox, 10, 60);  response.append(",");
             response.append("_,");  // percent on
-            fillArrayAtNextIndex(inputs[i_kc],   "Kc", ui->kcTextBox); response.append(",");
-            fillArrayAtNextIndex(inputs[i_tauI], "TauI", ui->tauiTextBox, 0); response.append(",");
-            fillArrayAtNextIndex(inputs[i_tauD], "tauD", ui->taudTextBox, 0); response.append(",");
-            fillArrayAtNextIndex(inputs[i_tauF], "TauF", ui->taufTextBox, 0); response.append(",");
-            fillArrayAtNextIndex(inputs[i_fanSpeed], "Fan Speed", ui->A_fanSpeedTextBox, 0, 255); response.append(",");
+            fillArrayAtNextIndex("Kc", ui->kcTextBox); response.append(",");
+            fillArrayAtNextIndex("TauI", ui->tauiTextBox, 0); response.append(",");
+            fillArrayAtNextIndex("tauD", ui->taudTextBox, 0); response.append(",");
+            fillArrayAtNextIndex("TauF", ui->taufTextBox, 0); response.append(",");
+            fillArrayAtNextIndex("Fan Speed", ui->A_fanSpeedTextBox, 0, 255); response.append(",");
         }
         else
         {
             response.append("0,");  //manual mode
             response.append("_,");  //setpoint
-            fillArrayAtNextIndex(inputs[i_percentOn], "Percent Heater On", ui->percentOntTextBox, 0, 100); response.append(",");
+            fillArrayAtNextIndex("Percent Heater On", ui->percentOntTextBox, 0, 100); response.append(",");
             response.append("_,");  // kc
             response.append("_,");  // taui
             response.append("_,");  //taud
             response.append("_,");  //tauf
-            fillArrayAtNextIndex(inputs[i_fanSpeed], "Fan Speed", ui->M_fanSpeedTextBox); response.append(",");
+            fillArrayAtNextIndex("Fan Speed", ui->M_fanSpeedTextBox); response.append(",");
         }
 
         response.append( ui->filterAllCheckBox->isChecked() ? "1," : "0," );
@@ -462,4 +462,15 @@ void MainWindow::on_tabWidget_currentChanged(int index)
     }
 
     emit on_setButton_clicked();
+}
+
+bool MainWindow::disonnectedPopUpWindow()
+{
+    qDebug() << "(disconnected popup window )\n";
+    QMessageBox::critical(this,
+                          "Error",
+                          "Fatal Error, device disconnected.\n"
+                          "Close and restart the application to continue.\n",
+                          QMessageBox::Ok
+                          );
 }

@@ -39,6 +39,7 @@ class MainWindow : public QMainWindow
 
 public:
     void showRequest(const QString & req);
+    bool disonnectedPopUpWindow();
     explicit MainWindow(QWidget *parent = nullptr);
     ~MainWindow();
 
