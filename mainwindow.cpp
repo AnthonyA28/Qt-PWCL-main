@@ -241,12 +241,12 @@ void MainWindow::on_setButton_clicked()
         auto fillArrayAtNextIndex = [&response]
                 (double oldVal, QString name, QLineEdit* textBox, double min = NAN, double max = NAN)
         {
-            double eps = 0.01;
             QString valStr = textBox->text();
-            bool isNumerical;
-            float val = valStr.toFloat(&isNumerical);    // convert to a float value
+            bool isNumerical = false;
+            valStr.remove(' ');
             if( !valStr.isEmpty() )
             {
+                float val = valStr.toFloat(&isNumerical);    // convert to a float value
                 if( !isNumerical )
                 {
                     QMessageBox msgBox;
