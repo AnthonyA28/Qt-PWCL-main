@@ -314,7 +314,7 @@ void MainWindow::on_setButton_clicked()
             response.append("_,");  // taui
             response.append("_,");  //taud
             response.append("_,");  //tauf
-            fillArrayAtNextIndex("Fan Speed", ui->M_fanSpeedTextBox); response.append(",");
+            fillArrayAtNextIndex("Fan Speed", ui->M_fanSpeedTextBox, 0, 255); response.append(",");
         }
 
         response.append( ui->filterAllCheckBox->isChecked() ? "1," : "0," );
@@ -442,7 +442,7 @@ void MainWindow::on_filterAllCheckBox_stateChanged(int arg1)
 
 void MainWindow::on_tabWidget_currentChanged(int index)
 {
-    if (!this->validConnection) return; // if we havent connected to the orrect port then stop
+    if (!this->validConnection) return; // if we havent connected to the correct port then stop
 
     bool autoModeTab = ( index == 1 ); // we are in the automatic tab
     if( autoModeTab )
