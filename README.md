@@ -1,6 +1,6 @@
-# qt_PC_GUI_main
+# PWCL-main
 
-## Qt based Process Controller Graphical User Interface, Main version
+## GUI for an arduino based Process Controller
 
 Provides a graphical user interface for changing parameters and logging/graphing data from an Arduino based process controller. 
 
