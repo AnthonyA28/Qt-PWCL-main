@@ -354,7 +354,7 @@ Point [°C]</string>
          <enum>QTabWidget::Rounded</enum>
         </property>
         <property name="currentIndex">
-         <number>0</number>
+         <number>1</number>
         </property>
         <property name="iconSize">
          <size>
@@ -869,7 +869,7 @@ Point [°C]</string>
          </widget>
         </item>
         <item row="3" column="0">
-         <widget class="QLabel" name="label_10">
+         <widget class="QLabel" name="tauiLabelName">
           <property name="sizePolicy">
            <sizepolicy hsizetype="Fixed" vsizetype="Fixed">
             <horstretch>0</horstretch>
@@ -907,7 +907,7 @@ Point [°C]</string>
          </widget>
         </item>
         <item row="4" column="0">
-         <widget class="QLabel" name="label_16">
+         <widget class="QLabel" name="taudLabelName">
           <property name="sizePolicy">
            <sizepolicy hsizetype="Fixed" vsizetype="Fixed">
             <horstretch>0</horstretch>
@@ -945,7 +945,7 @@ Point [°C]</string>
          </widget>
         </item>
         <item row="5" column="0">
-         <widget class="QLabel" name="label_12">
+         <widget class="QLabel" name="taufLabelName">
           <property name="sizePolicy">
            <sizepolicy hsizetype="Fixed" vsizetype="Fixed">
             <horstretch>0</horstretch>

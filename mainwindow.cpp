@@ -94,15 +94,10 @@ MainWindow::MainWindow(QWidget *parent) :
     ui->plot->graph(2)->setName("Temperature Filtered");
     ui->plot->graph(2)->setPen(QPen(Qt::blue));
 
-
     ui->plot->addGraph();
     ui->plot->graph(3)->setName("Percent Heater on");
     ui->plot->graph(3)->setPen(QPen(QColor("purple"))); // line color for the first graph
     ui->plot->graph(3)->setValueAxis(ui->plot->yAxis2);
-    /*
-     * If we want the user to be able to interact with graph
-     */
-    //    ui->plot->setInteractions(QCP::iRangeDrag | QCP::iRangeZoom | QCP::iSelectPlottables); // dont want user interactions
 
     ui->plot->xAxis2->setVisible(true);  // show x ticks at top
     ui->plot->xAxis2->setVisible(false); // dont show labels at top
@@ -129,22 +124,6 @@ MainWindow::~MainWindow()
     if( this->port.L_isConnected())
     {
 
-        /*
-         * Wont add a chart as I cant seem to make it look nice
-         */
-        // Add a scatterchart and save the excel file
-//        int numRows = ui->outputTable->rowCount();
-//        Chart *scatterchart = this->xldoc.insertChart(8, 5, QSize(600,400));
-//        scatterchart->setChartType(Chart::CT_Scatter);
-//        scatterchart->addSeries(CellRange(2,1,numRows, 2));
-//        scatterchart->addSeries(CellRange(3,1,numRows, 3));
-//        scatterchart->addSeries(CellRange(4,1,numRows, 4));
-//        scatterchart->setAxisTitle(Chart::Bottom, "Time" );
-//        scatterchart->setAxisTitle(Chart::Left, "Temperatures" );
-//        this->xldoc.saveAs(this->excelFileName);
-
-
-
         // ensure a backupfile directory exists, create one if it doesnt
         QDir backupDir("backupFiles");
         if( !backupDir.exists() )
@@ -168,7 +147,7 @@ void MainWindow::showRequest(const QString &req)
 
         this->validConnection = true;  // we can parse the string therfore it must be the correct arduino file uploaded
 
-        bool inAutoMode = (inputs[i_mode]);  // true if we are in automatic mode
+        bool inAutoMode = (inputs[i_autoMode]);  // true if we are in automatic mode
 
         ui->outputTable->insertRow(ui->outputTable->rowCount()); // create a new row
 
@@ -204,31 +183,36 @@ void MainWindow::showRequest(const QString &req)
         }
 
         QTextStream stream(&this->csvdoc);
-        stream << file_output_buffer;
-        stream.flush();
+        stream << file_output_buffer;   // write the file_output_buffer to the csvdoc file
+        stream.flush();  // so it writes immediately
 
 
         // Show the current values from the port in the current parameters area
-        ui->kcLabel->setNum(inputs[i_kc]);
-        ui->tauiLabel->setNum(inputs[i_tauI]);
-        ui->taudLabel->setNum(inputs[i_tauD]);
-        ui->taufLabel->setNum(inputs[i_tauF]);
-        QString ModeString = " ";
-        if ( inputs[i_mode])
+        QString ModeString = " "; // holds a string for current mode ex. "Automatic, velocity form, Filtering all terms"
+        if ( inputs[i_autoMode])
         {
+            ui->kcLabel->setNum(inputs[i_kc]);
+            ui->tauiLabel->setNum(inputs[i_tauI]);
+            ui->taudLabel->setNum(inputs[i_tauD]);
+            ui->taufLabel->setNum(inputs[i_tauF]);
+
             ModeString.append("Automatic\n");
             if ( inputs[i_positionForm]  ) ModeString.append("Position Form ");
             else ModeString.append("Velocity Form");
             if ( inputs[i_filterAll] ) ModeString.append("\nFiltering all terms");
         }
-        else ModeString.append("Manual");
+        else
+        {
+            ModeString.append("Manual");
+            ui->kcLabel->clear();
+            ui->tauiLabel->clear();
+            ui->taudLabel->clear();
+            ui->taufLabel->clear();
+        }
         ui->modeTextLabel->setText(ModeString);
 
 
-        /*
-         * update the graph
-         *
-         */
+        // update the graph
         ui->plot->graph(3)->addData(inputs[i_time], inputs[i_percentOn]);
         ui->plot->graph(1)->addData(inputs[i_time], inputs[i_temperature]);
         ui->plot->graph(2)->addData(inputs[i_time], inputs[i_tempFiltered]);
@@ -242,24 +226,24 @@ void MainWindow::showRequest(const QString &req)
 }
 
 
-
+/**
+    Called when the user clickes the set button 
+*/
 void MainWindow::on_setButton_clicked()
 {
     // send data to port now
-    if ( port.L_isConnected() )
-    {   // we are connected so we can send the data in the textbox
+    if ( port.L_isConnected() )  // we are connected so we can send the data in the textbox
+    {   
+        
+        QString response; // 'response' will be sent the port 
 
-        QString response;
-
-        /*
-         * Lambda expression used to automate filling the output array from input in the textboxes
-         */
+        // Lambda expression used to automate filling the output array from input in the textboxes
         auto fillArrayAtNextIndex = [&response]
                 ( QString name, QLineEdit* textBox, double min = NAN, double max = NAN)
         {
-            QString valStr = textBox->text();
+            QString valStr = textBox->text();   // 'valStr' is a string holding what the user inputted in the texbox
             bool isNumerical = false;
-            valStr.remove(' ');
+            valStr.remove(' ');  // remove any extra spaces
             if( !valStr.isEmpty() )
             {
                 float val = valStr.toFloat(&isNumerical);    // convert to a float value
@@ -273,8 +257,8 @@ void MainWindow::on_setButton_clicked()
                     return;
                 }
                 else{
-                    // ensure the value is with range
-                    if ( max != NAN && val > max )
+                    // ensure the value is within range
+                    if ( max != NAN && val > max )  // max is NAN if it is unconstrained
                     {
                         QMessageBox msgBox;
                         msgBox.setText(name + " of " + QString::number(val) + " is over the maximum of " + QString::number(max) );
@@ -283,7 +267,7 @@ void MainWindow::on_setButton_clicked()
                         response.append("_");
                         return;
                     }
-                    if  ( min != NAN && val < min )
+                    if  ( min != NAN && val < min )  // min is NAN if it is unconstrained
                     {
                         QMessageBox msgBox;
                         msgBox.setText(name + " of " + QString::number(val) + " is below the minimum of " + QString::number(min) );
@@ -301,10 +285,10 @@ void MainWindow::on_setButton_clicked()
             return;
         };
 
-            /* use the fillArrNextIndex to place the value from the text box
-               into the array if it is different than the last recieved value,
-               otherwise it will send an underscore signifying not to change the val
-            */
+        /* use the fillArrNextIndex to place the value from the text box
+           into the array if it is different than the last recieved value,
+           otherwise it will send an underscore signifying not to change the val
+        */
 
         response = "[";
 
@@ -346,9 +330,12 @@ void MainWindow::on_setButton_clicked()
 }
 
 
+/**
+    Called when the 250ms timer goes off. Timer is destroyed after a connection is established
+*/
 void MainWindow::timerEvent(QTimerEvent *event)
 {
-    /**
+    /*
       Check if any ports are available and if the port is connected, if its not, then attempt to connect
      */
 
@@ -367,12 +354,8 @@ void MainWindow::timerEvent(QTimerEvent *event)
     else
     {
         killTimer(this->timerId); // no reason for the timer anymore
-        if( ui->setButton->text() != "Set")   // change connect button to set button
-        {
+        if( ui->setButton->text() != "Set")   // change 'connect' button text to 'set'
             ui->setButton->setText("Set");
-//            ui->setButton->setEnabled(false);
-//            ui->portComboBox->setEnabled(false);
-        }
     }
 
 }
@@ -445,32 +428,46 @@ bool MainWindow::deserializeArray(const char* const input, unsigned int output_s
    return true;
 }
 
-
+/**
+    Called when the user clicks the position form checkbox
+*/
 void MainWindow::on_posFormCheckBox_stateChanged(int arg1)
 {
-    emit on_setButton_clicked();
+    emit on_setButton_clicked();    // as if the user just clicked the setbutton (triggers sending parameters to port)
 }
 
+
+/**
+    Called when the user clicks the Filter all terms checkbox
+*/
 void MainWindow::on_filterAllCheckBox_stateChanged(int arg1)
 {
-    emit on_setButton_clicked();
+    emit on_setButton_clicked();    // as if the user just clicked the setbutton (triggers sending parameters to port)
 }
 
+
+/**
+    Called when a the mode tabs are changed, 
+    Will fill the textboxes with the last recorded parameters 
+*/
 void MainWindow::on_tabWidget_currentChanged(int index)
 {
     if (!this->validConnection) return; // if we havent connected to the correct port then stop
 
-    bool autoModeTab = ( index == 1 ); // we are in the automatic tab
-    if( autoModeTab )
+    bool autoModeTab = ( index == 1 );  // tab index 1 is the automatic tab 
+    if( autoModeTab )  //  changed the automatic tab
     {
-        ui->kcTextBox->setText(QString::number(inputs[i_kc]));
+        // Fill the automatic textboxes with the last recorded parameters 
+        ui->kcTextBox->setText(QString::number(inputs[i_kc]));   
         ui->tauiTextBox->setText(QString::number(inputs[i_tauI]));
         ui->taufTextBox->setText(QString::number(inputs[i_tauF]));
         ui->taudTextBox->setText(QString::number(inputs[i_tauD]));
         ui->setPointTextBox->setText(QString::number(inputs[i_temperature]));
         ui->A_fanSpeedTextBox->setText(QString::number(inputs[i_fanSpeed]));
     }
-    else {
+    else  // changed to the manual tab 
+    {
+        // Fill the manual textboxes with the last recorded parameters
         ui->percentOntTextBox->setText(QString::number(inputs[i_percentOn]));
         ui->M_fanSpeedTextBox->setText(QString::number(inputs[i_fanSpeed]));
     }
@@ -478,6 +475,10 @@ void MainWindow::on_tabWidget_currentChanged(int index)
     emit on_setButton_clicked();
 }
 
+
+/**
+    function called when the port is disconnected
+*/
 bool MainWindow::disonnectedPopUpWindow()
 {
     qDebug() << "(disconnected popup window )\n";

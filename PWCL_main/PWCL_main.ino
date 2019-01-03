@@ -203,7 +203,7 @@ bool filterAll = false; // If not set only the derivative term is filtered
 bool autoEnabled = false;  // true when in automatic mode 
 bool positionFlag = false; // set to 1 for the position form of the PID law, to 0 for the velocity form
 
-const unsigned int i_mode         = 0;  //  for input & output
+const unsigned int i_autoMode         = 0;  //  for input & output
 const unsigned int i_setPoint     = 1;  //  for input & output
 const unsigned int i_percentOn    = 2;  //  for input & output
 const unsigned int i_kc           = 3;  //  for input & output
@@ -470,7 +470,7 @@ void loop(void)
     shutdown();
   }
   /* place current values in the output array */
-  outputs[i_mode] = autoEnabled;
+  outputs[i_autoMode] = autoEnabled;
   if(!autoEnabled){ outputs[i_setPoint] = temperature; }  // if its in manual mode it will sent the current temp in place of the setpoint
   else { outputs[i_setPoint]  = TsetPoint; } 
   outputs[i_percentOn] = percentRelayOn;
@@ -496,16 +496,16 @@ void loop(void)
   /*
   Here we will change any values that must be changed
   */
-  if ( autoEnabled == inputs[i_mode] && autoEnabled){  // not changing mode 
+  if ( autoEnabled == inputs[i_autoMode] && autoEnabled){  // not changing mode 
     TsetPoint = inputs[i_setPoint];   // only set the set point when we are NOT changing the mode 
   }
-  else if ( autoEnabled == inputs[i_mode] && !autoEnabled ){   // not changing mode 
+  else if ( autoEnabled == inputs[i_autoMode] && !autoEnabled ){   // not changing mode 
     percentRelayOn = inputs[i_percentOn];    // only set the percent on when we are NOT chaning th mode 
   }
-  else if ( autoEnabled != inputs[i_mode] && !autoEnabled) {   // transition from manual to automatic
+  else if ( autoEnabled != inputs[i_autoMode] && !autoEnabled) {   // transition from manual to automatic
     TsetPoint = temperature;
   }
-  autoEnabled = inputs[i_mode];
+  autoEnabled = inputs[i_autoMode];
   if ( autoEnabled){  // if in automatic, set the tuning parameters
     Kc = inputs[i_kc];
     tauI = inputs[i_tauI];

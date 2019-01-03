@@ -74,7 +74,7 @@ private:
 
     /*  Some values shared between the arduino code and the this program */
     // specific for the game
-    const unsigned int i_mode          = 0;       // for input & output
+    const unsigned int i_autoMode      = 0;       // for input & output
     const unsigned int i_setPoint      = 1;       // for input & output
     const unsigned int i_percentOn     = 2;       // for input & output
     const unsigned int i_kc            = 3;       // for input & output
