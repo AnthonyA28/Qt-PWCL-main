@@ -18,7 +18,9 @@ Uses the [ QCustomPlot ](http://www.qcustomplot.com/) library for live graphing.
   * Now double click on one of the executables, or a shortcut to it, to start the program. 
 
 ## Building from source 
-  Qt version 5 or greator is required.
+
+   Qt version 5 or greator is required. Tested in Qt 5.9.2.
+
   * Clone the repository. 
   * Open the *qt_PWCL_test.pro* file with Qt creator. 
 
