@@ -59,8 +59,9 @@ private slots:
     void on_tabWidget_currentChanged(int index);
 
 private:
+
     Ui::MainWindow *ui;
-    bool deserializeArray(const char* const input, unsigned int output_size, std::vector<float>& output);
+
     int timerId; // for setting up and destroying a timer used to frquently check if port is connected until connected
     void timerEvent(QTimerEvent *event);
     PORT port;
@@ -68,12 +69,15 @@ private:
 
     QString csvFileName;
     QString excelFileName;
-
     QXlsx::Document xldoc;
     QFile csvdoc;
+    
 
-    /*  Some values shared between the arduino code and the this program */
-    // specific for the game
+    bool deserializeArray(const char* const input, unsigned int output_size, std::vector<float>& output);
+    std::vector<float> inputs;  // Holds values read from the port ordered below 
+    /*
+    * Assign the index in which these values will exist in the 'inputs' and 'outputs' arrays
+    */
     const unsigned int i_autoMode      = 0;       // for input & output
     const unsigned int i_setPoint      = 1;       // for input & output
     const unsigned int i_percentOn     = 2;       // for input & output
@@ -89,7 +93,6 @@ private:
     const unsigned int i_time          = 12;      // for input
     const unsigned int numInputs       = 13;
 
-    std::vector<float> inputs;
 };
 
 #endif // MAINWINDOW_H
