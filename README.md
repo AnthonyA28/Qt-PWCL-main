@@ -4,6 +4,12 @@
 
 Provides a graphical user interface for changing parameters and logging/graphing data from an Arduino based process controller. 
 
+Uses the [QXlsx library](https://github.com/j2doll/QXlsx) for logging data to Excel. 
+
+Uses the [ QCustomPlot ](http://www.qcustomplot.com/) library for live graphing. 
+
+
+
 ## Installation
   * Download the latest release from the releases tab. 
   * unzip the files into any directory you prefer. 
