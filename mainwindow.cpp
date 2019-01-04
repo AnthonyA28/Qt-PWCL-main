@@ -34,7 +34,7 @@ MainWindow::MainWindow(QWidget *parent) :
     ui->setupUi(this);
     // timer is used to repeatedly check for port data until we are connected
     this->timerId = startTimer(250);  // timer is used to repeatedly check for port data until we are connected
-    // indicates when we are connected to the port AND the correct arduino program is being run 
+    // indicates when we are connected to the port AND the correct arduino program is being run
     this->validConnection = false;
     // initialize the input vector to hold the input values from the port
     this->inputs = std::vector<float>(this->numInputs); // initialize the input vector to hold the input values from the port
@@ -42,16 +42,16 @@ MainWindow::MainWindow(QWidget *parent) :
     ui->outputTable->horizontalHeader()->setSectionResizeMode(QHeaderView::Stretch);   // have the table resize with the window
 
     /*
-    *  Connect functions from the PORT class to functions declared in the MainWIndow class and vice versa. 
+    *  Connect functions from the PORT class to functions declared in the MainWIndow class and vice versa.
     */
     connect(&port, &PORT::request, this, &MainWindow::showRequest);     // when the port recieves data it will emit PORT::request thus calling MainWindow::showRequest
     connect(&port, &PORT::disconnected, this, &MainWindow::disonnectedPopUpWindow);
     connect(this, &MainWindow::response, &port, &PORT::L_processResponse);  // whn the set button is clicked, it will emit MainWindow::response thus calling PORT::L_processResponse
 
-    
+
     /*
-    *  Prepare data logging files. One in excel format named this->excelFileName 
-    *  and two in csv file format named this->csvFileName, another csv file 
+    *  Prepare data logging files. One in excel format named this->excelFileName
+    *  and two in csv file format named this->csvFileName, another csv file
     *  with titled with the current date will copy the contents of this->csvFileName.
     */
     // Move to the directy above the executable
@@ -130,7 +130,7 @@ MainWindow::MainWindow(QWidget *parent) :
 
 /**
 *   Called when the window is closed.
-*   Creates and saves a backup file of logged data. 
+*   Creates and saves a backup file of logged data.
 */
 MainWindow::~MainWindow()
 {
@@ -141,7 +141,7 @@ MainWindow::~MainWindow()
              backupDir.mkpath(".");
         QDir::setCurrent("backupFiles");
 
-        // Create a backup file titles with the current date and time 
+        // Create a backup file titles with the current date and time
         QDateTime currentTime(QDateTime::currentDateTime());
         QString dateStr = currentTime.toString("d-MMM--h-m-A");
         dateStr.append(".csv"); // the 's' cant be used when formatting the time string
@@ -155,7 +155,7 @@ MainWindow::~MainWindow()
 
 
 /**
-*   Called when data was read from the port. 
+*   Called when data was read from the port.
 *   Fills a new row in the output table. Updates the graph, and any parameters shown in the GUI.
 */
 void MainWindow::showRequest(const QString &req)
@@ -165,13 +165,14 @@ void MainWindow::showRequest(const QString &req)
         this->validConnection = true;  // String wa parsed therefore the correct arduino program is uploaded
 
         bool inAutoMode = (inputs[i_autoMode]);  // true if we are in automatic mode
-        
+
         /*
         *  Update the output table with the last parameters read from the port.
         */
         ui->outputTable->insertRow(ui->outputTable->rowCount()); // create a new row
 
-        /* add a string of each value into each column at the last row in the outputTable */
+        // add a string of each value into each column at the last row in the outputTable
+        // todo: determine if these new tablewidgets are memory leaks #p1
         ui->outputTable->setItem(ui->outputTable->rowCount()-1, 0, new QTableWidgetItem(QString::number(inputs[i_time],'g',3)));
         ui->outputTable->setItem(ui->outputTable->rowCount()-1, 1, new QTableWidgetItem(QString::number(inputs[i_percentOn],'g',3)));
         ui->outputTable->setItem(ui->outputTable->rowCount()-1, 2, new QTableWidgetItem(QString::number(inputs[i_temperature],'g',3)));
@@ -190,10 +191,10 @@ void MainWindow::showRequest(const QString &req)
         this->xldoc.saveAs(this->excelFileName); // save the doc in case we crash
 
         /*
-        *  Update the csv file with the last data read from the port 
+        *  Update the csv file with the last data read from the port
         */
         char file_output_buffer[200]   = "";
-        if (inAutoMode) {  // Only write the setpoint if in automatic mode 
+        if (inAutoMode) {  // Only write the setpoint if in automatic mode
             snprintf(file_output_buffer, sizeof(file_output_buffer),"%6.2f,%6.2f,%6.2f,%6.2f,%6.2f\n",
                 inputs[i_time], inputs[i_percentOn], inputs[i_temperature], inputs[i_tempFiltered], inputs[i_setPoint]);
         } else {
@@ -206,8 +207,8 @@ void MainWindow::showRequest(const QString &req)
         stream.flush();  // so it writes immediately
 
 
-        /* 
-        *  Show the current values from the port in the current parameters area 
+        /*
+        *  Show the current values from the port in the current parameters area
         */
         QString ModeString = " "; // holds a string for current mode ex. "Automatic, velocity form, Filtering all terms"
         if (inputs[i_autoMode]) {
@@ -231,7 +232,7 @@ void MainWindow::showRequest(const QString &req)
 
 
         /*
-        *  Place the latest values in the graph  
+        *  Place the latest values in the graph
         */
         ui->plot->graph(3)->addData(inputs[i_time], inputs[i_percentOn]);
         ui->plot->graph(1)->addData(inputs[i_time], inputs[i_temperature]);
@@ -255,13 +256,13 @@ void MainWindow::showRequest(const QString &req)
 void MainWindow::on_setButton_clicked()
 {
     if (port.L_isConnected()) {
-        
-        QString response; // is sent to the port 
+
+        QString response; // is sent to the port
 
         /*
         *  Lambda expression used to automate filling the output array from input in the textboxes
         *  Ensures the value inputted in the textBox is within range min and max
-        *  returns '_' if the value is no good. When the arduino recieves '_' it wont change the value. 
+        *  returns '_' if the value is no good. When the arduino recieves '_' it wont change the value.
         */
         auto fillArrayAtNextIndex = [&response]( QString name, QLineEdit* textBox, double min = NAN, double max = NAN)
         {
@@ -310,7 +311,7 @@ void MainWindow::on_setButton_clicked()
         */
         response = "[";
 
-        bool autoMode = ( ui->tabWidget->currentIndex() ==  1 ); // the first index of the tabwidget is the automatic one 
+        bool autoMode = ( ui->tabWidget->currentIndex() ==  1 ); // the first index of the tabwidget is the automatic one
 
         if (autoMode) {
             response.append( "1," ); // automatic mode
@@ -342,8 +343,8 @@ void MainWindow::on_setButton_clicked()
     else{
         /*
         *  if we arent connect then emit a signal as if the user clicked the first option in the combobox
-        *  and therefore a connection will be attempted. 
-        */ 
+        *  and therefore a connection will be attempted.
+        */
         emit this->on_portComboBox_activated(0);
     }
 
@@ -354,7 +355,7 @@ void MainWindow::on_setButton_clicked()
 /**
 *   Called by the timer ever 250 ms, until the timer is killed.
 *   Checks if a connection is active, if no connection is active,
-*   search for available ports and open a connection. 
+*   search for available ports and open a connection.
 */
 void MainWindow::timerEvent(QTimerEvent *event)
 {
@@ -379,7 +380,7 @@ void MainWindow::timerEvent(QTimerEvent *event)
 
 /**
 *   called when the user pressed on the combobox
-*   connects to the port selected. 
+*   connects to the port selected.
 */
 void MainWindow::on_portComboBox_activated(int index)
 {
@@ -397,8 +398,8 @@ void MainWindow::on_portComboBox_activated(int index)
 
 
 /**
-*   Called after new data is recieved from the port to parse the string recieved. 
-*   fills 'output' of five 'output_size' with the vlues in 'input' string. 
+*   Called after new data is recieved from the port to parse the string recieved.
+*   fills 'output' of five 'output_size' with the vlues in 'input' string.
 */
 bool MainWindow::deserializeArray(const char* const input, unsigned int output_size,  std::vector<float> &output)
 {
@@ -454,28 +455,28 @@ bool MainWindow::deserializeArray(const char* const input, unsigned int output_s
 }
 
 /**
-*   Called when a the mode tabs are changed, 
-*   Will fill the textboxes with the last recorded parameters 
+*   Called when a the mode tabs are changed,
+*   Will fill the textboxes with the last recorded parameters
 */
 void MainWindow::on_tabWidget_currentChanged(int index)
 {
     if (!this->validConnection) return; // if we havent connected to the correct port then stop
 
-    bool autoModeTab = ( index == 1 );  // tab index 1 is the automatic tab 
-    if (autoModeTab){ // changed from manual to automatic 
-        // Fill the automatic textboxes with the last recorded parameters 
-        ui->kcTextBox->setText(QString::number(inputs[i_kc]));   
+    bool autoModeTab = ( index == 1 );  // tab index 1 is the automatic tab
+    if (autoModeTab){ // changed from manual to automatic
+        // Fill the automatic textboxes with the last recorded parameters
+        ui->kcTextBox->setText(QString::number(inputs[i_kc]));
         ui->tauiTextBox->setText(QString::number(inputs[i_tauI]));
         ui->taufTextBox->setText(QString::number(inputs[i_tauF]));
         ui->taudTextBox->setText(QString::number(inputs[i_tauD]));
         ui->setPointTextBox->setText(QString::number(inputs[i_temperature]));
         ui->A_fanSpeedTextBox->setText(QString::number(inputs[i_fanSpeed]));
-    } else {  // changed to the manual tab 
+    } else {  // changed to the manual tab
         // Fill the manual textboxes with the last recorded parameters
         ui->percentOntTextBox->setText(QString::number(inputs[i_percentOn]));
         ui->M_fanSpeedTextBox->setText(QString::number(inputs[i_fanSpeed]));
     }
-    emit on_setButton_clicked(); // simulate the user presing the set button so new parameters are sent to the port. 
+    emit on_setButton_clicked(); // simulate the user presing the set button so new parameters are sent to the port.
 }
 
 
