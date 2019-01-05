@@ -172,7 +172,7 @@ void MainWindow::showRequest(const QString &req)
         ui->outputTable->insertRow(ui->outputTable->rowCount()); // create a new row
 
         // add a string of each value into each column at the last row in the outputTable
-        // todo: determine if these new tablewidgets are memory leaks #p1
+        // the 'new' tablewidget items are NOT memory leaks becuse the tablewiget takes ownership of the item, see: https://stackoverflow.com/questions/21997025/qtablewidget-memory-leak-or-not
         ui->outputTable->setItem(ui->outputTable->rowCount()-1, 0, new QTableWidgetItem(QString::number(inputs[i_time],'g',3)));
         ui->outputTable->setItem(ui->outputTable->rowCount()-1, 1, new QTableWidgetItem(QString::number(inputs[i_percentOn],'g',3)));
         ui->outputTable->setItem(ui->outputTable->rowCount()-1, 2, new QTableWidgetItem(QString::number(inputs[i_temperature],'g',3)));
