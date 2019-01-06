@@ -40,6 +40,10 @@ MainWindow::MainWindow(QWidget *parent) :
     this->inputs = std::vector<float>(this->numInputs); // initialize the input vector to hold the input values from the port
     // have the table resize with the window
     ui->outputTable->horizontalHeader()->setSectionResizeMode(QHeaderView::Stretch);   // have the table resize with the window
+    // deafault the tab widget on manual, and disable any input (until we are connected)
+    ui->tabWidget->setCurrentIndex(0);
+    ui->tabWidget->setTabEnabled(0,false);
+    ui->tabWidget->setTabEnabled(1,false);
 
     /*
     *  Connect functions from the PORT class to functions declared in the MainWIndow class and vice versa.
@@ -167,7 +171,13 @@ void MainWindow::showRequest(const QString &req)
 
     if (this->deserializeArray(req.toStdString().c_str(), this->numInputs, this->inputs)) {
 
-        this->validConnection = true;  // String was parsed therefore the correct arduino program is uploaded
+        if (!this->validConnection) {
+            this->validConnection = true;  // String was parsed therefore the correct arduino program is uploaded
+            // enable the tab widgets so the user an input vales
+            ui->tabWidget->setTabEnabled(0,true);
+            ui->tabWidget->setTabEnabled(1,true);
+        }
+
 
         bool inAutoMode = (inputs[i_autoMode]);  // true if we are in automatic mode
 
@@ -375,8 +385,7 @@ void MainWindow::timerEvent(QTimerEvent *event)
         }
     } else {
         killTimer(this->timerId); // no reason for the timer anymore
-        if( ui->setButton->text() != "Set")   // change connect button to set button
-           ui->setButton->setText("Set");
+        ui->setButton->setText("Set"); // change connect button to set button
     }
 
 }
