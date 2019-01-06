@@ -160,9 +160,14 @@ MainWindow::~MainWindow()
 */
 void MainWindow::showRequest(const QString &req)
 {
-    if(this->deserializeArray(req.toStdString().c_str(), this->numInputs, this->inputs)){
+    if (req.contains('!')) {
+        ui->emergencyMessageLabel->setText(req);
+        return;
+    }
 
-        this->validConnection = true;  // String wa parsed therefore the correct arduino program is uploaded
+    if (this->deserializeArray(req.toStdString().c_str(), this->numInputs, this->inputs)) {
+
+        this->validConnection = true;  // String was parsed therefore the correct arduino program is uploaded
 
         bool inAutoMode = (inputs[i_autoMode]);  // true if we are in automatic mode
 

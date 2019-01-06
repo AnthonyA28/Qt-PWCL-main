@@ -1,7 +1,7 @@
 /********************************************************************************
 ** Form generated from reading UI file 'mainwindow.ui'
 **
-** Created by: Qt User Interface Compiler version 5.12.0
+** Created by: Qt User Interface Compiler version 5.9.2
 **
 ** WARNING! All changes made in this file will be lost when recompiling UI file!
 ********************************************************************************/
@@ -10,7 +10,9 @@
 #define UI_MAINWINDOW_H
 
 #include <QtCore/QVariant>
+#include <QtWidgets/QAction>
 #include <QtWidgets/QApplication>
+#include <QtWidgets/QButtonGroup>
 #include <QtWidgets/QCheckBox>
 #include <QtWidgets/QComboBox>
 #include <QtWidgets/QFormLayout>
@@ -40,6 +42,7 @@ public:
     QGridLayout *gridLayout;
     QVBoxLayout *verticalLayout;
     QTableWidget *outputTable;
+    QLabel *emergencyMessageLabel;
     QCustomPlot *plot;
     QVBoxLayout *verticalLayout_3;
     QVBoxLayout *verticalLayout_4;
@@ -77,11 +80,11 @@ public:
     QFrame *line;
     QLabel *kcLabelName;
     QLabel *kcLabel;
-    QLabel *label_10;
+    QLabel *tauiLabelName;
     QLabel *tauiLabel;
-    QLabel *label_16;
+    QLabel *taudLabelName;
     QLabel *taudLabel;
-    QLabel *label_12;
+    QLabel *taufLabelName;
     QLabel *taufLabel;
     QLabel *label_13;
     QLabel *modeTextLabel;
@@ -93,18 +96,21 @@ public:
     void setupUi(QMainWindow *MainWindow)
     {
         if (MainWindow->objectName().isEmpty())
-            MainWindow->setObjectName(QString::fromUtf8("MainWindow"));
+            MainWindow->setObjectName(QStringLiteral("MainWindow"));
         MainWindow->resize(617, 590);
         MainWindow->setMinimumSize(QSize(542, 590));
+        QIcon icon;
+        icon.addFile(QStringLiteral("../qt_PWCL_game/gator_icon.ico"), QSize(), QIcon::Normal, QIcon::Off);
+        MainWindow->setWindowIcon(icon);
         centralWidget = new QWidget(MainWindow);
-        centralWidget->setObjectName(QString::fromUtf8("centralWidget"));
+        centralWidget->setObjectName(QStringLiteral("centralWidget"));
         gridLayout = new QGridLayout(centralWidget);
         gridLayout->setSpacing(6);
         gridLayout->setContentsMargins(11, 11, 11, 11);
-        gridLayout->setObjectName(QString::fromUtf8("gridLayout"));
+        gridLayout->setObjectName(QStringLiteral("gridLayout"));
         verticalLayout = new QVBoxLayout();
         verticalLayout->setSpacing(6);
-        verticalLayout->setObjectName(QString::fromUtf8("verticalLayout"));
+        verticalLayout->setObjectName(QStringLiteral("verticalLayout"));
         verticalLayout->setSizeConstraint(QLayout::SetMaximumSize);
         outputTable = new QTableWidget(centralWidget);
         if (outputTable->columnCount() < 6)
@@ -134,7 +140,7 @@ public:
         __qtablewidgetitem4->setFont(font1);
         outputTable->setHorizontalHeaderItem(4, __qtablewidgetitem4);
         QFont font2;
-        font2.setFamily(QString::fromUtf8("MS Shell Dlg 2"));
+        font2.setFamily(QStringLiteral("MS Shell Dlg 2"));
         font2.setPointSize(8);
         font2.setBold(true);
         font2.setWeight(75);
@@ -165,7 +171,7 @@ public:
         __qtablewidgetitem11->setFont(font3);
         __qtablewidgetitem11->setFlags(Qt::NoItemFlags);
         outputTable->setItem(0, 4, __qtablewidgetitem11);
-        outputTable->setObjectName(QString::fromUtf8("outputTable"));
+        outputTable->setObjectName(QStringLiteral("outputTable"));
         outputTable->setEnabled(true);
         QSizePolicy sizePolicy(QSizePolicy::Expanding, QSizePolicy::Expanding);
         sizePolicy.setHorizontalStretch(1);
@@ -176,19 +182,19 @@ public:
         outputTable->setFocusPolicy(Qt::NoFocus);
         outputTable->setContextMenuPolicy(Qt::NoContextMenu);
 #ifndef QT_NO_TOOLTIP
-        outputTable->setToolTip(QString::fromUtf8(""));
+        outputTable->setToolTip(QStringLiteral(""));
 #endif // QT_NO_TOOLTIP
 #ifndef QT_NO_STATUSTIP
-        outputTable->setStatusTip(QString::fromUtf8(""));
+        outputTable->setStatusTip(QStringLiteral(""));
 #endif // QT_NO_STATUSTIP
 #ifndef QT_NO_WHATSTHIS
-        outputTable->setWhatsThis(QString::fromUtf8(""));
+        outputTable->setWhatsThis(QStringLiteral(""));
 #endif // QT_NO_WHATSTHIS
 #ifndef QT_NO_ACCESSIBILITY
-        outputTable->setAccessibleName(QString::fromUtf8(""));
+        outputTable->setAccessibleName(QStringLiteral(""));
 #endif // QT_NO_ACCESSIBILITY
 #ifndef QT_NO_ACCESSIBILITY
-        outputTable->setAccessibleDescription(QString::fromUtf8(""));
+        outputTable->setAccessibleDescription(QStringLiteral(""));
 #endif // QT_NO_ACCESSIBILITY
         outputTable->setFrameShape(QFrame::Box);
         outputTable->setLineWidth(1);
@@ -213,26 +219,36 @@ public:
 
         verticalLayout->addWidget(outputTable);
 
+        emergencyMessageLabel = new QLabel(centralWidget);
+        emergencyMessageLabel->setObjectName(QStringLiteral("emergencyMessageLabel"));
+        QFont font4;
+        font4.setPointSize(14);
+        font4.setBold(true);
+        font4.setWeight(75);
+        emergencyMessageLabel->setFont(font4);
+
+        verticalLayout->addWidget(emergencyMessageLabel);
+
         plot = new QCustomPlot(centralWidget);
-        plot->setObjectName(QString::fromUtf8("plot"));
+        plot->setObjectName(QStringLiteral("plot"));
 
         verticalLayout->addWidget(plot);
 
         verticalLayout->setStretch(0, 1);
-        verticalLayout->setStretch(1, 1);
+        verticalLayout->setStretch(2, 1);
 
         gridLayout->addLayout(verticalLayout, 0, 1, 1, 1);
 
         verticalLayout_3 = new QVBoxLayout();
         verticalLayout_3->setSpacing(6);
-        verticalLayout_3->setObjectName(QString::fromUtf8("verticalLayout_3"));
+        verticalLayout_3->setObjectName(QStringLiteral("verticalLayout_3"));
         verticalLayout_3->setSizeConstraint(QLayout::SetFixedSize);
         verticalLayout_4 = new QVBoxLayout();
         verticalLayout_4->setSpacing(6);
-        verticalLayout_4->setObjectName(QString::fromUtf8("verticalLayout_4"));
+        verticalLayout_4->setObjectName(QStringLiteral("verticalLayout_4"));
         verticalLayout_4->setSizeConstraint(QLayout::SetFixedSize);
         label_5 = new QLabel(centralWidget);
-        label_5->setObjectName(QString::fromUtf8("label_5"));
+        label_5->setObjectName(QStringLiteral("label_5"));
         QSizePolicy sizePolicy1(QSizePolicy::Fixed, QSizePolicy::Fixed);
         sizePolicy1.setHorizontalStretch(0);
         sizePolicy1.setVerticalStretch(0);
@@ -240,10 +256,10 @@ public:
         label_5->setSizePolicy(sizePolicy1);
         label_5->setMinimumSize(QSize(251, 0));
         label_5->setMaximumSize(QSize(251, 16777215));
-        QFont font4;
-        font4.setBold(true);
-        font4.setWeight(75);
-        label_5->setFont(font4);
+        QFont font5;
+        font5.setBold(true);
+        font5.setWeight(75);
+        label_5->setFont(font5);
 
         verticalLayout_4->addWidget(label_5);
 
@@ -251,7 +267,7 @@ public:
         verticalLayout_3->addLayout(verticalLayout_4);
 
         tabWidget = new QTabWidget(centralWidget);
-        tabWidget->setObjectName(QString::fromUtf8("tabWidget"));
+        tabWidget->setObjectName(QStringLiteral("tabWidget"));
         sizePolicy1.setHeightForWidth(tabWidget->sizePolicy().hasHeightForWidth());
         tabWidget->setSizePolicy(sizePolicy1);
         tabWidget->setMinimumSize(QSize(0, 180));
@@ -261,32 +277,32 @@ public:
         tabWidget->setIconSize(QSize(21, 21));
         tabWidget->setElideMode(Qt::ElideNone);
         tabManual = new QWidget();
-        tabManual->setObjectName(QString::fromUtf8("tabManual"));
+        tabManual->setObjectName(QStringLiteral("tabManual"));
         formLayout = new QFormLayout(tabManual);
         formLayout->setSpacing(6);
         formLayout->setContentsMargins(11, 11, 11, 11);
-        formLayout->setObjectName(QString::fromUtf8("formLayout"));
+        formLayout->setObjectName(QStringLiteral("formLayout"));
         formLayout->setLabelAlignment(Qt::AlignRight|Qt::AlignTrailing|Qt::AlignVCenter);
         label_6 = new QLabel(tabManual);
-        label_6->setObjectName(QString::fromUtf8("label_6"));
+        label_6->setObjectName(QStringLiteral("label_6"));
         label_6->setMaximumSize(QSize(122, 16777215));
 
         formLayout->setWidget(1, QFormLayout::LabelRole, label_6);
 
         percentOntTextBox = new QLineEdit(tabManual);
-        percentOntTextBox->setObjectName(QString::fromUtf8("percentOntTextBox"));
+        percentOntTextBox->setObjectName(QStringLiteral("percentOntTextBox"));
         percentOntTextBox->setMaximumSize(QSize(70, 20));
 
         formLayout->setWidget(1, QFormLayout::FieldRole, percentOntTextBox);
 
         label_7 = new QLabel(tabManual);
-        label_7->setObjectName(QString::fromUtf8("label_7"));
+        label_7->setObjectName(QStringLiteral("label_7"));
         label_7->setMaximumSize(QSize(69, 16777215));
 
         formLayout->setWidget(2, QFormLayout::LabelRole, label_7);
 
         M_fanSpeedTextBox = new QLineEdit(tabManual);
-        M_fanSpeedTextBox->setObjectName(QString::fromUtf8("M_fanSpeedTextBox"));
+        M_fanSpeedTextBox->setObjectName(QStringLiteral("M_fanSpeedTextBox"));
         M_fanSpeedTextBox->setMaximumSize(QSize(70, 20));
 
         formLayout->setWidget(2, QFormLayout::FieldRole, M_fanSpeedTextBox);
@@ -297,34 +313,34 @@ public:
 
         tabWidget->addTab(tabManual, QString());
         tabAutomatic = new QWidget();
-        tabAutomatic->setObjectName(QString::fromUtf8("tabAutomatic"));
+        tabAutomatic->setObjectName(QStringLiteral("tabAutomatic"));
         tabAutomatic->setMinimumSize(QSize(100, 300));
         formLayout_2 = new QFormLayout(tabAutomatic);
         formLayout_2->setSpacing(6);
         formLayout_2->setContentsMargins(11, 11, 11, 11);
-        formLayout_2->setObjectName(QString::fromUtf8("formLayout_2"));
+        formLayout_2->setObjectName(QStringLiteral("formLayout_2"));
         formLayout_2->setLabelAlignment(Qt::AlignRight|Qt::AlignTrailing|Qt::AlignVCenter);
         formLayout_2->setHorizontalSpacing(3);
         formLayout_2->setVerticalSpacing(2);
         label_9 = new QLabel(tabAutomatic);
-        label_9->setObjectName(QString::fromUtf8("label_9"));
+        label_9->setObjectName(QStringLiteral("label_9"));
 
         formLayout_2->setWidget(1, QFormLayout::LabelRole, label_9);
 
         setPointTextBox = new QLineEdit(tabAutomatic);
-        setPointTextBox->setObjectName(QString::fromUtf8("setPointTextBox"));
+        setPointTextBox->setObjectName(QStringLiteral("setPointTextBox"));
         setPointTextBox->setMaximumSize(QSize(70, 20));
 
         formLayout_2->setWidget(1, QFormLayout::FieldRole, setPointTextBox);
 
         label_4 = new QLabel(tabAutomatic);
-        label_4->setObjectName(QString::fromUtf8("label_4"));
+        label_4->setObjectName(QStringLiteral("label_4"));
         label_4->setMaximumSize(QSize(18, 16777215));
 
         formLayout_2->setWidget(2, QFormLayout::LabelRole, label_4);
 
         kcTextBox = new QLineEdit(tabAutomatic);
-        kcTextBox->setObjectName(QString::fromUtf8("kcTextBox"));
+        kcTextBox->setObjectName(QStringLiteral("kcTextBox"));
         sizePolicy1.setHeightForWidth(kcTextBox->sizePolicy().hasHeightForWidth());
         kcTextBox->setSizePolicy(sizePolicy1);
         kcTextBox->setMaximumSize(QSize(70, 20));
@@ -333,13 +349,13 @@ public:
         formLayout_2->setWidget(2, QFormLayout::FieldRole, kcTextBox);
 
         label_3 = new QLabel(tabAutomatic);
-        label_3->setObjectName(QString::fromUtf8("label_3"));
+        label_3->setObjectName(QStringLiteral("label_3"));
         label_3->setMaximumSize(QSize(15, 16777215));
 
         formLayout_2->setWidget(3, QFormLayout::LabelRole, label_3);
 
         tauiTextBox = new QLineEdit(tabAutomatic);
-        tauiTextBox->setObjectName(QString::fromUtf8("tauiTextBox"));
+        tauiTextBox->setObjectName(QStringLiteral("tauiTextBox"));
         sizePolicy1.setHeightForWidth(tauiTextBox->sizePolicy().hasHeightForWidth());
         tauiTextBox->setSizePolicy(sizePolicy1);
         tauiTextBox->setMaximumSize(QSize(70, 20));
@@ -348,18 +364,18 @@ public:
         formLayout_2->setWidget(3, QFormLayout::FieldRole, tauiTextBox);
 
         label = new QLabel(tabAutomatic);
-        label->setObjectName(QString::fromUtf8("label"));
+        label->setObjectName(QStringLiteral("label"));
         label->setMaximumSize(QSize(19, 16777215));
-        QFont font5;
-        font5.setPointSize(9);
-        label->setFont(font5);
+        QFont font6;
+        font6.setPointSize(9);
+        label->setFont(font6);
         label->setLayoutDirection(Qt::LeftToRight);
         label->setAlignment(Qt::AlignLeading|Qt::AlignLeft|Qt::AlignVCenter);
 
         formLayout_2->setWidget(4, QFormLayout::LabelRole, label);
 
         taudTextBox = new QLineEdit(tabAutomatic);
-        taudTextBox->setObjectName(QString::fromUtf8("taudTextBox"));
+        taudTextBox->setObjectName(QStringLiteral("taudTextBox"));
         sizePolicy1.setHeightForWidth(taudTextBox->sizePolicy().hasHeightForWidth());
         taudTextBox->setSizePolicy(sizePolicy1);
         taudTextBox->setMaximumSize(QSize(70, 20));
@@ -368,13 +384,13 @@ public:
         formLayout_2->setWidget(4, QFormLayout::FieldRole, taudTextBox);
 
         label_2 = new QLabel(tabAutomatic);
-        label_2->setObjectName(QString::fromUtf8("label_2"));
+        label_2->setObjectName(QStringLiteral("label_2"));
         label_2->setMaximumSize(QSize(17, 16777215));
 
         formLayout_2->setWidget(5, QFormLayout::LabelRole, label_2);
 
         taufTextBox = new QLineEdit(tabAutomatic);
-        taufTextBox->setObjectName(QString::fromUtf8("taufTextBox"));
+        taufTextBox->setObjectName(QStringLiteral("taufTextBox"));
         sizePolicy1.setHeightForWidth(taufTextBox->sizePolicy().hasHeightForWidth());
         taufTextBox->setSizePolicy(sizePolicy1);
         taufTextBox->setMaximumSize(QSize(70, 20));
@@ -383,32 +399,32 @@ public:
         formLayout_2->setWidget(5, QFormLayout::FieldRole, taufTextBox);
 
         label_11 = new QLabel(tabAutomatic);
-        label_11->setObjectName(QString::fromUtf8("label_11"));
+        label_11->setObjectName(QStringLiteral("label_11"));
         label_11->setMaximumSize(QSize(69, 16777215));
 
         formLayout_2->setWidget(6, QFormLayout::LabelRole, label_11);
 
         A_fanSpeedTextBox = new QLineEdit(tabAutomatic);
-        A_fanSpeedTextBox->setObjectName(QString::fromUtf8("A_fanSpeedTextBox"));
+        A_fanSpeedTextBox->setObjectName(QStringLiteral("A_fanSpeedTextBox"));
         A_fanSpeedTextBox->setMaximumSize(QSize(70, 20));
 
         formLayout_2->setWidget(6, QFormLayout::FieldRole, A_fanSpeedTextBox);
 
         filterAllCheckBox = new QCheckBox(tabAutomatic);
-        filterAllCheckBox->setObjectName(QString::fromUtf8("filterAllCheckBox"));
+        filterAllCheckBox->setObjectName(QStringLiteral("filterAllCheckBox"));
         sizePolicy1.setHeightForWidth(filterAllCheckBox->sizePolicy().hasHeightForWidth());
         filterAllCheckBox->setSizePolicy(sizePolicy1);
         filterAllCheckBox->setMaximumSize(QSize(249, 16777215));
-        filterAllCheckBox->setFont(font5);
+        filterAllCheckBox->setFont(font6);
 
         formLayout_2->setWidget(7, QFormLayout::SpanningRole, filterAllCheckBox);
 
         posFormCheckBox = new QCheckBox(tabAutomatic);
-        posFormCheckBox->setObjectName(QString::fromUtf8("posFormCheckBox"));
+        posFormCheckBox->setObjectName(QStringLiteral("posFormCheckBox"));
         sizePolicy1.setHeightForWidth(posFormCheckBox->sizePolicy().hasHeightForWidth());
         posFormCheckBox->setSizePolicy(sizePolicy1);
         posFormCheckBox->setMaximumSize(QSize(249, 16777215));
-        posFormCheckBox->setFont(font5);
+        posFormCheckBox->setFont(font6);
 
         formLayout_2->setWidget(8, QFormLayout::SpanningRole, posFormCheckBox);
 
@@ -418,25 +434,25 @@ public:
 
         formLayout_6 = new QFormLayout();
         formLayout_6->setSpacing(6);
-        formLayout_6->setObjectName(QString::fromUtf8("formLayout_6"));
+        formLayout_6->setObjectName(QStringLiteral("formLayout_6"));
         formLayout_6->setHorizontalSpacing(2);
         formLayout_6->setVerticalSpacing(3);
         formLayout_5 = new QFormLayout();
         formLayout_5->setSpacing(6);
-        formLayout_5->setObjectName(QString::fromUtf8("formLayout_5"));
+        formLayout_5->setObjectName(QStringLiteral("formLayout_5"));
         setButton = new QPushButton(centralWidget);
-        setButton->setObjectName(QString::fromUtf8("setButton"));
+        setButton->setObjectName(QStringLiteral("setButton"));
         sizePolicy1.setHeightForWidth(setButton->sizePolicy().hasHeightForWidth());
         setButton->setSizePolicy(sizePolicy1);
         setButton->setMinimumSize(QSize(120, 0));
         setButton->setMaximumSize(QSize(120, 27));
-        setButton->setFont(font5);
+        setButton->setFont(font6);
         setButton->setAutoDefault(true);
 
         formLayout_5->setWidget(0, QFormLayout::LabelRole, setButton);
 
         portComboBox = new QComboBox(centralWidget);
-        portComboBox->setObjectName(QString::fromUtf8("portComboBox"));
+        portComboBox->setObjectName(QStringLiteral("portComboBox"));
         QSizePolicy sizePolicy2(QSizePolicy::Preferred, QSizePolicy::Fixed);
         sizePolicy2.setHorizontalStretch(0);
         sizePolicy2.setVerticalStretch(0);
@@ -458,12 +474,12 @@ public:
 
         formLayout_3 = new QFormLayout();
         formLayout_3->setSpacing(6);
-        formLayout_3->setObjectName(QString::fromUtf8("formLayout_3"));
+        formLayout_3->setObjectName(QStringLiteral("formLayout_3"));
         formLayout_3->setLabelAlignment(Qt::AlignRight|Qt::AlignTrailing|Qt::AlignVCenter);
         formLayout_3->setHorizontalSpacing(12);
         formLayout_3->setVerticalSpacing(7);
         label_8 = new QLabel(centralWidget);
-        label_8->setObjectName(QString::fromUtf8("label_8"));
+        label_8->setObjectName(QStringLiteral("label_8"));
         sizePolicy1.setHeightForWidth(label_8->sizePolicy().hasHeightForWidth());
         label_8->setSizePolicy(sizePolicy1);
         label_8->setMaximumSize(QSize(227, 16777215));
@@ -471,7 +487,7 @@ public:
         formLayout_3->setWidget(0, QFormLayout::FieldRole, label_8);
 
         line = new QFrame(centralWidget);
-        line->setObjectName(QString::fromUtf8("line"));
+        line->setObjectName(QStringLiteral("line"));
         QSizePolicy sizePolicy3(QSizePolicy::Minimum, QSizePolicy::Minimum);
         sizePolicy3.setHorizontalStretch(0);
         sizePolicy3.setVerticalStretch(0);
@@ -487,7 +503,7 @@ public:
         formLayout_3->setWidget(1, QFormLayout::SpanningRole, line);
 
         kcLabelName = new QLabel(centralWidget);
-        kcLabelName->setObjectName(QString::fromUtf8("kcLabelName"));
+        kcLabelName->setObjectName(QStringLiteral("kcLabelName"));
         sizePolicy1.setHeightForWidth(kcLabelName->sizePolicy().hasHeightForWidth());
         kcLabelName->setSizePolicy(sizePolicy1);
         kcLabelName->setMaximumSize(QSize(16, 16777215));
@@ -495,55 +511,55 @@ public:
         formLayout_3->setWidget(2, QFormLayout::LabelRole, kcLabelName);
 
         kcLabel = new QLabel(centralWidget);
-        kcLabel->setObjectName(QString::fromUtf8("kcLabel"));
+        kcLabel->setObjectName(QStringLiteral("kcLabel"));
         sizePolicy1.setHeightForWidth(kcLabel->sizePolicy().hasHeightForWidth());
         kcLabel->setSizePolicy(sizePolicy1);
         kcLabel->setMaximumSize(QSize(141, 16777215));
 
         formLayout_3->setWidget(2, QFormLayout::FieldRole, kcLabel);
 
-        label_10 = new QLabel(centralWidget);
-        label_10->setObjectName(QString::fromUtf8("label_10"));
-        sizePolicy1.setHeightForWidth(label_10->sizePolicy().hasHeightForWidth());
-        label_10->setSizePolicy(sizePolicy1);
-        label_10->setMaximumSize(QSize(14, 16777215));
+        tauiLabelName = new QLabel(centralWidget);
+        tauiLabelName->setObjectName(QStringLiteral("tauiLabelName"));
+        sizePolicy1.setHeightForWidth(tauiLabelName->sizePolicy().hasHeightForWidth());
+        tauiLabelName->setSizePolicy(sizePolicy1);
+        tauiLabelName->setMaximumSize(QSize(14, 16777215));
 
-        formLayout_3->setWidget(3, QFormLayout::LabelRole, label_10);
+        formLayout_3->setWidget(3, QFormLayout::LabelRole, tauiLabelName);
 
         tauiLabel = new QLabel(centralWidget);
-        tauiLabel->setObjectName(QString::fromUtf8("tauiLabel"));
+        tauiLabel->setObjectName(QStringLiteral("tauiLabel"));
         sizePolicy1.setHeightForWidth(tauiLabel->sizePolicy().hasHeightForWidth());
         tauiLabel->setSizePolicy(sizePolicy1);
         tauiLabel->setMaximumSize(QSize(141, 16777215));
 
         formLayout_3->setWidget(3, QFormLayout::FieldRole, tauiLabel);
 
-        label_16 = new QLabel(centralWidget);
-        label_16->setObjectName(QString::fromUtf8("label_16"));
-        sizePolicy1.setHeightForWidth(label_16->sizePolicy().hasHeightForWidth());
-        label_16->setSizePolicy(sizePolicy1);
-        label_16->setMaximumSize(QSize(17, 16777215));
+        taudLabelName = new QLabel(centralWidget);
+        taudLabelName->setObjectName(QStringLiteral("taudLabelName"));
+        sizePolicy1.setHeightForWidth(taudLabelName->sizePolicy().hasHeightForWidth());
+        taudLabelName->setSizePolicy(sizePolicy1);
+        taudLabelName->setMaximumSize(QSize(17, 16777215));
 
-        formLayout_3->setWidget(4, QFormLayout::LabelRole, label_16);
+        formLayout_3->setWidget(4, QFormLayout::LabelRole, taudLabelName);
 
         taudLabel = new QLabel(centralWidget);
-        taudLabel->setObjectName(QString::fromUtf8("taudLabel"));
+        taudLabel->setObjectName(QStringLiteral("taudLabel"));
         sizePolicy1.setHeightForWidth(taudLabel->sizePolicy().hasHeightForWidth());
         taudLabel->setSizePolicy(sizePolicy1);
         taudLabel->setMaximumSize(QSize(141, 16777215));
 
         formLayout_3->setWidget(4, QFormLayout::FieldRole, taudLabel);
 
-        label_12 = new QLabel(centralWidget);
-        label_12->setObjectName(QString::fromUtf8("label_12"));
-        sizePolicy1.setHeightForWidth(label_12->sizePolicy().hasHeightForWidth());
-        label_12->setSizePolicy(sizePolicy1);
-        label_12->setMaximumSize(QSize(16, 16777215));
+        taufLabelName = new QLabel(centralWidget);
+        taufLabelName->setObjectName(QStringLiteral("taufLabelName"));
+        sizePolicy1.setHeightForWidth(taufLabelName->sizePolicy().hasHeightForWidth());
+        taufLabelName->setSizePolicy(sizePolicy1);
+        taufLabelName->setMaximumSize(QSize(16, 16777215));
 
-        formLayout_3->setWidget(5, QFormLayout::LabelRole, label_12);
+        formLayout_3->setWidget(5, QFormLayout::LabelRole, taufLabelName);
 
         taufLabel = new QLabel(centralWidget);
-        taufLabel->setObjectName(QString::fromUtf8("taufLabel"));
+        taufLabel->setObjectName(QStringLiteral("taufLabel"));
         sizePolicy1.setHeightForWidth(taufLabel->sizePolicy().hasHeightForWidth());
         taufLabel->setSizePolicy(sizePolicy1);
         taufLabel->setMaximumSize(QSize(141, 16777215));
@@ -551,17 +567,17 @@ public:
         formLayout_3->setWidget(5, QFormLayout::FieldRole, taufLabel);
 
         label_13 = new QLabel(centralWidget);
-        label_13->setObjectName(QString::fromUtf8("label_13"));
+        label_13->setObjectName(QStringLiteral("label_13"));
 
         formLayout_3->setWidget(6, QFormLayout::LabelRole, label_13);
 
         modeTextLabel = new QLabel(centralWidget);
-        modeTextLabel->setObjectName(QString::fromUtf8("modeTextLabel"));
+        modeTextLabel->setObjectName(QStringLiteral("modeTextLabel"));
 
         formLayout_3->setWidget(6, QFormLayout::FieldRole, modeTextLabel);
 
         line_2 = new QFrame(centralWidget);
-        line_2->setObjectName(QString::fromUtf8("line_2"));
+        line_2->setObjectName(QStringLiteral("line_2"));
         sizePolicy3.setHeightForWidth(line_2->sizePolicy().hasHeightForWidth());
         line_2->setSizePolicy(sizePolicy3);
         line_2->setMinimumSize(QSize(2, 0));
@@ -581,19 +597,19 @@ public:
 
         MainWindow->setCentralWidget(centralWidget);
         menuBar = new QMenuBar(MainWindow);
-        menuBar->setObjectName(QString::fromUtf8("menuBar"));
+        menuBar->setObjectName(QStringLiteral("menuBar"));
         menuBar->setGeometry(QRect(0, 0, 617, 26));
         MainWindow->setMenuBar(menuBar);
         mainToolBar = new QToolBar(MainWindow);
-        mainToolBar->setObjectName(QString::fromUtf8("mainToolBar"));
+        mainToolBar->setObjectName(QStringLiteral("mainToolBar"));
         MainWindow->addToolBar(Qt::TopToolBarArea, mainToolBar);
         statusBar = new QStatusBar(MainWindow);
-        statusBar->setObjectName(QString::fromUtf8("statusBar"));
+        statusBar->setObjectName(QStringLiteral("statusBar"));
         MainWindow->setStatusBar(statusBar);
 
         retranslateUi(MainWindow);
 
-        tabWidget->setCurrentIndex(0);
+        tabWidget->setCurrentIndex(1);
         setButton->setDefault(true);
 
 
@@ -602,53 +618,54 @@ public:
 
     void retranslateUi(QMainWindow *MainWindow)
     {
-        MainWindow->setWindowTitle(QApplication::translate("MainWindow", "MainWindow", nullptr));
+        MainWindow->setWindowTitle(QApplication::translate("MainWindow", "Portable Wet Control Lab Main", Q_NULLPTR));
         QTableWidgetItem *___qtablewidgetitem = outputTable->horizontalHeaderItem(0);
         ___qtablewidgetitem->setText(QApplication::translate("MainWindow", "Time \n"
-"[min]", nullptr));
+"[min]", Q_NULLPTR));
         QTableWidgetItem *___qtablewidgetitem1 = outputTable->horizontalHeaderItem(1);
         ___qtablewidgetitem1->setText(QApplication::translate("MainWindow", "Heater\n"
-"On [%] ", nullptr));
+"On [%] ", Q_NULLPTR));
         QTableWidgetItem *___qtablewidgetitem2 = outputTable->horizontalHeaderItem(2);
         ___qtablewidgetitem2->setText(QApplication::translate("MainWindow", "Temperature\n"
-"[\302\260C]", nullptr));
+"[\302\260C]", Q_NULLPTR));
         QTableWidgetItem *___qtablewidgetitem3 = outputTable->horizontalHeaderItem(3);
         ___qtablewidgetitem3->setText(QApplication::translate("MainWindow", "Temperature \n"
-"Filtered [\302\260C]", nullptr));
+"Filtered [\302\260C]", Q_NULLPTR));
         QTableWidgetItem *___qtablewidgetitem4 = outputTable->horizontalHeaderItem(4);
         ___qtablewidgetitem4->setText(QApplication::translate("MainWindow", "Set \n"
-"Point [\302\260C]", nullptr));
+"Point [\302\260C]", Q_NULLPTR));
         QTableWidgetItem *___qtablewidgetitem5 = outputTable->horizontalHeaderItem(5);
-        ___qtablewidgetitem5->setText(QApplication::translate("MainWindow", "Fan Speed", nullptr));
+        ___qtablewidgetitem5->setText(QApplication::translate("MainWindow", "Fan Speed", Q_NULLPTR));
 
         const bool __sortingEnabled = outputTable->isSortingEnabled();
         outputTable->setSortingEnabled(false);
         outputTable->setSortingEnabled(__sortingEnabled);
 
-        label_5->setText(QApplication::translate("MainWindow", "<html><head/><body><p><span style=\" font-size:9pt;\">Portable Wet Control Lab Main</span></p></body></html>", nullptr));
-        label_6->setText(QApplication::translate("MainWindow", "<html><head/><body><p><span style=\" font-size:9pt;\">Percent Heater On</span></p></body></html>", nullptr));
-        label_7->setText(QApplication::translate("MainWindow", "<html><head/><body><p><span style=\" font-size:9pt;\">Fan Speed</span></p></body></html>", nullptr));
-        tabWidget->setTabText(tabWidget->indexOf(tabManual), QApplication::translate("MainWindow", "Manual", nullptr));
-        label_9->setText(QApplication::translate("MainWindow", "<html><head/><body><p><span style=\" font-size:9pt;\">Set Point</span></p></body></html>", nullptr));
-        label_4->setText(QApplication::translate("MainWindow", "<html><head/><body><p><span style=\" font-size:11pt;\">K</span><span style=\" font-size:11pt; vertical-align:sub;\">C</span></p></body></html>", nullptr));
-        label_3->setText(QApplication::translate("MainWindow", "<html><head/><body><p><span style=\" font-size:11pt;\">\316\244</span><span style=\" font-size:11pt; vertical-align:sub;\">I</span></p></body></html>", nullptr));
-        label->setText(QApplication::translate("MainWindow", "<html><head/><body><p><span style=\" font-size:11pt;\">\316\244</span><span style=\" font-size:11pt; vertical-align:sub;\">D</span></p></body></html>", nullptr));
-        label_2->setText(QApplication::translate("MainWindow", "<html><head/><body><p><span style=\" font-size:11pt;\">\316\244</span><span style=\" font-size:11pt; vertical-align:sub;\">F</span></p></body></html>", nullptr));
-        label_11->setText(QApplication::translate("MainWindow", "<html><head/><body><p><span style=\" font-size:9pt;\">Fan Speed</span></p></body></html>", nullptr));
-        filterAllCheckBox->setText(QApplication::translate("MainWindow", "Filter All Terms", nullptr));
-        posFormCheckBox->setText(QApplication::translate("MainWindow", "Position Form", nullptr));
-        tabWidget->setTabText(tabWidget->indexOf(tabAutomatic), QApplication::translate("MainWindow", "Automatic", nullptr));
-        setButton->setText(QApplication::translate("MainWindow", "Connect", nullptr));
-        label_8->setText(QApplication::translate("MainWindow", "<html><head/><body><p><span style=\" font-size:9pt; font-weight:600; text-decoration: underline;\">Current Parameters</span></p></body></html>", nullptr));
-        kcLabelName->setText(QApplication::translate("MainWindow", "<html><head/><body><p><span style=\" font-size:9pt;\">K</span><span style=\" font-size:9pt; vertical-align:sub;\">C</span></p></body></html>", nullptr));
+        emergencyMessageLabel->setText(QString());
+        label_5->setText(QApplication::translate("MainWindow", "<html><head/><body><p><span style=\" font-size:9pt;\">Portable Wet Control Lab Main</span></p></body></html>", Q_NULLPTR));
+        label_6->setText(QApplication::translate("MainWindow", "<html><head/><body><p><span style=\" font-size:9pt;\">Percent Heater On</span></p></body></html>", Q_NULLPTR));
+        label_7->setText(QApplication::translate("MainWindow", "<html><head/><body><p><span style=\" font-size:9pt;\">Fan Speed</span></p></body></html>", Q_NULLPTR));
+        tabWidget->setTabText(tabWidget->indexOf(tabManual), QApplication::translate("MainWindow", "Manual", Q_NULLPTR));
+        label_9->setText(QApplication::translate("MainWindow", "<html><head/><body><p><span style=\" font-size:9pt;\">Set Point</span></p></body></html>", Q_NULLPTR));
+        label_4->setText(QApplication::translate("MainWindow", "<html><head/><body><p><span style=\" font-size:11pt;\">K</span><span style=\" font-size:11pt; vertical-align:sub;\">C</span></p></body></html>", Q_NULLPTR));
+        label_3->setText(QApplication::translate("MainWindow", "<html><head/><body><p><span style=\" font-size:11pt;\">\316\244</span><span style=\" font-size:11pt; vertical-align:sub;\">I</span></p></body></html>", Q_NULLPTR));
+        label->setText(QApplication::translate("MainWindow", "<html><head/><body><p><span style=\" font-size:11pt;\">\316\244</span><span style=\" font-size:11pt; vertical-align:sub;\">D</span></p></body></html>", Q_NULLPTR));
+        label_2->setText(QApplication::translate("MainWindow", "<html><head/><body><p><span style=\" font-size:11pt;\">\316\244</span><span style=\" font-size:11pt; vertical-align:sub;\">F</span></p></body></html>", Q_NULLPTR));
+        label_11->setText(QApplication::translate("MainWindow", "<html><head/><body><p><span style=\" font-size:9pt;\">Fan Speed</span></p></body></html>", Q_NULLPTR));
+        filterAllCheckBox->setText(QApplication::translate("MainWindow", "Filter All Terms", Q_NULLPTR));
+        posFormCheckBox->setText(QApplication::translate("MainWindow", "Position Form", Q_NULLPTR));
+        tabWidget->setTabText(tabWidget->indexOf(tabAutomatic), QApplication::translate("MainWindow", "Automatic", Q_NULLPTR));
+        setButton->setText(QApplication::translate("MainWindow", "Connect", Q_NULLPTR));
+        label_8->setText(QApplication::translate("MainWindow", "<html><head/><body><p><span style=\" font-size:9pt; font-weight:600; text-decoration: underline;\">Current Parameters</span></p></body></html>", Q_NULLPTR));
+        kcLabelName->setText(QApplication::translate("MainWindow", "<html><head/><body><p><span style=\" font-size:9pt;\">K</span><span style=\" font-size:9pt; vertical-align:sub;\">C</span></p></body></html>", Q_NULLPTR));
         kcLabel->setText(QString());
-        label_10->setText(QApplication::translate("MainWindow", "<html><head/><body><p><span style=\" font-size:9pt;\">\316\244</span><span style=\" font-size:9pt; vertical-align:sub;\">I</span></p></body></html>", nullptr));
+        tauiLabelName->setText(QApplication::translate("MainWindow", "<html><head/><body><p><span style=\" font-size:9pt;\">\316\244</span><span style=\" font-size:9pt; vertical-align:sub;\">I</span></p></body></html>", Q_NULLPTR));
         tauiLabel->setText(QString());
-        label_16->setText(QApplication::translate("MainWindow", "<html><head/><body><p><span style=\" font-size:9pt;\">\316\244</span><span style=\" font-size:9pt; vertical-align:sub;\">D</span></p></body></html>", nullptr));
+        taudLabelName->setText(QApplication::translate("MainWindow", "<html><head/><body><p><span style=\" font-size:9pt;\">\316\244</span><span style=\" font-size:9pt; vertical-align:sub;\">D</span></p></body></html>", Q_NULLPTR));
         taudLabel->setText(QString());
-        label_12->setText(QApplication::translate("MainWindow", "<html><head/><body><p><span style=\" font-size:9pt;\">\316\244</span><span style=\" font-size:9pt; vertical-align:sub;\">F</span></p></body></html>", nullptr));
+        taufLabelName->setText(QApplication::translate("MainWindow", "<html><head/><body><p><span style=\" font-size:9pt;\">\316\244</span><span style=\" font-size:9pt; vertical-align:sub;\">F</span></p></body></html>", Q_NULLPTR));
         taufLabel->setText(QString());
-        label_13->setText(QApplication::translate("MainWindow", "<html><head/><body><p><span style=\" font-size:9pt;\">Mode</span></p></body></html>", nullptr));
+        label_13->setText(QApplication::translate("MainWindow", "<html><head/><body><p><span style=\" font-size:9pt;\">Mode</span></p></body></html>", Q_NULLPTR));
         modeTextLabel->setText(QString());
     } // retranslateUi
 
