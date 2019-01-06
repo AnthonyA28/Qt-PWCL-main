@@ -221,8 +221,22 @@ public:
 
         emergencyMessageLabel = new QLabel(centralWidget);
         emergencyMessageLabel->setObjectName(QStringLiteral("emergencyMessageLabel"));
+        QPalette palette;
+        QBrush brush(QColor(255, 0, 0, 255));
+        brush.setStyle(Qt::SolidPattern);
+        palette.setBrush(QPalette::Active, QPalette::WindowText, brush);
+        QBrush brush1(QColor(255, 0, 4, 255));
+        brush1.setStyle(Qt::SolidPattern);
+        palette.setBrush(QPalette::Active, QPalette::Text, brush1);
+        palette.setBrush(QPalette::Inactive, QPalette::WindowText, brush);
+        palette.setBrush(QPalette::Inactive, QPalette::Text, brush1);
+        QBrush brush2(QColor(120, 120, 120, 255));
+        brush2.setStyle(Qt::SolidPattern);
+        palette.setBrush(QPalette::Disabled, QPalette::WindowText, brush2);
+        palette.setBrush(QPalette::Disabled, QPalette::Text, brush2);
+        emergencyMessageLabel->setPalette(palette);
         QFont font4;
-        font4.setPointSize(14);
+        font4.setPointSize(12);
         font4.setBold(true);
         font4.setWeight(75);
         emergencyMessageLabel->setFont(font4);
@@ -268,6 +282,7 @@ public:
 
         tabWidget = new QTabWidget(centralWidget);
         tabWidget->setObjectName(QStringLiteral("tabWidget"));
+        tabWidget->setEnabled(true);
         sizePolicy1.setHeightForWidth(tabWidget->sizePolicy().hasHeightForWidth());
         tabWidget->setSizePolicy(sizePolicy1);
         tabWidget->setMinimumSize(QSize(0, 180));
@@ -314,6 +329,7 @@ public:
         tabWidget->addTab(tabManual, QString());
         tabAutomatic = new QWidget();
         tabAutomatic->setObjectName(QStringLiteral("tabAutomatic"));
+        tabAutomatic->setEnabled(true);
         tabAutomatic->setMinimumSize(QSize(100, 300));
         formLayout_2 = new QFormLayout(tabAutomatic);
         formLayout_2->setSpacing(6);
