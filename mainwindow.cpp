@@ -176,6 +176,7 @@ void MainWindow::showRequest(const QString &req)
             // enable the tab widgets so the user an input vales
             ui->tabWidget->setTabEnabled(0,true);
             ui->tabWidget->setTabEnabled(1,true);
+            ui->emergencyMessageLabel->clear();
         }
 
 
@@ -259,6 +260,8 @@ void MainWindow::showRequest(const QString &req)
     }
     else{
         qDebug() << "ERROR Failed to deserialize array \n";
+        if (!this->validConnection)
+            ui->emergencyMessageLabel->setText("Possible incorrect arduino program uploaded.");
     }
 }
 
