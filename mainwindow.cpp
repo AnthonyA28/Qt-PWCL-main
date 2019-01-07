@@ -196,7 +196,8 @@ void MainWindow::showRequest(const QString &req)
         if ( inAutoMode) ui->outputTable->setItem(ui->outputTable->rowCount()-1, 4,new QTableWidgetItem(QString::number(inputs[i_setPoint],'g',3)));
         else ui->outputTable->setItem(ui->outputTable->rowCount()-1, 4,new QTableWidgetItem(""));
         ui->outputTable->setItem(ui->outputTable->rowCount()-1, 5, new QTableWidgetItem(QString::number(inputs[i_fanSpeed],'g',3)));
-        ui->outputTable->scrollToBottom();   // scroll to the bottom to ensure the last value is visible
+        if (!ui->outputTable->underMouse())
+            ui->outputTable->scrollToBottom();   // scroll to the bottom to ensure the last value is visible
 
         // add each value into the excel file
         this->xldoc.write(ui->outputTable->rowCount(), 1, inputs[i_time]);
