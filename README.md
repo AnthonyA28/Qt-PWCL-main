@@ -25,3 +25,6 @@ Uses the [ QCustomPlot ](http://www.qcustomplot.com/) library for live graphing.
   * Open the *qt_PWCL_main.pro* file with Qt creator. 
 
 
+## todo: 
+ * fix the sizing issue of the tab control. clips the T values along with the velocity form option. 
+ 
