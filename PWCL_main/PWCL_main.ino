@@ -120,17 +120,6 @@
  *    draws a peak current of 180 mA, and I measured the steady draw at 140 mA.
  *    No other 5V fan performed well without drawing 300 mA or more.
  *
- *
- *    A TTL serial to USB cable is required for the communication between PLX-DAQ
- *    and UNO.  Cables utilizing the SiLabs CP210 chip work well with all versions
- *    of Windows if the driver instructions posted in
- *    (https://learn.adafruit.com/adafruits-raspberry-pi-lesson-5-using-a-console-cable/software-installation-windows)
- *    are followed.  The more expensive FTDI cables also work well with all Windows
- *    versions but the extra functionality they provide is not useful for the
- *    present application.  There are several very cheap FTDI knock-offs but these
- *    should be avoided if for no other reason than that Windows updates frequently
- *    disable them.
- *
  * 5. Control Algorithm
  *    The default algorithm used is the velocity form of the PID control law modified
  *    so as to remove set-point derivative kick.  Low-pass filtering can be used for the
