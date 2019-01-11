@@ -203,7 +203,7 @@ bool filterAll = false; // If not set only the derivative term is filtered
 bool autoEnabled = false;  // true when in automatic mode
 bool positionFlag = false; // set to 1 for the position form of the PID law, to 0 for the velocity form
 
-const unsigned int i_autoMode         = 0;  //  for input & output
+const unsigned int i_autoMode     = 0;  //  for input & output
 const unsigned int i_setPoint     = 1;  //  for input & output
 const unsigned int i_percentOn    = 2;  //  for input & output
 const unsigned int i_kc           = 3;  //  for input & output
@@ -225,94 +225,51 @@ float outputs[numOutputs] ={float(autoEnabled), TsetPoint, percentRelayOn, Kc, t
 void serialize_array(float input[], char * output); // declare the function so it can be placed under where it is used
 bool deserialize_array(const char * input, unsigned int output_size, float output[]); // declare the function so it can be placed under where it is used
 void check_input(); // declare the function so it can be placed under where it is used
+
 void setFanPwmFrequency(int pin, int divisor)
 {
   // From http://playground.arduino.cc/Code/PwmFrequency?action=sourceblock&num=2
-  byte mode_;
-  if (pin == 5 || pin == 6 || pin == 9 || pin == 10)
-  {
-    switch (divisor)
-    {
-      case 1:
-        mode_ = 0x01;
-        break;
-      case 8:
-        mode_ = 0x02;
-        break;
-      case 64:
-        mode_ = 0x03;
-        break;
-      case 256:
-        mode_ = 0x04;
-        break;
-      case 1024:
-        mode_ = 0x05;
-        break;
-      default:
-        return;
+  byte mode;
+  if(pin == 5 || pin == 6 || pin == 9 || pin == 10) {
+    switch(divisor) {
+      case 1: mode = 0x01; break;
+      case 8: mode = 0x02; break;
+      case 64: mode = 0x03; break;
+      case 256: mode = 0x04; break;
+      case 1024: mode = 0x05; break;
+      default: return;
     }
-    if (pin == 5 || pin == 6)
-    {
-      TCCR0B = TCCR0B & 0b11111000 | mode_;
+    if(pin == 5 || pin == 6) {
+      TCCR0B = TCCR0B & 0b11111000 | mode;
+    } else {
+      TCCR1B = TCCR1B & 0b11111000 | mode;
     }
-    else
-    {
-      TCCR1B = TCCR1B & 0b11111000 | mode_;
+  } else if(pin == 3 || pin == 11) {
+    switch(divisor) {
+      case 1: mode = 0x01; break;
+      case 8: mode = 0x02; break;
+      case 32: mode = 0x03; break;
+      case 64: mode = 0x04; break;
+      case 128: mode = 0x05; break;
+      case 256: mode = 0x06; break;
+      case 1024: mode = 0x07; break;
+      default: return;
     }
+    TCCR2B = TCCR2B & 0b11111000 | mode;
   }
-  else
-    if (pin == 3 || pin == 11)
-    {
-      switch (divisor)
-      {
-        case 1:
-          mode_ = 0x01;
-          break;
-        case 8:
-          mode_ = 0x02;
-          break;
-        case 32:
-          mode_ = 0x03;
-          break;
-        case 64:
-          mode_ = 0x04;
-          break;
-        case 128:
-          mode_ = 0x05;
-          break;
-        case 256:
-          mode_ = 0x06;
-          break;
-        case 1024:
-          mode_ = 0x07;
-          break;
-        default:
-          return;
-      }
-      TCCR2B = TCCR2B & 0b11111000 | mode_;
-    }
 }
 
 void relayCare(void)
-{
-  // Continues relay looping
+{         // Continues relay looping
   unsigned long timeHere = millis();
-  if (timeHere - tRelayStart < 0)
-  {
-    tRelayStart = 0;
-  }
-  // for runs longer than 49 days
-  if (timeHere - tRelayStart <= (1. - percentRelayOn/100.) * relayPeriod)
-  {
+  if (timeHere - tRelayStart <0) {tRelayStart = 0;} //for runs longer than 49 days
+  if (timeHere - tRelayStart <= (1.-percentRelayOn/100.)*relayPeriod) {
     digitalWrite(relayPin, LOW);
   }
-  else
-    if (timeHere - tRelayStart < relayPeriod)
-    {
-      digitalWrite(relayPin, HIGH);
-    }
-  else
-  {
+  else if (timeHere - tRelayStart < relayPeriod) {
+    digitalWrite(relayPin, HIGH);
+  }    
+  else{
     digitalWrite(relayPin, LOW);
     tRelayStart = timeHere;
   }
@@ -354,41 +311,38 @@ void loop(void)
   // It is adapted from http://bildr.org/2011/07/ds18b20-arduino/
   byte data[12];
   byte addr[8];
-  if (!ds.search(addr))
-  {
-    // no more sensors on chain, reset search
+  if ( !ds.search(addr)) { // no more sensors on chain, reset search
     ds.reset_search();
-    // return -1000;
   }
-  if (OneWire::crc8(addr, 7) != addr[7])
-  {
+  if ( OneWire::crc8(addr, 7) != addr[7]) {
     Serial.println(F("CRC is not valid!"));
-    // return -1000;
   }
-  if (addr[0] != 0x10 && addr[0] != 0x28)
-  {
+  if (addr[0] != 0x10 && addr[0] != 0x28) {
     Serial.println(F("Device is not recognized!"));
-    // return -1000;
   }
   ds.reset();
   ds.select(addr);
   ds.write(0x44); // start conversion, without parasite power on at the end
+  
+
   startConversionTime = millis();
-  while (millis() - startConversionTime < probeTime)
-    //wait for probe to finish conversion
+  while (millis() - startConversionTime < probeTime)    //wait for probe to finish conversion
   {
     relayCare();
   }
+
   byte present = ds.reset();
   ds.select(addr);
   ds.write(0xBE); // Read scratchpad
+  
   relayCare();
-  for (int i = 0; i < 9; i++)
-  {
-    // we need 9 bytes
+  
+  for (int i = 0; i < 9; i++) { // we need 9 bytes
     data[i] = ds.read();
   }
+ 
   relayCare();
+  
   ds.reset_search();
   byte MSB = data[1];
   byte LSB = data[0];
@@ -398,77 +352,67 @@ void loop(void)
   tempFiltPrevPrev = tempFiltPrev; // updating filtered measurements
   tempFiltPrev = tempFiltered;
   tempFiltered = Dt/ (Dt + tauF) * temperature + tauF/ (Dt + tauF) * tempFiltPrev;
+  
   // SAMPING INTERVAL STARTS NOW THAT MEASUREMENT IS AVAILABLE
+  
   relayCare();
+  
   // AUTOMATIC CONTROL
   errorPrev = error;
-  if (filterAll)
-   {
+  if (filterAll) {
     error = TsetPoint - tempFiltered;
-   } else {
+  } else {
     error = TsetPoint - temperature;
-   }
-  if (autoEnabled)
-  {
-    if (!positionFlag)
-    {
+  }
+  if (autoEnabled) {
+    if (!positionFlag) {
       float percentOnPrevious = percentRelayOn;
       float PropInt = percentOnPrevious + Kc * (error - errorPrev) + Dt * Kc * error / tauI;
       // Note:  To eliminate set-point kick (at the expense of slower responses to set-point changes) use:
       // float PropInt = percentOnPrevious + Kc *(-temperature + temperaturePrev) + Dt * Kc * error / tauI;
       float unconstrainedPercentRelayOn = PropInt + Kc * tauD/Dt * (-tempFiltered + 2. * tempFiltPrev - tempFiltPrevPrev);
-      if (unconstrainedPercentRelayOn < 0.)
-      {
+      if (unconstrainedPercentRelayOn < 0.){
         percentRelayOn = 0.;
       }
       else
-        if (unconstrainedPercentRelayOn > 100.)
-        {
+        if (unconstrainedPercentRelayOn > 100.) {
           percentRelayOn = 100.;
         }
-      else
-      {
+      else {
         percentRelayOn = unconstrainedPercentRelayOn;
       }
     }
-    else
-    {
-      if (noIntegralFlag)
-      {
+    else {
+      if (noIntegralFlag) {
         KI = 0;
-      }
-      else
-      {
+      } else {
         KI = Kc / tauI;
       }
       sumForIntegral += KI * error;
       float PropInt = percentRelayOnNominal + Kc * error + Dt * sumForIntegral;
       float unconstrainedPercentRelayOn = PropInt + Kc * tauD/Dt * (-tempFiltered + tempFiltPrev);
-      if (unconstrainedPercentRelayOn < 0.)
-      {
+      if (unconstrainedPercentRelayOn < 0.) {
         float woInt = percentRelayOnNominal + Kc * error + Kc * tauD/Dt * (-tempFiltered + tempFiltPrev);
         sumForIntegral = (0 - woInt) /Dt; // anti reset windup
         percentRelayOn = 0.;
       }
-      else
-        if (unconstrainedPercentRelayOn > 100.)
-        {
-          float woInt = percentRelayOnNominal + Kc * error + Kc * tauD/Dt * (-tempFiltered + tempFiltPrev);
-          sumForIntegral = (100 - woInt) /Dt; // anti reset windup
-          percentRelayOn = 100.;
-        }
-      else
-      {
+      else if (unconstrainedPercentRelayOn > 100.) {
+        float woInt = percentRelayOnNominal + Kc * error + Kc * tauD/Dt * (-tempFiltered + tempFiltPrev);
+        sumForIntegral = (100 - woInt) /Dt; // anti reset windup
+        percentRelayOn = 100.;
+      } else {
         percentRelayOn = unconstrainedPercentRelayOn;
       }
     }
   }
+
   relayCare();
-  if (temperature > Tmax)
-  {
+  
+  if (temperature > Tmax) {
     Serial.println("Shutting down due to overheat!");
     shutdown();
   }
+  
   /* place current values in the output array */
   outputs[i_autoMode] = autoEnabled;
   if(!autoEnabled){ outputs[i_setPoint] = temperature; }  // if its in manual mode it will sent the current temp in place of the setpoint
@@ -487,8 +431,8 @@ void loop(void)
   /* fill the ouput char buffer with the contents of the output array */
   serialize_array(outputs, outputbuffer);
   Serial.println(outputbuffer); // send the output buffer to the port
-  while (millis() < tLoopStart + stepSize)
-  {
+
+  while (millis() < tLoopStart + stepSize) {
     relayCare();
     check_input(); // we should constantly check for potential input from user (so parameters can change faster )
   }
@@ -591,18 +535,17 @@ bool deserialize_array(const char* const input, unsigned int output_size,  float
         const char* nc = p; // nc will point to the next comma or the closing bracket
         while(*nc != ',' && *nc != ']' && *nc)
         {
-            if ( (int)*nc >= 48 && (int)*nc <= 57 )
-                is_a_number = true;
-            nc++;
+          if ( (int)*nc >= 48 && (int)*nc <= 57 )
+            is_a_number = true;
+          nc++;
         }
-        if ( is_a_number )
-        {
-           output[i] = strtod(p, &pEnd); // strtof can returns nan when parsing nans,
-           // strod returns 0 when parsing nans
-           p = pEnd;
+        if ( is_a_number ) {
+         output[i] = strtod(p, &pEnd); // strtof can returns nan when parsing nans,
+         // strod returns 0 when parsing nans
+         p = pEnd;
         }
         while (*p != ',' && *p != ']' && *p)
-            p++;
+          p++;
         p++;
    }
    p = input;
