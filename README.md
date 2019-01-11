@@ -32,3 +32,4 @@ Uses the [ QCustomPlot ](http://www.qcustomplot.com/) library for live graphing.
  * fix text size and tab control size issue on dell inspire. 
  * Make enter work.
  * Place temperature tick marks on the right and the percent heater on, on the left. 
+ * Obvious DPI scaling issues 
