@@ -26,10 +26,5 @@ Uses the [ QCustomPlot ](http://www.qcustomplot.com/) library for live graphing.
 
 
 ## todo: 
- * Fix the sizing issue of the tab control. clips the T values along with the velocity form option. 
- * Fix text in tab controls being cut off.
- * Make legend less obnoxious. 
- * fix text size and tab control size issue on dell inspire. 
- * Make enter work.
- * Place temperature tick marks on the right and the percent heater on, on the left. 
- * Obvious DPI scaling issues 
+ * Make enter work. 
+ * fix DPI scaling issues 
