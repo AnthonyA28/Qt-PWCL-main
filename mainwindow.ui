@@ -12,7 +12,7 @@
   </property>
   <property name="minimumSize">
    <size>
-    <width>542</width>
+    <width>617</width>
     <height>590</height>
    </size>
   </property>
@@ -26,7 +26,7 @@
   <widget class="QWidget" name="centralWidget">
    <layout class="QGridLayout" name="gridLayout">
     <item row="0" column="1">
-     <layout class="QVBoxLayout" name="verticalLayout" stretch="1,0,1">
+     <layout class="QVBoxLayout" name="verticalLayout" stretch="1,0,1,0">
       <property name="sizeConstraint">
        <enum>QLayout::SetMaximumSize</enum>
       </property>
@@ -302,6 +302,15 @@ Point [°C]</string>
              </color>
             </brush>
            </colorrole>
+           <colorrole role="PlaceholderText">
+            <brush brushstyle="NoBrush">
+             <color alpha="128">
+              <red>255</red>
+              <green>0</green>
+              <blue>4</blue>
+             </color>
+            </brush>
+           </colorrole>
           </active>
           <inactive>
            <colorrole role="WindowText">
@@ -316,6 +325,15 @@ Point [°C]</string>
            <colorrole role="Text">
             <brush brushstyle="SolidPattern">
              <color alpha="255">
+              <red>255</red>
+              <green>0</green>
+              <blue>4</blue>
+             </color>
+            </brush>
+           </colorrole>
+           <colorrole role="PlaceholderText">
+            <brush brushstyle="NoBrush">
+             <color alpha="128">
               <red>255</red>
               <green>0</green>
               <blue>4</blue>
@@ -342,6 +360,15 @@ Point [°C]</string>
              </color>
             </brush>
            </colorrole>
+           <colorrole role="PlaceholderText">
+            <brush brushstyle="NoBrush">
+             <color alpha="128">
+              <red>255</red>
+              <green>0</green>
+              <blue>4</blue>
+             </color>
+            </brush>
+           </colorrole>
           </disabled>
          </palette>
         </property>
@@ -359,6 +386,65 @@ Point [°C]</string>
       </item>
       <item>
        <widget class="QCustomPlot" name="plot" native="true"/>
+      </item>
+      <item>
+       <layout class="QHBoxLayout" name="horizontalLayout">
+        <property name="spacing">
+         <number>0</number>
+        </property>
+        <item>
+         <widget class="QLabel" name="label_10">
+          <property name="styleSheet">
+           <string notr="true">background-color: rgb(255, 255, 255);</string>
+          </property>
+          <property name="lineWidth">
+           <number>1</number>
+          </property>
+          <property name="text">
+           <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;&lt;span style=&quot; font-family:'arial unicode ms,Lucida Sans Unicode,sans-serif'; font-size:9pt; color:#ffaa00; background-color:#ffffff;&quot;&gt;• Set point&lt;/span&gt;&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
+          </property>
+         </widget>
+        </item>
+        <item>
+         <widget class="QLabel" name="label_12">
+          <property name="styleSheet">
+           <string notr="true">background-color: rgb(255, 255, 255);</string>
+          </property>
+          <property name="lineWidth">
+           <number>1</number>
+          </property>
+          <property name="text">
+           <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;&lt;span style=&quot; font-family:'Code2000,Arial Unicode MS,Lucida Sans Unicode'; font-size:9pt; color:#55ff00; background-color:#fbfffe;&quot;&gt;⸺&lt;/span&gt;&lt;span style=&quot; font-family:'arial unicode ms,Lucida Sans Unicode,sans-serif'; font-size:9pt; color:#55ff00; background-color:#ffffff;&quot;&gt;Temp&lt;/span&gt;&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
+          </property>
+         </widget>
+        </item>
+        <item>
+         <widget class="QLabel" name="label_14">
+          <property name="styleSheet">
+           <string notr="true">background-color: rgb(255, 255, 255);</string>
+          </property>
+          <property name="lineWidth">
+           <number>1</number>
+          </property>
+          <property name="text">
+           <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;&lt;span style=&quot; font-family:'Code2000,Arial Unicode MS,Lucida Sans Unicode'; font-size:9pt; color:#0055ff; background-color:#fbfffe;&quot;&gt;⸺&lt;/span&gt;&lt;span style=&quot; font-family:'arial unicode ms,Lucida Sans Unicode,sans-serif'; font-size:9pt; color:#0055ff; background-color:#ffffff;&quot;&gt;Temp Filt &lt;/span&gt;&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
+          </property>
+         </widget>
+        </item>
+        <item>
+         <widget class="QLabel" name="label_15">
+          <property name="styleSheet">
+           <string notr="true">background-color: rgb(255, 255, 255);</string>
+          </property>
+          <property name="lineWidth">
+           <number>1</number>
+          </property>
+          <property name="text">
+           <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;&lt;span style=&quot; font-family:'Code2000,Arial Unicode MS,Lucida Sans Unicode'; font-size:9pt; color:#55007f; background-color:#fbfffe;&quot;&gt;⸺&lt;/span&gt;&lt;span style=&quot; font-family:'arial unicode ms,Lucida Sans Unicode,sans-serif'; font-size:9pt; color:#55007f; background-color:#ffffff;&quot;&gt;% On&lt;/span&gt;&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
+          </property>
+         </widget>
+        </item>
+       </layout>
       </item>
      </layout>
     </item>
@@ -570,12 +656,6 @@ Point [°C]</string>
           </item>
           <item row="2" column="1">
            <widget class="QLineEdit" name="kcTextBox">
-            <property name="sizePolicy">
-             <sizepolicy hsizetype="Fixed" vsizetype="Fixed">
-              <horstretch>0</horstretch>
-              <verstretch>0</verstretch>
-             </sizepolicy>
-            </property>
             <property name="maximumSize">
              <size>
               <width>70</width>
@@ -602,12 +682,6 @@ Point [°C]</string>
           </item>
           <item row="3" column="1">
            <widget class="QLineEdit" name="tauiTextBox">
-            <property name="sizePolicy">
-             <sizepolicy hsizetype="Fixed" vsizetype="Fixed">
-              <horstretch>0</horstretch>
-              <verstretch>0</verstretch>
-             </sizepolicy>
-            </property>
             <property name="maximumSize">
              <size>
               <width>70</width>
@@ -645,12 +719,6 @@ Point [°C]</string>
           </item>
           <item row="4" column="1">
            <widget class="QLineEdit" name="taudTextBox">
-            <property name="sizePolicy">
-             <sizepolicy hsizetype="Fixed" vsizetype="Fixed">
-              <horstretch>0</horstretch>
-              <verstretch>0</verstretch>
-             </sizepolicy>
-            </property>
             <property name="maximumSize">
              <size>
               <width>70</width>
@@ -677,12 +745,6 @@ Point [°C]</string>
           </item>
           <item row="5" column="1">
            <widget class="QLineEdit" name="taufTextBox">
-            <property name="sizePolicy">
-             <sizepolicy hsizetype="Fixed" vsizetype="Fixed">
-              <horstretch>0</horstretch>
-              <verstretch>0</verstretch>
-             </sizepolicy>
-            </property>
             <property name="maximumSize">
              <size>
               <width>70</width>
@@ -1126,7 +1188,7 @@ Point [°C]</string>
      <x>0</x>
      <y>0</y>
      <width>617</width>
-     <height>26</height>
+     <height>21</height>
     </rect>
    </property>
   </widget>

@@ -1,6 +1,6 @@
 #include <windows.h>
 
-IDI_ICON1	ICON	DISCARDABLE	"C:\\Users\\antho\\Development\\Process Controller\\QT\\qt_PWCL_main\\gator_icon.ico"
+IDI_ICON1	ICON	DISCARDABLE	"C:/Users/Anthony/Documents/Qt-PWCL-main/gator_icon.ico"
 
 VS_VERSION_INFO VERSIONINFO
 	FILEVERSION 0,0,0,0

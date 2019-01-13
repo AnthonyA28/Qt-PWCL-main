@@ -98,35 +98,34 @@ MainWindow::MainWindow(QWidget *parent) :
     ui->plot->graph(0)->setName("Set Point");
     ui->plot->graph(0)->setScatterStyle(QCPScatterStyle(QCPScatterStyle::ssDisc, QColor("orange"), 5));
     ui->plot->graph(0)->setPen(QPen(Qt::white)); // so we dont see the line connecting the dots
+    ui->plot->graph(0)->setValueAxis(ui->plot->yAxis2);
 
     ui->plot->addGraph();
     ui->plot->graph(1)->setName("Temperature");
     ui->plot->graph(1)->setPen(QPen(Qt::green));
+    ui->plot->graph(1)->setValueAxis(ui->plot->yAxis2);
 
     ui->plot->addGraph();
     ui->plot->graph(2)->setName("Temperature Filtered");
     ui->plot->graph(2)->setPen(QPen(Qt::blue));
+    ui->plot->graph(2)->setValueAxis(ui->plot->yAxis2);
 
     ui->plot->addGraph();
     ui->plot->graph(3)->setName("Percent Heater on");
     ui->plot->graph(3)->setPen(QPen(QColor("purple"))); // line color for the first graph
-    ui->plot->graph(3)->setValueAxis(ui->plot->yAxis2);
+
 
     ui->plot->xAxis2->setVisible(true);  // show x ticks at top
     ui->plot->xAxis2->setVisible(false); // dont show labels at top
     ui->plot->yAxis2->setVisible(true);  // right y axis labels
-    ui->plot->yAxis2->setTickLabels(true);  // show y ticks on right side for % on
+    ui->plot->yAxis2->setTickLabels(true);  // show y ticks on right side for temperature
 
-    ui->plot->yAxis2->setLabel("Heater [%]");
-    ui->plot->yAxis->setLabel("Temperature [C]");
+    ui->plot->yAxis->setLabel("Heater [%]");
+    ui->plot->yAxis2->setLabel("Temperature [C]");
     ui->plot->xAxis->setLabel("Time [min]");
 
-    // setup the legend
-    ui->plot->legend->setVisible(true);
-    ui->plot->legend->setFont(QFont("Helvetica", 8));
-    ui->plot->legend->setRowSpacing(-4);  // less space between words
-    ui->plot->axisRect()->insetLayout()->setInsetAlignment(0, Qt::AlignLeft|Qt::AlignTop);
-
+    // we dont want a legend
+    ui->plot->legend->setVisible(false);
 
 }
 
@@ -180,7 +179,7 @@ void MainWindow::showRequest(const QString &req)
         }
 
 
-        bool inAutoMode = (inputs[i_autoMode]);  // true if we are in automatic mode
+        bool inAutoMode = (static_cast<bool>(inputs[i_autoMode]));  // true if we are in automatic mode
 
         /*
         *  Update the output table with the last parameters read from the port.
@@ -189,7 +188,7 @@ void MainWindow::showRequest(const QString &req)
 
         // add a string of each value into each column at the last row in the outputTable
         // the 'new' tablewidget items are NOT memory leaks becuse the tablewiget takes ownership of the item, see: https://stackoverflow.com/questions/21997025/qtablewidget-memory-leak-or-not
-        ui->outputTable->setItem(ui->outputTable->rowCount()-1, 0, new QTableWidgetItem(QString::number(inputs[i_time],'g',3)));
+        ui->outputTable->setItem(ui->outputTable->rowCount()-1, 0, new QTableWidgetItem(QString::number(inputs[i_time] ,'g',3)));
         ui->outputTable->setItem(ui->outputTable->rowCount()-1, 1, new QTableWidgetItem(QString::number(inputs[i_percentOn],'g',3)));
         ui->outputTable->setItem(ui->outputTable->rowCount()-1, 2, new QTableWidgetItem(QString::number(inputs[i_temperature],'g',3)));
         ui->outputTable->setItem(ui->outputTable->rowCount()-1, 3, new QTableWidgetItem(QString::number(inputs[i_tempFiltered],'g',3)));
