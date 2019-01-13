@@ -517,8 +517,6 @@ void MainWindow::on_filterAllCheckBox_stateChanged(int arg1)
 
 
 
-
-
 /**
 *    function called when the port is disconnected
 */
@@ -531,4 +529,20 @@ bool MainWindow::disonnectedPopUpWindow()
                           "Close and restart the application to continue.\n",
                           QMessageBox::Ok
                           );
+}
+
+/**
+ * called when the user presses enter or return
+ * // thank you numbat: https://www.qtcentre.org/threads/26313-MainWindow-Button
+ */
+bool MainWindow::event(QEvent *event)
+{
+    if (event->type() == QEvent::KeyPress) {
+        QKeyEvent *ke = static_cast<QKeyEvent *>(event);
+        if (ke->key() == Qt::Key_Enter || ke->key() == Qt::Key_Return) {
+            emit on_setButton_clicked();
+            return true;
+        }
+    }
+    return QMainWindow::event(event);
 }

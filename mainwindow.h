@@ -55,7 +55,6 @@ private slots:
     void on_setButton_clicked();
     void on_posFormCheckBox_stateChanged(int arg1);
     void on_filterAllCheckBox_stateChanged(int arg1);
-
     void on_tabWidget_currentChanged(int index);
 
 private:
@@ -92,6 +91,9 @@ private:
     const unsigned int i_tempFiltered  = 11;      // for input
     const unsigned int i_time          = 12;      // for input
     const unsigned int numInputs       = 13;
+
+protected:
+    bool event(QEvent *event);
 
 };
 
