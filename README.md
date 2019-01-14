@@ -22,6 +22,9 @@ Uses the [ QCustomPlot ](http://www.qcustomplot.com/) library for live graphing.
    Qt version 5 or greator is required. Tested in Qt 5.9.2.
 
   * Clone the repository. 
-  * Open the *qt_PWCL_test.pro* file with Qt creator. 
+  * Open the *qt_PWCL_main.pro* file with Qt creator. 
 
 
+## todo: 
+ * Make enter work. 
+ * fix DPI scaling issues 

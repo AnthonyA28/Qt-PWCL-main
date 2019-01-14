@@ -98,35 +98,34 @@ MainWindow::MainWindow(QWidget *parent) :
     ui->plot->graph(0)->setName("Set Point");
     ui->plot->graph(0)->setScatterStyle(QCPScatterStyle(QCPScatterStyle::ssDisc, QColor("orange"), 5));
     ui->plot->graph(0)->setPen(QPen(Qt::white)); // so we dont see the line connecting the dots
+    ui->plot->graph(0)->setValueAxis(ui->plot->yAxis2);
 
     ui->plot->addGraph();
     ui->plot->graph(1)->setName("Temperature");
     ui->plot->graph(1)->setPen(QPen(Qt::green));
+    ui->plot->graph(1)->setValueAxis(ui->plot->yAxis2);
 
     ui->plot->addGraph();
     ui->plot->graph(2)->setName("Temperature Filtered");
     ui->plot->graph(2)->setPen(QPen(Qt::blue));
+    ui->plot->graph(2)->setValueAxis(ui->plot->yAxis2);
 
     ui->plot->addGraph();
     ui->plot->graph(3)->setName("Percent Heater on");
     ui->plot->graph(3)->setPen(QPen(QColor("purple"))); // line color for the first graph
-    ui->plot->graph(3)->setValueAxis(ui->plot->yAxis2);
+
 
     ui->plot->xAxis2->setVisible(true);  // show x ticks at top
     ui->plot->xAxis2->setVisible(false); // dont show labels at top
     ui->plot->yAxis2->setVisible(true);  // right y axis labels
-    ui->plot->yAxis2->setTickLabels(true);  // show y ticks on right side for % on
+    ui->plot->yAxis2->setTickLabels(true);  // show y ticks on right side for temperature
 
-    ui->plot->yAxis2->setLabel("Heater [%]");
-    ui->plot->yAxis->setLabel("Temperature [C]");
+    ui->plot->yAxis->setLabel("Heater [%]");
+    ui->plot->yAxis2->setLabel("Temperature [C]");
     ui->plot->xAxis->setLabel("Time [min]");
 
-    // setup the legend
-    ui->plot->legend->setVisible(true);
-    ui->plot->legend->setFont(QFont("Helvetica", 8));
-    ui->plot->legend->setRowSpacing(-4);  // less space between words
-    ui->plot->axisRect()->insetLayout()->setInsetAlignment(0, Qt::AlignLeft|Qt::AlignTop);
-
+    // we dont want a legend
+    ui->plot->legend->setVisible(false);
 
 }
 
@@ -179,8 +178,19 @@ void MainWindow::showRequest(const QString &req)
             ui->emergencyMessageLabel->clear();
         }
 
-
-        bool inAutoMode = (inputs[i_autoMode]);  // true if we are in automatic mode
+        double time       = static_cast<double>(inputs[i_time]);
+        double percentOn  = static_cast<double>(inputs[i_percentOn]);
+        double temp       = static_cast<double>(inputs[i_temperature]);
+        double tempFilt   = static_cast<double>(inputs[i_tempFiltered]);
+        double setPoint   = static_cast<double>(inputs[i_setPoint]);
+        double fanSpeed   = static_cast<double>(inputs[i_fanSpeed]);
+        double kc         = static_cast<double>(inputs[i_kc]);
+        double tauI       = static_cast<double>(inputs[i_tauI]);
+        double tauD       = static_cast<double>(inputs[i_tauD]);
+        double tauF       = static_cast<double>(inputs[i_tauF]);
+        bool inAutoMode   = static_cast<bool>(inputs[i_autoMode]);  // true if we are in automatic mode
+        bool positionForm = static_cast<bool>(inputs[i_positionForm]);
+        bool filterAll    = static_cast<bool>(inputs[i_filterAll]);
 
         /*
         *  Update the output table with the last parameters read from the port.
@@ -189,22 +199,22 @@ void MainWindow::showRequest(const QString &req)
 
         // add a string of each value into each column at the last row in the outputTable
         // the 'new' tablewidget items are NOT memory leaks becuse the tablewiget takes ownership of the item, see: https://stackoverflow.com/questions/21997025/qtablewidget-memory-leak-or-not
-        ui->outputTable->setItem(ui->outputTable->rowCount()-1, 0, new QTableWidgetItem(QString::number(inputs[i_time],'g',3)));
-        ui->outputTable->setItem(ui->outputTable->rowCount()-1, 1, new QTableWidgetItem(QString::number(inputs[i_percentOn],'g',3)));
-        ui->outputTable->setItem(ui->outputTable->rowCount()-1, 2, new QTableWidgetItem(QString::number(inputs[i_temperature],'g',3)));
-        ui->outputTable->setItem(ui->outputTable->rowCount()-1, 3, new QTableWidgetItem(QString::number(inputs[i_tempFiltered],'g',3)));
-        if ( inAutoMode) ui->outputTable->setItem(ui->outputTable->rowCount()-1, 4,new QTableWidgetItem(QString::number(inputs[i_setPoint],'g',3)));
+        ui->outputTable->setItem(ui->outputTable->rowCount()-1, 0, new QTableWidgetItem(QString::number(time ,'g',3)));
+        ui->outputTable->setItem(ui->outputTable->rowCount()-1, 1, new QTableWidgetItem(QString::number(percentOn,'g',3)));
+        ui->outputTable->setItem(ui->outputTable->rowCount()-1, 2, new QTableWidgetItem(QString::number(temp,'g',3)));
+        ui->outputTable->setItem(ui->outputTable->rowCount()-1, 3, new QTableWidgetItem(QString::number(tempFilt,'g',3)));
+        if ( inAutoMode) ui->outputTable->setItem(ui->outputTable->rowCount()-1, 4,new QTableWidgetItem(QString::number(setPoint,'g',3)));
         else ui->outputTable->setItem(ui->outputTable->rowCount()-1, 4,new QTableWidgetItem(""));
-        ui->outputTable->setItem(ui->outputTable->rowCount()-1, 5, new QTableWidgetItem(QString::number(inputs[i_fanSpeed],'g',3)));
+        ui->outputTable->setItem(ui->outputTable->rowCount()-1, 5, new QTableWidgetItem(QString::number(fanSpeed,'g',3)));
         if (!ui->outputTable->underMouse())
             ui->outputTable->scrollToBottom();   // scroll to the bottom to ensure the last value is visible
 
         // add each value into the excel file
-        this->xldoc.write(ui->outputTable->rowCount(), 1, inputs[i_time]);
-        this->xldoc.write(ui->outputTable->rowCount(), 2, inputs[i_percentOn]);
-        this->xldoc.write(ui->outputTable->rowCount(), 3, inputs[i_temperature]);
-        this->xldoc.write(ui->outputTable->rowCount(), 4, inputs[i_tempFiltered]);
-        if ( inAutoMode ) this->xldoc.write(ui->outputTable->rowCount(), 5, inputs[i_setPoint]);
+        this->xldoc.write(ui->outputTable->rowCount(), 1, time);
+        this->xldoc.write(ui->outputTable->rowCount(), 2, percentOn);
+        this->xldoc.write(ui->outputTable->rowCount(), 3, temp);
+        this->xldoc.write(ui->outputTable->rowCount(), 4, tempFilt);
+        if ( inAutoMode ) this->xldoc.write(ui->outputTable->rowCount(), 5, setPoint);
         this->xldoc.saveAs(this->excelFileName); // save the doc in case we crash
 
         /*
@@ -212,11 +222,9 @@ void MainWindow::showRequest(const QString &req)
         */
         char file_output_buffer[200]   = "";
         if (inAutoMode) {  // Only write the setpoint if in automatic mode
-            snprintf(file_output_buffer, sizeof(file_output_buffer),"%6.2f,%6.2f,%6.2f,%6.2f,%6.2f\n",
-                inputs[i_time], inputs[i_percentOn], inputs[i_temperature], inputs[i_tempFiltered], inputs[i_setPoint]);
+            snprintf(file_output_buffer, sizeof(file_output_buffer),"%6.2f,%6.2f,%6.2f,%6.2f,%6.2f\n",time, percentOn, temp, tempFilt, setPoint);
         } else {
-            snprintf(file_output_buffer, sizeof(file_output_buffer),"%6.2f,%6.2f,%6.2f,%6.2f,\n",
-                inputs[i_time], inputs[i_percentOn], inputs[i_temperature], inputs[i_tempFiltered]);
+            snprintf(file_output_buffer, sizeof(file_output_buffer),"%6.2f,%6.2f,%6.2f,%6.2f,\n",time, percentOn, temp, tempFilt);
         }
 
         QTextStream stream(&this->csvdoc);
@@ -228,15 +236,15 @@ void MainWindow::showRequest(const QString &req)
         *  Show the current values from the port in the current parameters area
         */
         QString ModeString = " "; // holds a string for current mode ex. "Automatic, velocity form, Filtering all terms"
-        if (inputs[i_autoMode]) {
-            ui->kcLabel->setNum(inputs[i_kc]);
-            ui->tauiLabel->setNum(inputs[i_tauI]);
-            ui->taudLabel->setNum(inputs[i_tauD]);
-            ui->taufLabel->setNum(inputs[i_tauF]);
+        if (inAutoMode) {
+            ui->kcLabel->setNum(kc);
+            ui->tauiLabel->setNum(tauI);
+            ui->taudLabel->setNum(tauD);
+            ui->taufLabel->setNum(tauF);
             ModeString.append("Automatic\n");
-            if ( inputs[i_positionForm]  ) ModeString.append("Position Form ");
+            if ( positionForm  ) ModeString.append("Position Form ");
             else ModeString.append("Velocity Form");
-            if ( inputs[i_filterAll] ) ModeString.append("\nFiltering all terms");
+            if ( filterAll ) ModeString.append("\nFiltering all terms");
         } else {
             ModeString.append("Manual");
             // When in manual mode, clear the automatic parameters to avoid confusion/
@@ -251,10 +259,10 @@ void MainWindow::showRequest(const QString &req)
         /*
         *  Place the latest values in the graph
         */
-        ui->plot->graph(3)->addData(inputs[i_time], inputs[i_percentOn]);
-        ui->plot->graph(1)->addData(inputs[i_time], inputs[i_temperature]);
-        ui->plot->graph(2)->addData(inputs[i_time], inputs[i_tempFiltered]);
-        if( inAutoMode ) ui->plot->graph(0)->addData(inputs[i_time], inputs[i_setPoint]);
+        ui->plot->graph(3)->addData(time, percentOn);
+        ui->plot->graph(1)->addData(time, temp);
+        ui->plot->graph(2)->addData(time, tempFilt);
+        if( inAutoMode ) ui->plot->graph(0)->addData(time, setPoint);
         ui->plot->replot( QCustomPlot::rpQueuedReplot );
         ui->plot->rescaleAxes(); // should be in a button or somethng
 
@@ -283,7 +291,7 @@ void MainWindow::on_setButton_clicked()
         *  Ensures the value inputted in the textBox is within range min and max
         *  returns '_' if the value is no good. When the arduino recieves '_' it wont change the value.
         */
-        auto fillArrayAtNextIndex = [&response]( QString name, QLineEdit* textBox, double min = NAN, double max = NAN)
+        auto fillArrayAtNextIndex = [&response]( QString name, QLineEdit* textBox, float min = NAN, float max = NAN)
         {
             QString valStr = textBox->text();   // 'valStr' is a string holding what the user inputted in the texbox
             bool isNumerical = false;
@@ -301,7 +309,7 @@ void MainWindow::on_setButton_clicked()
                     // ensure the value is within range
                     if ( max != NAN && val > max ){  // max is NAN if it is unconstrained
                         QMessageBox msgBox;
-                        msgBox.setText(name + " of " + QString::number(val) + " is over the maximum of " + QString::number(max) );
+                        msgBox.setText(name + " of " + QString::number(static_cast<double>(val)) + " is over the maximum of " + QString::number(static_cast<double>(max)) );
                         msgBox.exec();
                         textBox->clear();
                         response.append("_");
@@ -309,7 +317,7 @@ void MainWindow::on_setButton_clicked()
                     }
                     if  ( min != NAN && val < min ){  // min is NAN if it is unconstrained
                         QMessageBox msgBox;
-                        msgBox.setText(name + " of " + QString::number(val) + " is below the minimum of " + QString::number(min) );
+                        msgBox.setText(name + " of " + QString::number(static_cast<double>(val)) + " is below the minimum of " + QString::number(static_cast<double>(min)) );
                         msgBox.exec();
                         textBox->clear();
                         response.append("_");
@@ -482,17 +490,27 @@ void MainWindow::on_tabWidget_currentChanged(int index)
 
     bool autoModeTab = ( index == 1 );  // tab index 1 is the automatic tab
     if (autoModeTab){ // changed from manual to automatic
+
+        double temp       = static_cast<double>(inputs[i_temperature]);
+        double fanSpeed   = static_cast<double>(inputs[i_fanSpeed]);
+        double kc         = static_cast<double>(inputs[i_kc]);
+        double tauI       = static_cast<double>(inputs[i_tauI]);
+        double tauD       = static_cast<double>(inputs[i_tauD]);
+        double tauF       = static_cast<double>(inputs[i_tauF]);
+
         // Fill the automatic textboxes with the last recorded parameters
-        ui->kcTextBox->setText(QString::number(inputs[i_kc]));
-        ui->tauiTextBox->setText(QString::number(inputs[i_tauI]));
-        ui->taufTextBox->setText(QString::number(inputs[i_tauF]));
-        ui->taudTextBox->setText(QString::number(inputs[i_tauD]));
-        ui->setPointTextBox->setText(QString::number(inputs[i_temperature]));
-        ui->A_fanSpeedTextBox->setText(QString::number(inputs[i_fanSpeed]));
+        ui->kcTextBox->setText(QString::number(kc));
+        ui->tauiTextBox->setText(QString::number(tauI));
+        ui->taufTextBox->setText(QString::number(tauF));
+        ui->taudTextBox->setText(QString::number(tauD));
+        ui->setPointTextBox->setText(QString::number(temp));
+        ui->A_fanSpeedTextBox->setText(QString::number(fanSpeed));
     } else {  // changed to the manual tab
+        double percentOn  = static_cast<double>(inputs[i_percentOn]);
+        double fanSpeed   = static_cast<double>(inputs[i_fanSpeed]);
         // Fill the manual textboxes with the last recorded parameters
-        ui->percentOntTextBox->setText(QString::number(inputs[i_percentOn]));
-        ui->M_fanSpeedTextBox->setText(QString::number(inputs[i_fanSpeed]));
+        ui->percentOntTextBox->setText(QString::number(percentOn));
+        ui->M_fanSpeedTextBox->setText(QString::number(fanSpeed));
     }
     emit on_setButton_clicked(); // simulate the user presing the set button so new parameters are sent to the port.
 }
@@ -518,8 +536,6 @@ void MainWindow::on_filterAllCheckBox_stateChanged(int arg1)
 
 
 
-
-
 /**
 *    function called when the port is disconnected
 */
@@ -532,4 +548,20 @@ bool MainWindow::disonnectedPopUpWindow()
                           "Close and restart the application to continue.\n",
                           QMessageBox::Ok
                           );
+}
+
+/**
+ * called when the user presses enter or return
+ * // thank you numbat: https://www.qtcentre.org/threads/26313-MainWindow-Button
+ */
+bool MainWindow::event(QEvent *event)
+{
+    if (event->type() == QEvent::KeyPress) {
+        QKeyEvent *ke = static_cast<QKeyEvent *>(event);
+        if (ke->key() == Qt::Key_Enter || ke->key() == Qt::Key_Return) {
+            emit on_setButton_clicked();
+            return true;
+        }
+    }
+    return QMainWindow::event(event);
 }
