@@ -28,3 +28,4 @@ Uses the [ QCustomPlot ](http://www.qcustomplot.com/) library for live graphing.
 ## todo: 
  * reduce number of significant figures for score. 
  * add a beep when overheat. 
+ * make dots bigger for setpoint. 
