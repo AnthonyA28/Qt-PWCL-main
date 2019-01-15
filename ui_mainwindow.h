@@ -116,8 +116,8 @@ public:
     {
         if (MainWindow->objectName().isEmpty())
             MainWindow->setObjectName(QString::fromUtf8("MainWindow"));
-        MainWindow->resize(613, 548);
-        MainWindow->setMinimumSize(QSize(613, 548));
+        MainWindow->resize(613, 615);
+        MainWindow->setMinimumSize(QSize(613, 615));
         QIcon icon;
         icon.addFile(QString::fromUtf8("../qt_PWCL_game/gator_icon.ico"), QSize(), QIcon::Normal, QIcon::Off);
         MainWindow->setWindowIcon(icon);
@@ -228,7 +228,7 @@ public:
         formLayout_2->setObjectName(QString::fromUtf8("formLayout_2"));
         formLayout_2->setLabelAlignment(Qt::AlignRight|Qt::AlignTrailing|Qt::AlignVCenter);
         formLayout_2->setHorizontalSpacing(10);
-        formLayout_2->setVerticalSpacing(3);
+        formLayout_2->setVerticalSpacing(0);
         formLayout_2->setContentsMargins(-1, -1, 15, -1);
         label_9 = new QLabel(tabAutomatic);
         label_9->setObjectName(QString::fromUtf8("label_9"));
@@ -731,7 +731,7 @@ public:
         MainWindow->setCentralWidget(centralWidget);
         menuBar = new QMenuBar(MainWindow);
         menuBar->setObjectName(QString::fromUtf8("menuBar"));
-        menuBar->setGeometry(QRect(0, 0, 613, 21));
+        menuBar->setGeometry(QRect(0, 0, 613, 26));
         MainWindow->setMenuBar(menuBar);
         mainToolBar = new QToolBar(MainWindow);
         mainToolBar->setObjectName(QString::fromUtf8("mainToolBar"));
@@ -742,7 +742,7 @@ public:
 
         retranslateUi(MainWindow);
 
-        tabWidget->setCurrentIndex(0);
+        tabWidget->setCurrentIndex(1);
         setButton->setDefault(true);
 
 
