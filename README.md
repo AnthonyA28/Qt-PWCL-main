@@ -26,5 +26,5 @@ Uses the [ QCustomPlot ](http://www.qcustomplot.com/) library for live graphing.
 
 
 ## todo: 
- * Make enter work. 
- * fix DPI scaling issues 
+ * reduce number of significant figures for score. 
+ * add a beep when overheat. 
