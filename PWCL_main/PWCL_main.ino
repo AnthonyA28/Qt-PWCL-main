@@ -120,6 +120,7 @@
  *    draws a peak current of 180 mA, and I measured the steady draw at 140 mA.
  *    No other 5V fan performed well without drawing 300 mA or more.
  *
+ *
  * 5. Control Algorithm
  *    The default algorithm used is the velocity form of the PID control law modified
  *    so as to remove set-point derivative kick.  Low-pass filtering can be used for the
