@@ -31,3 +31,4 @@ Uses the [ QCustomPlot ](http://www.qcustomplot.com/) library for live graphing.
  * make dots bigger for setpoint. 
 * game.exe, you have earned rating of professional crash test dummy .  
 * filt temp not temp filt 
+* You have achieved rating of..
