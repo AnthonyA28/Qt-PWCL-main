@@ -185,7 +185,7 @@ unsigned long tRelayStart;
 unsigned long startConversionTime;
 unsigned long tLoopStart;
 bool stopTempHigh = 0; // flag ending the run due to high temperature
-float Tmax = 70; // maximum safe temperature
+float Tmax = 60; // maximum safe temperature
 const unsigned int bufferSize = 300;
 char inputbuffer[bufferSize];
 char outputbuffer[bufferSize]; // its much better for the memory to be using a char* rather than a string
@@ -258,7 +258,7 @@ void relayCare(void)
   }
   else if (timeHere - tRelayStart < relayPeriod) {
     digitalWrite(relayPin, HIGH);
-  }    
+  }
   else{
     digitalWrite(relayPin, LOW);
     tRelayStart = timeHere;
@@ -313,7 +313,7 @@ void loop(void)
   ds.reset();
   ds.select(addr);
   ds.write(0x44); // start conversion, without parasite power on at the end
-  
+
 
   startConversionTime = millis();
   while (millis() - startConversionTime < probeTime)    //wait for probe to finish conversion
@@ -324,15 +324,15 @@ void loop(void)
   byte present = ds.reset();
   ds.select(addr);
   ds.write(0xBE); // Read scratchpad
-  
+
   relayCare();
-  
+
   for (int i = 0; i < 9; i++) { // we need 9 bytes
     data[i] = ds.read();
   }
- 
+
   relayCare();
-  
+
   ds.reset_search();
   byte MSB = data[1];
   byte LSB = data[0];
@@ -342,11 +342,11 @@ void loop(void)
   tempFiltPrevPrev = tempFiltPrev; // updating filtered measurements
   tempFiltPrev = tempFiltered;
   tempFiltered = Dt/ (Dt + tauF) * temperature + tauF/ (Dt + tauF) * tempFiltPrev;
-  
+
   // SAMPING INTERVAL STARTS NOW THAT MEASUREMENT IS AVAILABLE
-  
+
   relayCare();
-  
+
   // AUTOMATIC CONTROL
   errorPrev = error;
   if (filterAll) {
@@ -397,12 +397,12 @@ void loop(void)
   }
 
   relayCare();
-  
+
   if (temperature > Tmax) {
     Serial.println("Shutting down due to overheat!");
     shutdown();
   }
-  
+
   /* place current values in the output array */
   outputs[i_autoMode] = autoEnabled;
   if(!autoEnabled){ outputs[i_setPoint] = temperature; }  // if its in manual mode it will sent the current temp in place of the setpoint
