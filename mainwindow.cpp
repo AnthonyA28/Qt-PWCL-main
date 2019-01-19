@@ -101,7 +101,7 @@ MainWindow::MainWindow(QWidget *parent) :
     */
     ui->plot->addGraph();
     ui->plot->graph(0)->setName("Set Point");
-    ui->plot->graph(0)->setScatterStyle(QCPScatterStyle(QCPScatterStyle::ssDisc, QColor("orange"), 5));
+    ui->plot->graph(0)->setScatterStyle(QCPScatterStyle(QCPScatterStyle::ssDisc, QColor("orange"), 8));
     ui->plot->graph(0)->setPen(QPen(Qt::white)); // so we dont see the line connecting the dots
     ui->plot->graph(0)->setValueAxis(ui->plot->yAxis2);
 
@@ -208,13 +208,13 @@ void MainWindow::showRequest(const QString &req)
 
         // add a string of each value into each column at the last row in the outputTable
         // the 'new' tablewidget items are NOT memory leaks becuse the tablewiget takes ownership of the item, see: https://stackoverflow.com/questions/21997025/qtablewidget-memory-leak-or-not
-        ui->outputTable->setItem(ui->outputTable->rowCount()-1, 0, new QTableWidgetItem(QString::number(time ,'g',3)));
-        ui->outputTable->setItem(ui->outputTable->rowCount()-1, 1, new QTableWidgetItem(QString::number(percentOn,'g',3)));
-        ui->outputTable->setItem(ui->outputTable->rowCount()-1, 2, new QTableWidgetItem(QString::number(temp,'g',3)));
-        ui->outputTable->setItem(ui->outputTable->rowCount()-1, 3, new QTableWidgetItem(QString::number(tempFilt,'g',3)));
-        if ( inAutoMode) ui->outputTable->setItem(ui->outputTable->rowCount()-1, 4,new QTableWidgetItem(QString::number(setPoint,'g',3)));
+        ui->outputTable->setItem(ui->outputTable->rowCount()-1, 0, new QTableWidgetItem(QString::number(time ,'f',2)));
+        ui->outputTable->setItem(ui->outputTable->rowCount()-1, 1, new QTableWidgetItem(QString::number(percentOn,'f',2)));
+        ui->outputTable->setItem(ui->outputTable->rowCount()-1, 2, new QTableWidgetItem(QString::number(temp,'f',2)));
+        ui->outputTable->setItem(ui->outputTable->rowCount()-1, 3, new QTableWidgetItem(QString::number(tempFilt,'f',2)));
+        if ( inAutoMode) ui->outputTable->setItem(ui->outputTable->rowCount()-1, 4,new QTableWidgetItem(QString::number(setPoint,'f',2)));
         else ui->outputTable->setItem(ui->outputTable->rowCount()-1, 4,new QTableWidgetItem(""));
-        ui->outputTable->setItem(ui->outputTable->rowCount()-1, 5, new QTableWidgetItem(QString::number(fanSpeed,'g',3)));
+        ui->outputTable->setItem(ui->outputTable->rowCount()-1, 5, new QTableWidgetItem(QString::number(fanSpeed,'f',0)));
         if (!ui->outputTable->underMouse())
             ui->outputTable->scrollToBottom();   // scroll to the bottom to ensure the last value is visible
 
@@ -246,10 +246,10 @@ void MainWindow::showRequest(const QString &req)
         */
         QString ModeString = " "; // holds a string for current mode ex. "Automatic, velocity form, Filtering all terms"
         if (inAutoMode) {
-            ui->kcLabel->setNum(kc);
-            ui->tauiLabel->setNum(tauI);
-            ui->taudLabel->setNum(tauD);
-            ui->taufLabel->setNum(tauF);
+            ui->kcLabel->setText(QString::number(kc, 'f', 3));
+            ui->tauiLabel->setText(QString::number(tauI, 'f', 3));
+            ui->taudLabel->setText(QString::number(tauD, 'f', 3));;
+            ui->taufLabel->setText(QString::number(tauF, 'f', 3));;
             ModeString.append("Automatic\n");
             if ( positionForm  ) ModeString.append("Position Form ");
             else ModeString.append("Velocity Form");
@@ -508,18 +508,18 @@ void MainWindow::on_tabWidget_currentChanged(int index)
         double tauF       = static_cast<double>(inputs[i_tauF]);
 
         // Fill the automatic textboxes with the last recorded parameters
-        ui->kcTextBox->setText(QString::number(kc));
-        ui->tauiTextBox->setText(QString::number(tauI));
-        ui->taufTextBox->setText(QString::number(tauF));
-        ui->taudTextBox->setText(QString::number(tauD));
-        ui->setPointTextBox->setText(QString::number(temp));
-        ui->A_fanSpeedTextBox->setText(QString::number(fanSpeed));
+        ui->kcTextBox->setText(QString::number(kc, 'f', 3));
+        ui->tauiTextBox->setText(QString::number(tauI, 'f', 3));
+        ui->taufTextBox->setText(QString::number(tauF, 'f', 3));
+        ui->taudTextBox->setText(QString::number(tauD, 'f', 3));
+        ui->setPointTextBox->setText(QString::number(temp, 'f', 2));
+        ui->A_fanSpeedTextBox->setText(QString::number(fanSpeed, 'f', 1));
     } else {  // changed to the manual tab
         double percentOn  = static_cast<double>(inputs[i_percentOn]);
         double fanSpeed   = static_cast<double>(inputs[i_fanSpeed]);
         // Fill the manual textboxes with the last recorded parameters
-        ui->percentOntTextBox->setText(QString::number(percentOn));
-        ui->M_fanSpeedTextBox->setText(QString::number(fanSpeed));
+        ui->percentOntTextBox->setText(QString::number(percentOn, 'f', 1));
+        ui->M_fanSpeedTextBox->setText(QString::number(fanSpeed, 'f', 1));
     }
     emit on_setButton_clicked(); // simulate the user presing the set button so new parameters are sent to the port.
 }
