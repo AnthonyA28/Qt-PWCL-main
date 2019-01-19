@@ -65,6 +65,11 @@ MainWindow::MainWindow(QWidget *parent) :
     newDir.cdUp();  // go one directory up so we dont place our output next to the dependencies
     QDir::setCurrent(newDir.path());
 
+    // create the media player
+    this->player = new QMediaPlayer;
+    player->setMedia(QUrl::fromLocalFile(execDir+"/alarm.wav"));
+
+
     this->excelFileName = "excelFile.xlsx";
     this->csvFileName   = "data.csv";
 
@@ -165,6 +170,10 @@ void MainWindow::showRequest(const QString &req)
 {
     if (req.contains('!')) {
         ui->emergencyMessageLabel->setText(req);
+        if(req.contains("overheat")) {
+            player->setVolume(100);
+            player->play();
+        }
         return;
     }
 
