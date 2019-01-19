@@ -157,7 +157,8 @@ MainWindow::~MainWindow()
     }
     this->csvdoc.close();
 
-        delete ui;
+    delete player;
+    delete ui;
 }
 
 
