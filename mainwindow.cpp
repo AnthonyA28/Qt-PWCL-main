@@ -246,10 +246,10 @@ void MainWindow::showRequest(const QString &req)
         */
         QString ModeString = " "; // holds a string for current mode ex. "Automatic, velocity form, Filtering all terms"
         if (inAutoMode) {
-            ui->kcLabel->setText(QString::number(kc, 'f', 3));
-            ui->tauiLabel->setText(QString::number(tauI, 'f', 3));
-            ui->taudLabel->setText(QString::number(tauD, 'f', 3));;
-            ui->taufLabel->setText(QString::number(tauF, 'f', 3));;
+            ui->kcLabel->setNum( kc);
+            ui->tauiLabel->setNum( tauI);
+            ui->taudLabel->setNum( tauD);
+            ui->taufLabel->setNum( tauF);
             ModeString.append("Automatic\n");
             if ( positionForm  ) ModeString.append("Position Form ");
             else ModeString.append("Velocity Form");
