@@ -26,11 +26,12 @@ Uses the [ QCustomPlot ](http://www.qcustomplot.com/) library for live graphing.
 
 
 ## todo: 
+ * doesnt make backup file when disconnected early. 
  * the excel file does not show the time. 
  * reduce number of significant figures for score. 
  * add a beep when overheat. 
  * make dots bigger for setpoint. 
-* game.exe, you have earned rating of professional crash test dummy .  
-* filt temp not temp filt 
-* You have achieved rating of..
-* Change Tmax to 60. 
+ * game.exe, you have earned rating of professional crash test dummy .  
+ * filt temp not temp filt 
+ * You have achieved rating of..
+ * Change Tmax to 60. 
