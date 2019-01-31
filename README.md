@@ -25,7 +25,8 @@ Uses the [ QCustomPlot ](http://www.qcustomplot.com/) library for live graphing.
   * Open the *qt_PWCL_main.pro* file with Qt creator. 
 
 
-## todo: 
+## todo:
+ * make sure Tmax is the same in arduino and gui.
  * doesnt make backup file when disconnected early. 
  * the excel file does not show the time. 
  * reduce number of significant figures for score. 
