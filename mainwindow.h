@@ -92,6 +92,7 @@ private:
     const unsigned int i_tempFiltered  = 11;      // for input
     const unsigned int i_time          = 12;      // for input
     const unsigned int numInputs       = 13;
+    float Tmax = 60; // maximum safe temperature
 
 protected:
     bool event(QEvent *event);
