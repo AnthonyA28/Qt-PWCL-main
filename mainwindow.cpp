@@ -354,7 +354,7 @@ void MainWindow::on_setButton_clicked()
 
         if (autoMode) {
             response.append( "1," ); // automatic mode
-            fillArrayAtNextIndex("Set Point ", ui->setPointTextBox, 10, this->Tmax); // maximum safe temperature);  response.append(",");
+            fillArrayAtNextIndex("Set Point ", ui->setPointTextBox, 10, this->Tmax); response.append(","); // maximum safe temperature is Tmax;
             response.append("_,");  // percent on
             fillArrayAtNextIndex("Kc", ui->kcTextBox); response.append(",");
             fillArrayAtNextIndex("TauI", ui->tauiTextBox, 0); response.append(",");
