@@ -438,6 +438,7 @@ void loop(void)
   }
   else if ( autoEnabled != inputs[i_autoMode] && !autoEnabled) {   // transition from manual to automatic
     TsetPoint = temperature;
+    percentRelayOnNominal = percentRelayOn;
   }
   autoEnabled = inputs[i_autoMode];
   if ( autoEnabled){  // if in automatic, set the tuning parameters
