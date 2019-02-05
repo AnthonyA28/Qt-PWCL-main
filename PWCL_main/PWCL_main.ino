@@ -308,7 +308,7 @@ void loop(void)
     Serial.println(F("CRC is not valid!"));
   }
   if (addr[0] != 0x10 && addr[0] != 0x28) {
-    Serial.println(F("Temperature probe malfunctioning!"));
+    Serial.printlnln(F("Temperature probe malfunctioning!"));
   }
   ds.reset();
   ds.select(addr);
