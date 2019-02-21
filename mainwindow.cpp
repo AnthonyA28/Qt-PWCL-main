@@ -70,13 +70,11 @@ MainWindow::MainWindow(QWidget *parent) :
     player->setMedia(QUrl::fromLocalFile(execDir+"/audio/alarm.wav"));
 
 
-    this->excelFileName = "excelFile.xlsx";
-    this->csvFileName   = "data.csv";
-
-    if (QFile::exists(this->excelFileName)) {
-        QFile oldFile(this->excelFileName);
-        oldFile.remove();
-    }
+    // Create file titles with the current date and time
+    QDateTime currentTime(QDateTime::currentDateTime());
+    QString dateStr = currentTime.toString("d-MMM--h-m-A_Main");
+    this->excelFileName = "Data-Main.xlsx";
+    this->csvFileName   = dateStr + ".csv";
 
     // give the excel file column headers
     this->xldoc.write( 1 , 1, "Time");
@@ -84,16 +82,6 @@ MainWindow::MainWindow(QWidget *parent) :
     this->xldoc.write( 1 , 3, "Temperature");
     this->xldoc.write( 1 , 4, "Filtered Temperature");
     this->xldoc.write( 1 , 5, "Set Point");
-
-    // open the csv file and give it a header
-    this->csvdoc.setFileName(this->csvFileName);
-    if (this->csvdoc.open(QIODevice::Truncate | QIODevice::WriteOnly | QIODevice::Text)) {
-        QTextStream stream(&this->csvdoc);
-        stream << "Time, percent on, Temp, Temp filtered, Set Point\n";
-    }
-    else
-        qDebug() << " Failed to open data.csv \n";
-
 
     /*
     * Set up the live plot on the GUI/
@@ -149,11 +137,7 @@ MainWindow::~MainWindow()
              backupDir.mkpath(".");
         QDir::setCurrent("backupFiles");
 
-        // Create a backup file titles with the current date and time
-        QDateTime currentTime(QDateTime::currentDateTime());
-        QString dateStr = currentTime.toString("d-MMM--h-m-A");
-        dateStr.append(".csv"); // the 's' cant be used when formatting the time string
-        this->csvdoc.copy(dateStr);
+        this->csvdoc.copy(this->csvFileName); // create a backup file
     }
     this->csvdoc.close();
 
@@ -186,6 +170,21 @@ void MainWindow::showRequest(const QString &req)
             ui->tabWidget->setTabEnabled(0,true);
             ui->tabWidget->setTabEnabled(1,true);
             ui->emergencyMessageLabel->clear();
+
+            // open the csv file and give it a header
+            this->csvdoc.setFileName(this->csvFileName);
+            if (this->csvdoc.open(QIODevice::Truncate | QIODevice::WriteOnly | QIODevice::Text)) {
+                QTextStream stream(&this->csvdoc);
+                stream << "Time, percent on, Temp, Temp filtered, Set Point\n";
+            }
+            else {
+                qDebug() << " Failed to open  csv file  \n";
+                QString errMsg = this->csvdoc.errorString();
+                QFileDevice::FileError err = this->csvdoc.error();
+                qDebug() << " \n ERRORmmsg : " << errMsg ;
+                qDebug() << " \n ERROR : " << err;
+            }
+
         }
 
         double time       = static_cast<double>(inputs[i_time]);
@@ -226,7 +225,6 @@ void MainWindow::showRequest(const QString &req)
         this->xldoc.write(ui->outputTable->rowCount(), 4,  (static_cast<int>(tempFilt*100))/100.0);
         if ( inAutoMode )
             this->xldoc.write(ui->outputTable->rowCount(), 5,  (static_cast<int>(setPoint*100))/100.0);
-        this->xldoc.saveAs(this->excelFileName); // save the doc in case we crash
 
 
         /*
@@ -553,17 +551,15 @@ void MainWindow::on_filterAllCheckBox_stateChanged(int arg1)
 */
 bool MainWindow::disonnectedPopUpWindow()
 {
+
     // ensure a backupfile directory exists, create one if it doesnt
     QDir backupDir("backupFiles");
     if( !backupDir.exists() )
          backupDir.mkpath(".");
     QDir::setCurrent("backupFiles");
+    this->csvdoc.copy(this->csvFileName); // create a backup file
 
-    // Create a backup file titles with the current date and time
-    QDateTime currentTime(QDateTime::currentDateTime());
-    QString dateStr = currentTime.toString("d-MMM--h-m-A");
-    dateStr.append(".csv"); // the 's' cant be used when formatting the time string
-    this->csvdoc.copy(dateStr);
+    this->csvdoc.close();
 
     qDebug() << "(disconnected popup window )\n";
     QMessageBox::critical(this,
