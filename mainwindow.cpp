@@ -72,9 +72,9 @@ MainWindow::MainWindow(QWidget *parent) :
 
     // Create file titles with the current date and time
     QDateTime currentTime(QDateTime::currentDateTime());
-    QString dateStr = currentTime.toString("d-MMM--h-m-A_Main");
+    QString dateStr = currentTime.toString("d-MMM--h-m-A");
     this->excelFileName = "Data-Main.xlsx";
-    this->csvFileName   = dateStr + ".csv";
+    this->csvFileName   = dateStr + "-Main.csv";
 
     // give the excel file column headers
     this->xldoc.write( 1 , 1, "Time");
@@ -175,13 +175,13 @@ void MainWindow::showRequest(const QString &req)
             this->csvdoc.setFileName(this->csvFileName);
             if (this->csvdoc.open(QIODevice::Truncate | QIODevice::WriteOnly | QIODevice::Text)) {
                 QTextStream stream(&this->csvdoc);
-                stream << "Time, percent on, Temp, Temp filtered, Set Point\n";
+                stream << "Time, Percent on, Temeraturep, Filtered temperature, Set Point\n";
             }
             else {
                 qDebug() << " Failed to open  csv file  \n";
                 QString errMsg = this->csvdoc.errorString();
                 QFileDevice::FileError err = this->csvdoc.error();
-                qDebug() << " \n ERRORmmsg : " << errMsg ;
+                qDebug() << " \n ERROR msg : " << errMsg ;
                 qDebug() << " \n ERROR : " << err;
             }
 
@@ -225,6 +225,7 @@ void MainWindow::showRequest(const QString &req)
         this->xldoc.write(ui->outputTable->rowCount(), 4,  (static_cast<int>(tempFilt*100))/100.0);
         if ( inAutoMode )
             this->xldoc.write(ui->outputTable->rowCount(), 5,  (static_cast<int>(setPoint*100))/100.0);
+        this->xldoc.saveAs(this->excelFileName); // save the doc in case we crash
 
 
         /*
