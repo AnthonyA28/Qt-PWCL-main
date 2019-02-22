@@ -175,7 +175,7 @@ void MainWindow::showRequest(const QString &req)
             this->csvdoc.setFileName(this->csvFileName);
             if (this->csvdoc.open(QIODevice::Truncate | QIODevice::WriteOnly | QIODevice::Text)) {
                 QTextStream stream(&this->csvdoc);
-                stream << "Time, Percent on, Temeraturep, Filtered temperature, Set Point\n";
+                stream << "Time, Percent on, Temerature, Filtered temperature, Set Point\n";
             }
             else {
                 qDebug() << " Failed to open  csv file  \n";
