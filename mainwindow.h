@@ -58,6 +58,8 @@ private slots:
     void on_filterAllCheckBox_stateChanged(int arg1);
     void on_tabWidget_currentChanged(int index);
 
+    void on_actionExport_Excel_File_triggered();
+
 private:
 
     Ui::MainWindow *ui;
