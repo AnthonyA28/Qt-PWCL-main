@@ -26,13 +26,16 @@ Uses the [ QCustomPlot ](http://www.qcustomplot.com/) library for live graphing.
 
 
 ## todo:
- * make sure Tmax is the same in arduino and gui.
- * doesnt make backup file when disconnected early. 
- * the excel file does not show the time. 
- * reduce number of significant figures for score. 
- * add a beep when overheat. 
- * make dots bigger for setpoint. 
- * game.exe, you have earned rating of professional crash test dummy .  
- * filt temp not temp filt 
- * You have achieved rating of..
- * Change Tmax to 60. 
+* Nominal percent on when position form 
+* place temperature on top of filtered temperature.
+* change color from light green to dark green.
+* fix 'not available' & 'velocity form' being cut off in the test program.
+* Feed forward: 
+	1) manual, Automatic FB, Automatic FB FF
+	Parameters (3) :
+ 		- K_ff
+ 		- T_lead
+ 		- T_lag
+
+* Special test, only show score after 59 minutes. 
+* Fix rank string in test and special test. 
