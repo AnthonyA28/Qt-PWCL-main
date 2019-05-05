@@ -200,6 +200,7 @@ void MainWindow::showRequest(const QString &req)
         bool inAutoMode   = static_cast<bool>(inputs[i_autoMode]);  // true if we are in automatic mode
         bool positionForm = static_cast<bool>(inputs[i_positionForm]);
         bool filterAll    = static_cast<bool>(inputs[i_filterAll]);
+        this->nominalPercentOn = inputs[i_pOnNominal];
 
         /*
         *  Update the output table with the last parameters read from the port.
@@ -372,7 +373,9 @@ void MainWindow::on_setButton_clicked()
         // these two have a different order in the test program but its okay
         // todo: consider fixing that #p2
         response.append( ui->filterAllCheckBox->isChecked() ? "1," : "0," );
-        response.append( ui->posFormCheckBox->isChecked()   ? "1]" : "0]" );
+        response.append( ui->posFormCheckBox->isChecked()   ? "1," : "0," );
+        response.append( QString::number(static_cast<double>(this->nominalPercentOn)));
+        response.append("]");
 
         emit this->response(response);
     }
@@ -530,6 +533,13 @@ void MainWindow::on_tabWidget_currentChanged(int index)
 */
 void MainWindow::on_posFormCheckBox_stateChanged(int arg1)
 {
+    if(ui->posFormCheckBox->isChecked()){ // The position for box is checked so we need to reques the nominal percent on
+        bool ok;
+        this->nominalPercentOn = QInputDialog::getDouble(this, tr("Position Form"),
+                                           tr("Nominal Percent On:"), this->nominalPercentOn, 0, 100, 2 , &ok);
+        if (!ok){
+        }
+    }
     emit on_setButton_clicked();    // as if the user just clicked the setbutton (triggers sending parameters to port)
 }
 

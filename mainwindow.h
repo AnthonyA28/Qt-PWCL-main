@@ -90,11 +90,14 @@ private:
     const unsigned int i_fanSpeed      = 7;       // for input & output
     const unsigned int i_filterAll     = 8;       // for input & output
     const unsigned int i_positionForm  = 9;       // for input & output
-    const unsigned int i_temperature   = 10;      // for input
-    const unsigned int i_tempFiltered  = 11;      // for input
-    const unsigned int i_time          = 12;      // for input
-    const unsigned int numInputs       = 13;
+    const unsigned int i_pOnNominal    = 10;      // for input & output
+    const unsigned int i_temperature   = 11;      // for input
+    const unsigned int i_tempFiltered  = 12;      // for input
+    const unsigned int i_time          = 13;      // for input
+    const unsigned int numInputs       = 14;
     float Tmax = 60; // maximum safe temperature
+
+    float nominalPercentOn = 0;
 
 protected:
     bool event(QEvent *event);

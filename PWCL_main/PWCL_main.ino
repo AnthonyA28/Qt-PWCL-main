@@ -203,15 +203,16 @@ const unsigned int i_tauF         = 6;  //  for input & output
 const unsigned int i_fanSpeed     = 7;  //  for input & output
 const unsigned int i_filterAll    = 8;  //  for input & output
 const unsigned int i_positionForm = 9;  //  for input & output
-const unsigned int i_temperature  = 10; // for output
-const unsigned int i_tempFiltered = 11; // for output
-const unsigned int i_time         = 12; // for output
-const unsigned int numInputs      = 10;
-const unsigned int numOutputs     = 13;
+const unsigned int i_pOnNominal   = 10; //  for input & output
+const unsigned int i_temperature  = 11; // for output
+const unsigned int i_tempFiltered = 12; // for output
+const unsigned int i_time         = 13; // for output
+const unsigned int numInputs      = 11;
+const unsigned int numOutputs     = 14;
 
 // Declare the input and output arrays with some default values, incase they are accessed before they are filled
-float inputs[numInputs]   ={float(autoEnabled), TsetPoint, percentRelayOn, Kc, tauI, tauD, tauF, fanSpeed, float(filterAll), float(positionFlag) };
-float outputs[numOutputs] ={float(autoEnabled), TsetPoint, percentRelayOn, Kc, tauI, tauD, tauF, fanSpeed, float(filterAll), float(positionFlag), temperature, temperature, 0 };
+float inputs[numInputs]   ={float(autoEnabled), TsetPoint, percentRelayOn, Kc, tauI, tauD, tauF, fanSpeed, float(filterAll), float(positionFlag) , percentRelayOnNominal};
+float outputs[numOutputs] ={float(autoEnabled), TsetPoint, percentRelayOn, Kc, tauI, tauD, tauF, fanSpeed, float(filterAll), float(positionFlag), percentRelayOnNominal, temperature, temperature, 0 };
 void serialize_array(float input[], char * output); // declare the function so it can be placed under where it is used
 bool deserialize_array(const char * input, unsigned int output_size, float output[]); // declare the function so it can be placed under where it is used
 void check_input(); // declare the function so it can be placed under where it is used
@@ -418,6 +419,7 @@ void loop(void)
   outputs[i_time] = millis() /60000.0;
   outputs[i_filterAll] = filterAll;
   outputs[i_positionForm] = positionFlag;
+  outputs[i_pOnNominal] = percentRelayOnNominal;
   /* fill the ouput char buffer with the contents of the output array */
   serialize_array(outputs, outputbuffer);
   Serial.println(outputbuffer); // send the output buffer to the port
@@ -438,7 +440,6 @@ void loop(void)
   }
   else if ( autoEnabled != inputs[i_autoMode] && !autoEnabled) {   // transition from manual to automatic
     TsetPoint = temperature;
-    percentRelayOnNominal = percentRelayOn;
   }
   autoEnabled = inputs[i_autoMode];
   if ( autoEnabled){  // if in automatic, set the tuning parameters
@@ -448,6 +449,7 @@ void loop(void)
     tauF = inputs[i_tauF];
     filterAll    = inputs[i_filterAll];
     positionFlag = inputs[i_positionForm];
+    percentRelayOnNominal= inputs[i_pOnNominal];
   }
   fanSpeed = inputs[i_fanSpeed];
   analogWrite(fetPin,(int) fanSpeed);

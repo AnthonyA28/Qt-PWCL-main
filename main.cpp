@@ -31,7 +31,7 @@ void myMessageOutput(QtMsgType type, const QMessageLogContext &context, const QS
 
 int main(int argc, char *argv[])
 {
-    qInstallMessageHandler(myMessageOutput); // Install the handler
+//    qInstallMessageHandler(myMessageOutput); // Install the handler
 
     QApplication::setAttribute(Qt::AA_EnableHighDpiScaling);
 
