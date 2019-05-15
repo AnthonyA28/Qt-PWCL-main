@@ -95,7 +95,7 @@ MainWindow::MainWindow(QWidget *parent) :
 
     ui->plot->addGraph();
     ui->plot->graph(1)->setName("Temperature Filtered");
-    ui->plot->graph(1)->setPen(QPen(Qt::green));
+    ui->plot->graph(1)->setPen(QPen(qRgb(0,100,0)));
     ui->plot->graph(1)->setValueAxis(ui->plot->yAxis2);
 
     ui->plot->addGraph();
@@ -398,6 +398,8 @@ void MainWindow::on_setButton_clicked()
 */
 void MainWindow::timerEvent(QTimerEvent *event)
 {
+    Q_UNUSED( event ) // to ignore the unused parameter warning
+
     if (!port.L_isConnected()) {
         QList<QSerialPortInfo> portList = QSerialPortInfo::availablePorts();
         // todo: check what hapens if the socket changes. This may be an issue if we change the COM before establishing a connection  #p2
@@ -533,10 +535,12 @@ void MainWindow::on_tabWidget_currentChanged(int index)
 */
 void MainWindow::on_posFormCheckBox_stateChanged(int arg1)
 {
+    Q_UNUSED( arg1 ) // to ignore the unused parameter warning
+
     if(ui->posFormCheckBox->isChecked()){ // The position for box is checked so we need to reques the nominal percent on
         bool ok;
-        this->nominalPercentOn = QInputDialog::getDouble(this, tr("Position Form"),
-                                           tr("Nominal Percent On:"), this->nominalPercentOn, 0, 100, 2 , &ok);
+        this->nominalPercentOn = static_cast<float>(QInputDialog::getDouble(this, tr("Position Form"),
+                                           tr("Nominal Percent On:"), static_cast<double>(this->nominalPercentOn), 0, 100, 2 , &ok));
         if (!ok){
         }
     }
@@ -549,6 +553,7 @@ void MainWindow::on_posFormCheckBox_stateChanged(int arg1)
 */
 void MainWindow::on_filterAllCheckBox_stateChanged(int arg1)
 {
+    Q_UNUSED( arg1 ) // to ignore the unused parameter warning
     emit on_setButton_clicked();    // as if the user just clicked the setbutton (triggers sending parameters to port)
 }
 
@@ -577,6 +582,7 @@ bool MainWindow::disonnectedPopUpWindow()
                           "Close and restart the application to continue.\n",
                           QMessageBox::Ok
                           );
+    return true;
 }
 
 /**
