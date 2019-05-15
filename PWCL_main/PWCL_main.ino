@@ -175,7 +175,7 @@ float sumForIntegral = 0;
 float TsetPoint = temperature; // deg C
 bool noIntegralFlag = 0; // set to 1 for eliminating integral action
 float Kc = 0.0; // controller gain (% power on / deg C)
-float tauI = 8.69; // integral time constant in min
+float tauI = 3.0; // integral time constant in min
 float KI; // if (proportionalFlag) {KI = 0} else {KI = Kc / tauI}
 float tauD = 0.0; // derivative time constant in min
 float tauF = 0; // filter time constant in min.  Rule of thumb: Choose it 0.1-0.2 * tauD
