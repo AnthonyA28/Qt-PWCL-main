@@ -26,10 +26,6 @@ Uses the [ QCustomPlot ](http://www.qcustomplot.com/) library for live graphing.
 
 
 ## todo:
-* Nominal percent on when position form 
-* place temperature on top of filtered temperature.
-* change color from light green to dark green.
-* fix 'not available' & 'velocity form' being cut off in the test program.
 * Feed forward: 
 	1) manual, Automatic FB, Automatic FB FF
 	Parameters (3) :
@@ -38,4 +34,3 @@ Uses the [ QCustomPlot ](http://www.qcustomplot.com/) library for live graphing.
  		- T_lag
 
 * Special test, only show score after 59 minutes. 
-* Fix rank string in test and special test. 
