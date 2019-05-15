@@ -245,7 +245,7 @@ void MainWindow::showRequest(const QString &req)
         /*
         *  Show the current values from the port in the current parameters area
         */
-        QString ModeString = " "; // holds a string for current mode ex. "Automatic, velocity form, Filtering all terms"
+        QString ModeString = ""; // holds a string for current mode ex. "Automatic, velocity form, Filtering all terms"
         if (inAutoMode) {
             ui->kcLabel->setNum( kc);
             ui->tauiLabel->setNum( tauI);
