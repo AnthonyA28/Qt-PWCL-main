@@ -443,13 +443,13 @@ void loop(void)
   }
   autoEnabled = inputs[i_autoMode];
   if ( autoEnabled){  // if in automatic, set the tuning parameters
-    Kc = inputs[i_kc];
-    tauI = inputs[i_tauI];
-    tauD = inputs[i_tauD];
-    tauF = inputs[i_tauF];
-    filterAll    = inputs[i_filterAll];
-    positionFlag = inputs[i_positionForm];
-    percentRelayOnNominal= inputs[i_pOnNominal];
+    Kc                    = inputs[i_kc];
+    tauI                  = inputs[i_tauI];
+    tauD                  = inputs[i_tauD];
+    tauF                  = inputs[i_tauF];
+    filterAll             = inputs[i_filterAll];
+    positionFlag          = inputs[i_positionForm];
+    percentRelayOnNominal = inputs[i_pOnNominal];
   }
   fanSpeed = inputs[i_fanSpeed];
   analogWrite(fetPin,(int) fanSpeed);
