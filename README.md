@@ -34,3 +34,4 @@ Uses the [ QCustomPlot ](http://www.qcustomplot.com/) library for live graphing.
  		- T_lag
 
 * Special test, only show score after 59 minutes. 
+* Evidently the export as Excel File option does not work on Ubuntu builds. 
