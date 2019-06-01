@@ -223,7 +223,13 @@ public:
     bool deserialize_array ();
     float get(int index);
     void set(int index, float value);
+    void printStream(char* errMsg);
+    void printStream(float value);
 };
+
+
+
+
 
 VARIABLES vars;
 

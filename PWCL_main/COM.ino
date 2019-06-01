@@ -1,4 +1,15 @@
 
+void VARIABLES::printStream(char* errMsg)
+{
+    // std::cout <<  errMsg;
+    Serial.print(errMsg);
+}
+void VARIABLES::printStream(float value)
+{
+    // std::cout <<  value;
+    Serial.print(value);
+}
+
 void VARIABLES::set(int index, float value)
 {
   arr[index] = value;
@@ -11,10 +22,9 @@ float VARIABLES::get(int index)
 
 void VARIABLES::printCurrentValues()
 {
-  /** Arduino **/
   for (int i = 0; i < numVars; i ++ ) {
-    // Serial.print("\t");
-    // Serial.println(arr[i]);
+    this->printStream("\t");
+    this->printStream(arr[i]);
   }
 }
 
@@ -23,8 +33,6 @@ void VARIABLES::printCurrentValues()
 */
 bool VARIABLES::fillStr(float value, char* output, unsigned int* i, unsigned short max)
 {
-  // Serial.println( "filling  float");
-  // Serial.println( value );
   int whole = value;
   unsigned int decimals = ((value - (float)whole)) * 10000; // TODO: FIXME keep getting some kind of overflow if the precision is larger #p3
 
@@ -41,8 +49,7 @@ bool VARIABLES::fillStr(float value, char* output, unsigned int* i, unsigned sho
       return false;
   }
 
-  if (isnan(value)) {
-    Serial.println("it is a nan");
+  if (value != value) {
     output[*i]   = 'N';
     output[*i+1] = 'A';
     output[*i+2] = 'N';
@@ -85,9 +92,7 @@ bool VARIABLES::prepare_output()
 */
 bool VARIABLES::deserialize_array ()
 {
-  const char* const input = this->buffer;
-    Serial.print("deserializing:");
-    Serial.print(this->buffer);
+    const char* const input = this->buffer;
     /* Ensure that the input string has the correct format and number of numbers to be parsed*/
     const char*  p = input;
     unsigned int numB   = 0;   // number of brackets
@@ -100,15 +105,11 @@ bool VARIABLES::deserialize_array ()
       } p++;
     }
     if (numB != 2) {
-        /** Arduino **/
-        Serial.print("(A) Parse error, not valid array\n");
-        Serial.println(input);
+        this->printStream("(C++) Parse error, not valid array\n");
         return false;
     }
     if (numV != numVars) {
-        /** Arduino **/
-        Serial.print("(A) Parse error, input size incorrect\n");
-        Serial.println(input);
+        this->printStream("(C++) Parse error, input size incorrect\n");
         return false;
     }
 
@@ -117,13 +118,11 @@ bool VARIABLES::deserialize_array ()
    for ( unsigned int i = 0; i < numVars; i ++ ) {
       bool isNum = false;  // if the string is a number
       const char* nc = p; // nc will point to the next comma or the closing bracket
-      // Serial.print(*p);
-      // Serial.print(*(p+1));
-      // Serial.println(*(p+2));
       /* Handle NANS */
       if ( (*p == 'N' && *(p+1) == 'A' && *(p+2) == 'N')
         || (*p == 'n' && *(p+1) == 'a' && *(p+2) == 'n') ) {
-        this->arr[i] = NAN;
+        this->arr[i] != this->arr[i];  // TODO: this probably wont work #p1
+        // this->arr[i] = NAN;
         p++;
         continue;
       }
