@@ -186,29 +186,26 @@ unsigned long startConversionTime;
 unsigned long tLoopStart;
 bool stopTempHigh = 0; // flag ending the run due to high temperature
 float Tmax = 60; // maximum safe temperature
-const unsigned int bufferSize = 300;
-char inputbuffer[bufferSize];
-char outputbuffer[bufferSize]; // its much better for the memory to be using a char* rather than a string
 bool filterAll = false; // If not set only the derivative term is filtered
 bool autoEnabled = false;  // true when in automatic mode
 bool positionFlag = false; // set to 1 for the position form of the PID law, to 0 for the velocity form
 
-#define i_autoMode     0 //  for input & output
-#define i_setPoint     1 //  for input & output
-#define i_percentOn    2 //  for input & output
-#define i_kc           3 //  for input & output
-#define i_tauI         4 //  for input & output
-#define i_tauD         5 //  for input & output
-#define i_tauF         6 //  for input & output
-#define i_fanSpeed     7 //  for input & output
-#define i_filterAll    8 //  for input & output
-#define i_positionForm 9 //  for input & output
-#define i_pOnNominal   10 //  for input & output
-#define i_temperature  11 //  for input & output
-#define i_tempFiltered 12 //  for input & output
-#define i_time         13 //  for input & output
+#define i_autoMode     0
+#define i_setPoint     1
+#define i_percentOn    2
+#define i_kc           3
+#define i_tauI         4
+#define i_tauD         5
+#define i_tauF         6
+#define i_fanSpeed     7
+#define i_filterAll    8
+#define i_positionForm 9
+#define i_pOnNominal   10
+#define i_temperature  11
+#define i_tempFiltered 12
+#define i_time         13
 #define numVars 13
-#define bufferSize 500
+#define bufferSize 300
 
 class VARIABLES
 {
@@ -219,19 +216,15 @@ public:
     VARIABLES(){}
     void printCurrentValues();
     bool prepare_output();
+    bool deserialize_array();
     bool fillStr(float value, char* output, unsigned int* i, unsigned short max);
-    bool deserialize_array ();
     float get(int index);
     void set(int index, float value);
     void printStream(char* errMsg);
     void printStream(float value);
 };
-
-
-
-
-
 VARIABLES vars;
+
 
 void checkInput();
 
@@ -439,14 +432,13 @@ void loop(void)
   vars.set(i_filterAll, filterAll);
   vars.set(i_positionForm, positionFlag);
   vars.set(i_pOnNominal, percentRelayOnNominal);
+
   /* fill the ouput char buffer with the contents of the output array */
   vars.prepare_output();
   Serial.println(vars.buffer); // send the output buffer to the port
-
   while (millis() < tLoopStart + stepSize) {
     relayCare();
-    checkInput(); // we should constantly check for potential input from user (so parameters can change faster )
-    delay(100);
+    check_input();
   }
 
   /*
@@ -477,25 +469,34 @@ void loop(void)
 }
 
 
-/* Check for input from the port */
-void checkInput()
+void check_input()
 {
-  /** Arduino **/
+  // checks for input from the port and potentially changes parameters
+  /*  I dont use the serial.readString becuse it will read ANY size input
+  presenting the possibiliity of a buffer overflow. this will read up to a closing bracket
+  or until the input buffer is at max capacity.
+  */
   if (Serial.available()) {
-    for (unsigned int i = 0; i < bufferSize - 1; i ++) {
+    int j = 0;
+    for (unsigned int i = 0; i < bufferSize - 1 && j < 500; i ++) {
       char c = Serial.read();
-      if (c==-1) break; // If serial.read has no data to read
+      if ( c == -1){
+        i -=1;
+        j +=1;
+        continue;
+      }
       vars.buffer[i] = c; // place this character in the input buffer
       if (c == ']' || c == '\0' ) { // stop reading chracters if we have read the last bracket or a null charcter
-        vars.buffer[i+1] = '\0'; // this will null terminate the inputbuffer
+        vars.buffer[i+1] = '\0'; // this will null terminate the buffer
         break;
       }
       if (c == '!')
-        // shutdown();
+        shutdown();
       delay(10);
     }
     while (Serial.available())
       char _ = Serial.read(); // this throws aways any other character in the buffer after the first right bracket
     vars.deserialize_array();
   }
+
 }

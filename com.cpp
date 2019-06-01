@@ -1,6 +1,18 @@
+#if defined(__AVR_ATmega168__) || defined(__AVR_ATmega328P__) || defined(__AVR_ATmega1280__) || defined(__AVR_ATmega2560__)
+// this is being compiled for an aruino
+#define PRINT_SOURCE Serial.print("(A) ")
+#define PRINT_MESSAGE( msg ) Serial.print(msg)
+#else
+// This is being compile for C++
 #include "com.h"
 #include <string>
 #include <cstring>
+#include <iostream>
+#define PRINT_SOURCE std::cout << "(C++) ";
+#define PRINT_MESSAGE( msg ) std::cout << msg
+#endif
+
+
 
 void VARIABLES::set(int index, float value)
 {
@@ -14,10 +26,10 @@ float VARIABLES::get(int index)
 
 void VARIABLES::printCurrentValues()
 {
-  /** Arduino **/
   for (int i = 0; i < numVars; i ++ ) {
-//    Serial.print("\t");
-//    Serial.println(arr[i]);
+    PRINT_SOURCE;
+    PRINT_MESSAGE("\t");
+    PRINT_MESSAGE(arr[i]);
   }
 }
 
@@ -26,8 +38,6 @@ void VARIABLES::printCurrentValues()
 */
 bool VARIABLES::fillStr(float value, char* output, unsigned int* i, unsigned short max)
 {
-//  Serial.println( "filling  float");
-//  Serial.println( value );
   int whole = value;
   unsigned int decimals = ((value - (float)whole)) * 10000; // TODO: FIXME keep getting some kind of overflow if the precision is larger #p3
 
@@ -45,7 +55,6 @@ bool VARIABLES::fillStr(float value, char* output, unsigned int* i, unsigned sho
   }
 
   if (value != value) {
-    //Serial.println("it is a nan");
     output[*i]   = 'N';
     output[*i+1] = 'A';
     output[*i+2] = 'N';
@@ -63,13 +72,13 @@ bool VARIABLES::prepare_output()
 {
     unsigned int bufIndex = 1;
     bool success = true;
-    buffer[0] = '[';
+    this->buffer[0] = '[';
     for ( int i = 0; i < numVars && success; i ++ ) {
-      success = this->fillStr(this->arr[i], buffer, &bufIndex, bufferSize);
+      success = this->fillStr(this->arr[i], this->buffer, &bufIndex, bufferSize);
     }
     if (success && bufIndex < bufferSize - 2) {
-        buffer[bufIndex] = ']';
-        buffer[bufIndex+1] = '\0';
+        this->buffer[bufIndex] = ']';
+        this->buffer[bufIndex+1] = '\0';
     }
     return success;
 }
@@ -88,9 +97,9 @@ bool VARIABLES::prepare_output()
 */
 bool VARIABLES::deserialize_array ()
 {
-  const char* const input = this->buffer;
+
     /* Ensure that the input string has the correct format and number of numbers to be parsed*/
-    const char*  p = input;
+    const char*  p = this->buffer;
     unsigned int numB   = 0;   // number of brackets
     unsigned int numV   = 0;   // number of values
 
@@ -101,33 +110,33 @@ bool VARIABLES::deserialize_array ()
       } p++;
     }
     if (numB != 2) {
-        /** Arduino **/
-        //Serial.print("(A) Parse error, not valid array\n");
-        //Serial.println(input);
+        PRINT_SOURCE;
+        PRINT_MESSAGE("Parse error, not valid array.. Message: \n");
+        PRINT_MESSAGE(this->buffer);
+        PRINT_MESSAGE("\n");
         return false;
     }
     if (numV != numVars) {
-        /** Arduino **/
-        //Serial.print("(A) Parse error, input size incorrect\n");
-        //Serial.println(input);
+        PRINT_SOURCE;
+        PRINT_MESSAGE("Parse error, incorrect array size.. Message: \n");
+        PRINT_MESSAGE(this->buffer);
+        PRINT_MESSAGE("\n");
         return false;
     }
 
    char* pEnd;
-   p = input + 1;
+   p = this->buffer + 1;
    for ( unsigned int i = 0; i < numVars; i ++ ) {
       bool isNum = false;  // if the string is a number
       const char* nc = p; // nc will point to the next comma or the closing bracket
-      //Serial.print(*p);
-      //Serial.print(*(p+1));
-      //Serial.println(*(p+2));
       /* Handle NANS */
-      if ( (*p == 'N' && *(p+1) == 'A' && *(p+2) == 'N')
-        || (*p == 'n' && *(p+1) == 'a' && *(p+2) == 'n') ) {
-        this->arr[i] != this->arr[i];
-        p++;
-        continue;
-      }
+       if ( (*p == 'N' && *(p+1) == 'A' && *(p+2) == 'N')
+         || (*p == 'n' && *(p+1) == 'a' && *(p+2) == 'n') ) {
+         this->arr[i] != this->arr[i];  // TODO: this probably wont work #p1
+         // this->arr[i] = NAN;
+         p++;
+         continue;
+       }
       while(*nc != ',' && *nc != ']' && *nc) {
         if ((int)*nc >= 48 && (int)*nc <= 57)
           isNum = true;
@@ -142,5 +151,5 @@ bool VARIABLES::deserialize_array ()
       }
       p++;
    }
-   p = input;
+   p = this->buffer;
 }
