@@ -162,9 +162,9 @@ void MainWindow::showRequest(const QString &req)
 
     QByteArray ba = req.toStdString().c_str();
     for ( int i = 0; i < 300; i ++ ) {
-        vars.buffer[i] = ba[i];
+        com.buffer[i] = ba[i];
     }
-    if(vars.deserialize_array()) {
+    if(com.deserialize_array()) {
 //    if (this->deserializeArray(req.toStdString().c_str(), this->numInputs, this->inputs)) {
 
         if (!this->validConnection) {
@@ -190,20 +190,20 @@ void MainWindow::showRequest(const QString &req)
 
         }
 
-        double time       = static_cast<double>(vars.get(i_time));
-        double percentOn  = static_cast<double>(vars.get(i_percentOn));
-        double temp       = static_cast<double>(vars.get(i_temperature));
-        double tempFilt   = static_cast<double>(vars.get(i_tempFiltered));
-        double setPoint   = static_cast<double>(vars.get(i_setPoint));
-        double fanSpeed   = static_cast<double>(vars.get(i_fanSpeed));
-        double kc         = static_cast<double>(vars.get(i_kc));
-        double tauI       = static_cast<double>(vars.get(i_tauI));
-        double tauD       = static_cast<double>(vars.get(i_tauD));
-        double tauF       = static_cast<double>(vars.get(i_tauF));
-        bool inAutoMode   = static_cast<bool>(vars.get(i_autoMode));  // true if we are in automatic mode
-        bool positionForm = static_cast<bool>(vars.get(i_positionForm));
-        bool filterAll    = static_cast<bool>(vars.get(i_filterAll));
-        this->nominalPercentOn = vars.get(i_pOnNominal);
+        double time       = static_cast<double>(com.get(i_time));
+        double percentOn  = static_cast<double>(com.get(i_percentOn));
+        double temp       = static_cast<double>(com.get(i_temperature));
+        double tempFilt   = static_cast<double>(com.get(i_tempFiltered));
+        double setPoint   = static_cast<double>(com.get(i_setPoint));
+        double fanSpeed   = static_cast<double>(com.get(i_fanSpeed));
+        double kc         = static_cast<double>(com.get(i_kc));
+        double tauI       = static_cast<double>(com.get(i_tauI));
+        double tauD       = static_cast<double>(com.get(i_tauD));
+        double tauF       = static_cast<double>(com.get(i_tauF));
+        bool inAutoMode   = static_cast<bool>(com.get(i_autoMode));  // true if we are in automatic mode
+        bool positionForm = static_cast<bool>(com.get(i_positionForm));
+        bool filterAll    = static_cast<bool>(com.get(i_filterAll));
+        this->nominalPercentOn = com.get(i_pOnNominal);
 
         /*
         *  Update the output table with the last parameters read from the port.
@@ -454,12 +454,12 @@ void MainWindow::on_tabWidget_currentChanged(int index)
     bool autoModeTab = ( index == 1 );  // tab index 1 is the automatic tab
     if (autoModeTab){ // changed from manual to automatic
 
-        double temp       = static_cast<double>(vars.get(i_temperature));
-        double fanSpeed   = static_cast<double>(vars.get(i_fanSpeed));
-        double kc         = static_cast<double>(vars.get(i_kc));
-        double tauI       = static_cast<double>(vars.get(i_tauI));
-        double tauD       = static_cast<double>(vars.get(i_tauD));
-        double tauF       = static_cast<double>(vars.get(i_tauF));
+        double temp       = static_cast<double>(com.get(i_temperature));
+        double fanSpeed   = static_cast<double>(com.get(i_fanSpeed));
+        double kc         = static_cast<double>(com.get(i_kc));
+        double tauI       = static_cast<double>(com.get(i_tauI));
+        double tauD       = static_cast<double>(com.get(i_tauD));
+        double tauF       = static_cast<double>(com.get(i_tauF));
 
         // Fill the automatic textboxes with the last recorded parameters
         ui->kcTextBox->setText(QString::number(kc, 'f', 3));
@@ -469,8 +469,8 @@ void MainWindow::on_tabWidget_currentChanged(int index)
         ui->setPointTextBox->setText(QString::number(temp, 'f', 2));
         ui->A_fanSpeedTextBox->setText(QString::number(fanSpeed, 'f', 1));
     } else {  // changed to the manual tab
-        double percentOn  = static_cast<double>(vars.get(i_percentOn));
-        double fanSpeed   = static_cast<double>(vars.get(i_fanSpeed));
+        double percentOn  = static_cast<double>(com.get(i_percentOn));
+        double fanSpeed   = static_cast<double>(com.get(i_fanSpeed));
         // Fill the manual textboxes with the last recorded parameters
         ui->percentOntTextBox->setText(QString::number(percentOn, 'f', 1));
         ui->M_fanSpeedTextBox->setText(QString::number(fanSpeed, 'f', 1));

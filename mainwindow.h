@@ -61,7 +61,7 @@ private slots:
     void on_actionExport_Excel_File_triggered();
 
 private:
-    VARIABLES vars;
+    COM com;
 
 
     Ui::MainWindow *ui;

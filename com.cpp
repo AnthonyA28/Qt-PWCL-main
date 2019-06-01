@@ -14,17 +14,17 @@
 
 
 
-void VARIABLES::set(int index, float value)
+void COM::set(int index, float value)
 {
   arr[index] = value;
 }
 
-float VARIABLES::get(int index)
+float COM::get(int index)
 {
   return arr[index];
 }
 
-void VARIABLES::printCurrentValues()
+void COM::printCurrentValues()
 {
   for (int i = 0; i < numVars; i ++ ) {
     PRINT_SOURCE;
@@ -36,7 +36,7 @@ void VARIABLES::printCurrentValues()
 /***
   Fills the 'output' char* with a string version of 'value'. at the specified 'bufIndex'
 */
-bool VARIABLES::fillStr(float value, char* output, unsigned int* i, unsigned short max)
+bool COM::fillStr(float value, char* output, unsigned int* i, unsigned short max)
 {
   int whole = value;
   unsigned int decimals = ((value - (float)whole)) * 10000; // TODO: FIXME keep getting some kind of overflow if the precision is larger #p3
@@ -68,7 +68,7 @@ bool VARIABLES::fillStr(float value, char* output, unsigned int* i, unsigned sho
   return true;
 }
 
-bool VARIABLES::prepare_output()
+bool COM::prepare_output()
 {
     unsigned int bufIndex = 1;
     bool success = true;
@@ -92,10 +92,10 @@ bool VARIABLES::prepare_output()
         arr[0] => 23.89
         arr[1] => 324
       then you could do..
-        VARIABLES.get(0);
+        COM.get(0);
       which returns 23.89
 */
-bool VARIABLES::deserialize_array ()
+bool COM::deserialize_array ()
 {
 
     /* Ensure that the input string has the correct format and number of numbers to be parsed*/

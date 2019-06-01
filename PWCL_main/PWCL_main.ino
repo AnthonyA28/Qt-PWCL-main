@@ -207,13 +207,13 @@ bool positionFlag = false; // set to 1 for the position form of the PID law, to 
 #define numVars 13
 #define bufferSize 300
 
-class VARIABLES
+class COM
 {
 private:
     float arr[numVars];
 public:
     char buffer[bufferSize];
-    VARIABLES(){}
+    COM(){}
     void printCurrentValues();
     bool prepare_output();
     bool deserialize_array();
@@ -223,7 +223,7 @@ public:
     void printStream(char* errMsg);
     void printStream(float value);
 };
-VARIABLES vars;
+COM com;
 
 
 void checkInput();
@@ -417,25 +417,25 @@ void loop(void)
   }
 
   /* place current values in the output array */
-  vars.set(i_autoMode, autoEnabled);
-  if(!autoEnabled){ vars.set(i_setPoint, temperature); }  // if its in manual mode it will sent the current temp in place of the setpoin)t
-  else { vars.set(i_setPoint, TsetPoint); }
-  vars.set(i_percentOn, percentRelayOn);
-  vars.set(i_kc, Kc);
-  vars.set(i_tauI, tauI);
-  vars.set(i_tauD, tauD);
-  vars.set(i_tauF, tauF);
-  vars.set(i_fanSpeed, fanSpeed);
-  vars.set(i_temperature, temperature);
-  vars.set(i_tempFiltered, tempFiltered);
-  vars.set(i_time, millis() /60000.0);
-  vars.set(i_filterAll, filterAll);
-  vars.set(i_positionForm, positionFlag);
-  vars.set(i_pOnNominal, percentRelayOnNominal);
+  com.set(i_autoMode, autoEnabled);
+  if(!autoEnabled){ com.set(i_setPoint, temperature); }  // if its in manual mode it will sent the current temp in place of the setpoin)t
+  else { com.set(i_setPoint, TsetPoint); }
+  com.set(i_percentOn, percentRelayOn);
+  com.set(i_kc, Kc);
+  com.set(i_tauI, tauI);
+  com.set(i_tauD, tauD);
+  com.set(i_tauF, tauF);
+  com.set(i_fanSpeed, fanSpeed);
+  com.set(i_temperature, temperature);
+  com.set(i_tempFiltered, tempFiltered);
+  com.set(i_time, millis() /60000.0);
+  com.set(i_filterAll, filterAll);
+  com.set(i_positionForm, positionFlag);
+  com.set(i_pOnNominal, percentRelayOnNominal);
 
   /* fill the ouput char buffer with the contents of the output array */
-  vars.prepare_output();
-  Serial.println(vars.buffer); // send the output buffer to the port
+  com.prepare_output();
+  Serial.println(com.buffer); // send the output buffer to the port
   while (millis() < tLoopStart + stepSize) {
     relayCare();
     check_input();
@@ -444,26 +444,26 @@ void loop(void)
   /*
   Here we will change any values that must be changed
   */
-  if ( autoEnabled == vars.get(i_autoMode) && autoEnabled){  // not changing mode
-    TsetPoint = vars.get(i_setPoint);   // only set the set point when we are NOT changing the mode
+  if ( autoEnabled == com.get(i_autoMode) && autoEnabled){  // not changing mode
+    TsetPoint = com.get(i_setPoint);   // only set the set point when we are NOT changing the mode
   }
-  else if ( autoEnabled == vars.get(i_autoMode)  && !autoEnabled ){   // not changing mode
-    percentRelayOn = vars.get(i_percentOn);    // only set the percent on when we are NOT chaning th mode
+  else if ( autoEnabled == com.get(i_autoMode)  && !autoEnabled ){   // not changing mode
+    percentRelayOn = com.get(i_percentOn);    // only set the percent on when we are NOT chaning th mode
   }
-  else if ( autoEnabled != vars.get(i_autoMode) && !autoEnabled) {   // transition from manual to automatic
+  else if ( autoEnabled != com.get(i_autoMode) && !autoEnabled) {   // transition from manual to automatic
     TsetPoint = temperature;
   }
-  autoEnabled = vars.get(i_autoMode);
+  autoEnabled = com.get(i_autoMode);
   if ( autoEnabled){  // if in automatic, set the tuning parameters
-    Kc                    = vars.get(i_kc);
-    tauI                  = vars.get(i_tauI);
-    tauD                  = vars.get(i_tauD);
-    tauF                  = vars.get(i_tauF);
-    filterAll             = vars.get(i_filterAll);
-    positionFlag          = vars.get(i_positionForm);
-    percentRelayOnNominal = vars.get(i_pOnNominal);
+    Kc                    = com.get(i_kc);
+    tauI                  = com.get(i_tauI);
+    tauD                  = com.get(i_tauD);
+    tauF                  = com.get(i_tauF);
+    filterAll             = com.get(i_filterAll);
+    positionFlag          = com.get(i_positionForm);
+    percentRelayOnNominal = com.get(i_pOnNominal);
   }
-  fanSpeed = vars.get(i_fanSpeed);
+  fanSpeed = com.get(i_fanSpeed);
   analogWrite(fetPin,(int) fanSpeed);
 
 }
@@ -485,9 +485,9 @@ void check_input()
         j +=1;
         continue;
       }
-      vars.buffer[i] = c; // place this character in the input buffer
+      com.buffer[i] = c; // place this character in the input buffer
       if (c == ']' || c == '\0' ) { // stop reading chracters if we have read the last bracket or a null charcter
-        vars.buffer[i+1] = '\0'; // this will null terminate the buffer
+        com.buffer[i+1] = '\0'; // this will null terminate the buffer
         break;
       }
       if (c == '!')
@@ -496,7 +496,7 @@ void check_input()
     }
     while (Serial.available())
       char _ = Serial.read(); // this throws aways any other character in the buffer after the first right bracket
-    vars.deserialize_array();
+    com.deserialize_array();
   }
 
 }

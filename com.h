@@ -15,7 +15,7 @@
 #define i_time         13 //  for input & output
 #define numVars 13
 
-class VARIABLES
+class COM
 {
 private:
     float arr[numVars];
@@ -23,7 +23,7 @@ public:
 
     char buffer[400];
     const int bufferSize = 400; //FIXME TODO: this is not good
-    VARIABLES(){}
+    COM(){}
     void printCurrentValues();
     bool prepare_output();
     bool fillStr(float value, char* output, unsigned int* i, unsigned short max);
