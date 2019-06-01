@@ -193,29 +193,42 @@ bool filterAll = false; // If not set only the derivative term is filtered
 bool autoEnabled = false;  // true when in automatic mode
 bool positionFlag = false; // set to 1 for the position form of the PID law, to 0 for the velocity form
 
-const unsigned int i_autoMode     = 0;  //  for input & output
-const unsigned int i_setPoint     = 1;  //  for input & output
-const unsigned int i_percentOn    = 2;  //  for input & output
-const unsigned int i_kc           = 3;  //  for input & output
-const unsigned int i_tauI         = 4;  //  for input & output
-const unsigned int i_tauD         = 5;  //  for input & output
-const unsigned int i_tauF         = 6;  //  for input & output
-const unsigned int i_fanSpeed     = 7;  //  for input & output
-const unsigned int i_filterAll    = 8;  //  for input & output
-const unsigned int i_positionForm = 9;  //  for input & output
-const unsigned int i_pOnNominal   = 10; //  for input & output
-const unsigned int i_temperature  = 11; // for output
-const unsigned int i_tempFiltered = 12; // for output
-const unsigned int i_time         = 13; // for output
-const unsigned int numInputs      = 11;
-const unsigned int numOutputs     = 14;
+#define i_autoMode     0 //  for input & output
+#define i_setPoint     1 //  for input & output
+#define i_percentOn    2 //  for input & output
+#define i_kc           3 //  for input & output
+#define i_tauI         4 //  for input & output
+#define i_tauD         5 //  for input & output
+#define i_tauF         6 //  for input & output
+#define i_fanSpeed     7 //  for input & output
+#define i_filterAll    8 //  for input & output
+#define i_positionForm 9 //  for input & output
+#define i_pOnNominal   10 //  for input & output
+#define i_temperature  11 //  for input & output
+#define i_tempFiltered 12 //  for input & output
+#define i_time         13 //  for input & output
+#define numVars 13
+#define bufferSize 100
 
-// Declare the input and output arrays with some default values, incase they are accessed before they are filled
-float inputs[numInputs]   ={float(autoEnabled), TsetPoint, percentRelayOn, Kc, tauI, tauD, tauF, fanSpeed, float(filterAll), float(positionFlag) , percentRelayOnNominal};
-float outputs[numOutputs] ={float(autoEnabled), TsetPoint, percentRelayOn, Kc, tauI, tauD, tauF, fanSpeed, float(filterAll), float(positionFlag), percentRelayOnNominal, temperature, temperature, 0 };
-void serialize_array(float input[], char * output); // declare the function so it can be placed under where it is used
-bool deserialize_array(const char * input, unsigned int output_size, float output[]); // declare the function so it can be placed under where it is used
-void check_input(); // declare the function so it can be placed under where it is used
+class VARIABLES
+{
+private:
+    float arr[numVars];
+public:
+    char buffer[bufferSize];
+    VARIABLES(){}
+    void printCurrentValues();
+    bool prepare_output();
+    bool fillStr(float value, char* output, unsigned int* i, unsigned short max);
+    bool deserialize_array ();
+    float get(int index);
+    void set(int index, float value);
+};
+
+VARIABLES vars;
+
+void checkInput();
+
 
 void setFanPwmFrequency(int pin, int divisor)
 {
@@ -405,174 +418,77 @@ void loop(void)
   }
 
   /* place current values in the output array */
-  outputs[i_autoMode] = autoEnabled;
-  if(!autoEnabled){ outputs[i_setPoint] = temperature; }  // if its in manual mode it will sent the current temp in place of the setpoint
-  else { outputs[i_setPoint]  = TsetPoint; }
-  outputs[i_percentOn] = percentRelayOn;
-  outputs[i_kc] = Kc;
-  outputs[i_tauI] = tauI;
-  outputs[i_tauD] = tauD;
-  outputs[i_tauF] = tauF;
-  outputs[i_fanSpeed] = fanSpeed;
-  outputs[i_temperature] = temperature;
-  outputs[i_tempFiltered] = tempFiltered;
-  outputs[i_time] = millis() /60000.0;
-  outputs[i_filterAll] = filterAll;
-  outputs[i_positionForm] = positionFlag;
-  outputs[i_pOnNominal] = percentRelayOnNominal;
+  vars.set(i_autoMode, autoEnabled);
+  if(!autoEnabled){ vars.set(i_setPoint, temperature); }  // if its in manual mode it will sent the current temp in place of the setpoin)t
+  else { vars.set(i_setPoint, TsetPoint); }
+  vars.set(i_percentOn, percentRelayOn);
+  vars.set(i_kc, Kc);
+  vars.set(i_tauI, tauI);
+  vars.set(i_tauD, tauD);
+  vars.set(i_tauF, tauF);
+  vars.set(i_fanSpeed, fanSpeed);
+  vars.set(i_temperature, temperature);
+  vars.set(i_tempFiltered, tempFiltered);
+  vars.set(i_time, millis() /60000.0);
+  vars.set(i_filterAll, filterAll);
+  vars.set(i_positionForm, positionFlag);
+  vars.set(i_pOnNominal, percentRelayOnNominal);
   /* fill the ouput char buffer with the contents of the output array */
-  serialize_array(outputs, outputbuffer);
-  Serial.println(outputbuffer); // send the output buffer to the port
+  vars.prepare_output();
+  Serial.println(vars.buffer); // send the output buffer to the port
 
   while (millis() < tLoopStart + stepSize) {
     relayCare();
-    check_input(); // we should constantly check for potential input from user (so parameters can change faster )
+    checkInput(); // we should constantly check for potential input from user (so parameters can change faster )
   }
 
   /*
   Here we will change any values that must be changed
   */
-  if ( autoEnabled == inputs[i_autoMode] && autoEnabled){  // not changing mode
-    TsetPoint = inputs[i_setPoint];   // only set the set point when we are NOT changing the mode
+  if ( autoEnabled == vars.get(i_autoMode) && autoEnabled){  // not changing mode
+    TsetPoint = vars.get(i_setPoint);   // only set the set point when we are NOT changing the mode
   }
-  else if ( autoEnabled == inputs[i_autoMode] && !autoEnabled ){   // not changing mode
-    percentRelayOn = inputs[i_percentOn];    // only set the percent on when we are NOT chaning th mode
+  else if ( autoEnabled == vars.get(i_autoMode)  && !autoEnabled ){   // not changing mode
+    percentRelayOn = vars.get(i_percentOn);    // only set the percent on when we are NOT chaning th mode
   }
-  else if ( autoEnabled != inputs[i_autoMode] && !autoEnabled) {   // transition from manual to automatic
+  else if ( autoEnabled != vars.get(i_autoMode) && !autoEnabled) {   // transition from manual to automatic
     TsetPoint = temperature;
   }
-  autoEnabled = inputs[i_autoMode];
+  autoEnabled = vars.get(i_autoMode);
   if ( autoEnabled){  // if in automatic, set the tuning parameters
-    Kc                    = inputs[i_kc];
-    tauI                  = inputs[i_tauI];
-    tauD                  = inputs[i_tauD];
-    tauF                  = inputs[i_tauF];
-    filterAll             = inputs[i_filterAll];
-    positionFlag          = inputs[i_positionForm];
-    percentRelayOnNominal = inputs[i_pOnNominal];
+    Kc                    = vars.get(i_kc);
+    tauI                  = vars.get(i_tauI);
+    tauD                  = vars.get(i_tauD);
+    tauF                  = vars.get(i_tauF);
+    filterAll             = vars.get(i_filterAll);
+    positionFlag          = vars.get(i_positionForm);
+    percentRelayOnNominal = vars.get(i_pOnNominal);
   }
-  fanSpeed = inputs[i_fanSpeed];
+  fanSpeed = vars.get(i_fanSpeed);
   analogWrite(fetPin,(int) fanSpeed);
 
 }
 
-/**
-  Fills <output> with a string representation of the <input[]> array.
-*/
-void serialize_array(float input[], char * output)
+
+/* Check for input from the port */
+void checkInput()
 {
-  char tmp[15];
-  unsigned int index = 0;
-  unsigned int tmp_size;
-  memcpy(& output[index], "[", 1);
-  index++;
-  for (unsigned int i = 0; i < numOutputs - 1; i++)
-  {
-    dtostrf(input[i], 0, 4, tmp); // (val, minimum width, precision , str)
-    tmp_size = strlen(tmp);
-    memcpy(& output[index], tmp, tmp_size);
-    index += tmp_size;
-    const char * comma  = ",";
-    memcpy(& output[index], comma, 1);
-    index += 1;
-  }
-  dtostrf(input[numOutputs - 1], 0, 4, tmp);
-  tmp_size = strlen(tmp);
-  memcpy(& output[index], tmp, tmp_size);
-  index += tmp_size;
-  memcpy(& output[index], "]", 1);
-  index += 1;
-  const char * null  = "\0";
-  memcpy(& output[index], null, 1);
-}
-
-
-
-
-/**
-Transforms the <input> string to a float array <output> of known <output_size>
-*/
-bool deserialize_array(const char* const input, unsigned int output_size,  float output[] )
-{
-        /*
-    Ensure that the input string has the correct format and number of numbers to be parsed
-    */
-    const char*  p = input;
-    unsigned int num_commas     = 0;
-    unsigned int num_brackets   = 0;
-    unsigned int num_values     = 0;
-
-    while (*p)
-    {
-      if (*p == '[') { num_brackets++;
-      } else if ( *p == ']' ) {num_brackets++; num_values++;
-      } else if ( *p == ',' ) {num_commas++; num_values++;
-      } p++;
-    }
-    if (num_brackets != 2) {
-        Serial.print("(A) Parse error, not valid array\n");
-        return false;
-    }
-    if (num_values != output_size) {
-        Serial.print("(A) Parse error, input size incorrect\n");
-        return false;
-    }
-
-
-   char* pEnd;
-   p = input + 1;
-   for ( unsigned int i = 0; i < output_size; i ++ )
-   {
-
-        bool is_a_number = false;
-        const char* nc = p; // nc will point to the next comma or the closing bracket
-        while(*nc != ',' && *nc != ']' && *nc)
-        {
-          if ( (int)*nc >= 48 && (int)*nc <= 57 )
-            is_a_number = true;
-          nc++;
-        }
-        if ( is_a_number ) {
-         output[i] = strtod(p, &pEnd); // strtof can returns nan when parsing nans,
-         // strod returns 0 when parsing nans
-         p = pEnd;
-        }
-        while (*p != ',' && *p != ']' && *p)
-          p++;
-        p++;
-   }
-   p = input;
-   return true;
-}
-
-
-
-/**
-  Checks the port for any incoming data. If new data has arrived, it will be used to set the current values.
-*/
-void check_input()
-{
-  // checks for input from the port and potentially changes parameters
-  /*  I dont use the serial.readString becuse it will read ANY size input
-  presenting the possibiliity of a buffer overflow. this will read up to a closing bracket
-  or until the input buffer is at max capacity.
-  */
+  /** Arduino **/
   if (Serial.available()) {
-    for (unsigned int i = 0; i < bufferSize - 1; i ++)
-    {
+    for (unsigned int i = 0; i < bufferSize - 1; i ++) {
       char c = Serial.read();
-      inputbuffer[i] = c; // place this character in the input buffer
+      if (c==-1) break; // If serial.read has no data to read
+      vars.buffer[i] = c; // place this character in the input buffer
       if (c == ']' || c == '\0' ) { // stop reading chracters if we have read the last bracket or a null charcter
-        inputbuffer[i+1] = '\0'; // this will null terminate the inputbuffer
+        vars.buffer[i+1] = '\0'; // this will null terminate the inputbuffer
         break;
       }
       if (c == '!')
-        shutdown();
+        // shutdown();
       delay(10);
     }
     while (Serial.available())
       char _ = Serial.read(); // this throws aways any other character in the buffer after the first right bracket
-    deserialize_array(inputbuffer, numInputs, inputs);
+    vars.deserialize_array();
   }
-
 }
