@@ -20,7 +20,9 @@ class VARIABLES
 private:
     float arr[numVars];
 public:
+
     char buffer[400];
+    const int bufferSize = 400; //FIXME TODO: this is not good
     VARIABLES(){}
     void printCurrentValues();
     bool prepare_output();
