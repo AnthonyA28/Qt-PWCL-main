@@ -13,8 +13,8 @@ void VARIABLES::printCurrentValues()
 {
   /** Arduino **/
   for (int i = 0; i < numVars; i ++ ) {
-    Serial.print("\t");
-    Serial.println(arr[i]);
+    // Serial.print("\t");
+    // Serial.println(arr[i]);
   }
 }
 
@@ -115,9 +115,9 @@ bool VARIABLES::deserialize_array ()
    for ( unsigned int i = 0; i < numVars; i ++ ) {
       bool isNum = false;  // if the string is a number
       const char* nc = p; // nc will point to the next comma or the closing bracket
-      Serial.print(*p);
-      Serial.print(*(p+1));
-      Serial.println(*(p+2));
+      // Serial.print(*p);
+      // Serial.print(*(p+1));
+      // Serial.println(*(p+2));
       /* Handle NANS */
       if ( (*p == 'N' && *(p+1) == 'A' && *(p+2) == 'N')
         || (*p == 'n' && *(p+1) == 'a' && *(p+2) == 'n') ) {
