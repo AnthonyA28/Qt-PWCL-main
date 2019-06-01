@@ -23,17 +23,17 @@ FILE *pFile= fopen(".log", "w");
 
 void myMessageOutput(QtMsgType type, const QMessageLogContext &context, const QString &msg)
 {
-    Q_UNUSED( type ) Q_UNUSED( context ) // to ignore the unused parameter warning
+//    Q_UNUSED( type ) Q_UNUSED( context ) // to ignore the unused parameter warning
 
-    QByteArray localMsg = msg.toLocal8Bit();
-    fprintf(pFile, "%s", localMsg.constData());
-    fflush(pFile);
+//    QByteArray localMsg = msg.toLocal8Bit();
+//    fprintf(pFile, "%s", localMsg.constData());
+//    fflush(pFile);
 
 }
 
 int main(int argc, char *argv[])
 {
-    qInstallMessageHandler(myMessageOutput); // Install the handler
+//    qInstallMessageHandler(myMessageOutput); // Install the handler
 
     QApplication::setAttribute(Qt::AA_EnableHighDpiScaling);
 

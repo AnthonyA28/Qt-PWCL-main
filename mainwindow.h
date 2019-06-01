@@ -31,7 +31,7 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 using namespace QXlsx;
 
 #include "port.h"
-
+#include "com.h"
 
 namespace Ui {
 class MainWindow;
@@ -61,6 +61,8 @@ private slots:
     void on_actionExport_Excel_File_triggered();
 
 private:
+    VARIABLES vars;
+
 
     Ui::MainWindow *ui;
 
@@ -76,25 +78,6 @@ private:
     QMediaPlayer* player;
 
     bool deserializeArray(const char* const input, unsigned int output_size, std::vector<float>& output);
-    std::vector<float> inputs;  // Holds values read from the port ordered below
-    /*
-    * Assign the index in which these values will exist in the 'inputs' and 'outputs' arrays
-    */
-    const unsigned int i_autoMode      = 0;       // for input & output
-    const unsigned int i_setPoint      = 1;       // for input & output
-    const unsigned int i_percentOn     = 2;       // for input & output
-    const unsigned int i_kc            = 3;       // for input & output
-    const unsigned int i_tauI          = 4;       // for input & output
-    const unsigned int i_tauD          = 5;       // for input & output
-    const unsigned int i_tauF          = 6;       // for input & output
-    const unsigned int i_fanSpeed      = 7;       // for input & output
-    const unsigned int i_filterAll     = 8;       // for input & output
-    const unsigned int i_positionForm  = 9;       // for input & output
-    const unsigned int i_pOnNominal    = 10;      // for input & output
-    const unsigned int i_temperature   = 11;      // for input
-    const unsigned int i_tempFiltered  = 12;      // for input
-    const unsigned int i_time          = 13;      // for input
-    const unsigned int numInputs       = 14;
     float Tmax = 60; // maximum safe temperature
 
     float nominalPercentOn = 0;

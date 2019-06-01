@@ -36,8 +36,6 @@ MainWindow::MainWindow(QWidget *parent) :
     this->timerId = startTimer(250);  // timer is used to repeatedly check for port data until we are connected
     // indicates when we are connected to the port AND the correct arduino program is being run
     this->validConnection = false;
-    // initialize the input vector to hold the input values from the port
-    this->inputs = std::vector<float>(this->numInputs); // initialize the input vector to hold the input values from the port
     // have the table resize with the window
     ui->outputTable->horizontalHeader()->setSectionResizeMode(QHeaderView::Stretch);   // have the table resize with the window
     // deafault the tab widget on manual, and disable any input (until we are connected)
@@ -162,7 +160,12 @@ void MainWindow::showRequest(const QString &req)
         return;
     }
 
-    if (this->deserializeArray(req.toStdString().c_str(), this->numInputs, this->inputs)) {
+    QByteArray ba = req.toStdString().c_str();
+    for ( int i = 0; i < 300; i ++ ) {
+        vars.buffer[i] = ba[i];
+    }
+    if(vars.deserialize_array()) {
+//    if (this->deserializeArray(req.toStdString().c_str(), this->numInputs, this->inputs)) {
 
         if (!this->validConnection) {
             this->validConnection = true;  // String was parsed therefore the correct arduino program is uploaded
@@ -187,20 +190,20 @@ void MainWindow::showRequest(const QString &req)
 
         }
 
-        double time       = static_cast<double>(inputs[i_time]);
-        double percentOn  = static_cast<double>(inputs[i_percentOn]);
-        double temp       = static_cast<double>(inputs[i_temperature]);
-        double tempFilt   = static_cast<double>(inputs[i_tempFiltered]);
-        double setPoint   = static_cast<double>(inputs[i_setPoint]);
-        double fanSpeed   = static_cast<double>(inputs[i_fanSpeed]);
-        double kc         = static_cast<double>(inputs[i_kc]);
-        double tauI       = static_cast<double>(inputs[i_tauI]);
-        double tauD       = static_cast<double>(inputs[i_tauD]);
-        double tauF       = static_cast<double>(inputs[i_tauF]);
-        bool inAutoMode   = static_cast<bool>(inputs[i_autoMode]);  // true if we are in automatic mode
-        bool positionForm = static_cast<bool>(inputs[i_positionForm]);
-        bool filterAll    = static_cast<bool>(inputs[i_filterAll]);
-        this->nominalPercentOn = inputs[i_pOnNominal];
+        double time       = static_cast<double>(vars.get(i_time));
+        double percentOn  = static_cast<double>(vars.get(i_percentOn));
+        double temp       = static_cast<double>(vars.get(i_temperature));
+        double tempFilt   = static_cast<double>(vars.get(i_tempFiltered));
+        double setPoint   = static_cast<double>(vars.get(i_setPoint));
+        double fanSpeed   = static_cast<double>(vars.get(i_fanSpeed));
+        double kc         = static_cast<double>(vars.get(i_kc));
+        double tauI       = static_cast<double>(vars.get(i_tauI));
+        double tauD       = static_cast<double>(vars.get(i_tauD));
+        double tauF       = static_cast<double>(vars.get(i_tauF));
+        bool inAutoMode   = static_cast<bool>(vars.get(i_autoMode));  // true if we are in automatic mode
+        bool positionForm = static_cast<bool>(vars.get(i_positionForm));
+        bool filterAll    = static_cast<bool>(vars.get(i_filterAll));
+        this->nominalPercentOn = vars.get(i_pOnNominal);
 
         /*
         *  Update the output table with the last parameters read from the port.
@@ -313,7 +316,7 @@ void MainWindow::on_setButton_clicked()
                     msgBox.setText(name + " is not valid" );
                     msgBox.exec();
                     textBox->clear();
-                    response.append("_");
+                    response.append("");
                     return;
                 } else {
                     // ensure the value is within range
@@ -322,7 +325,7 @@ void MainWindow::on_setButton_clicked()
                         msgBox.setText(name + " of " + QString::number(static_cast<double>(val)) + " is over the maximum of " + QString::number(static_cast<double>(max)) );
                         msgBox.exec();
                         textBox->clear();
-                        response.append("_");
+                        response.append("");
                         return;
                     }
                     if  ( min != NAN && val < min ){  // min is NAN if it is unconstrained
@@ -330,7 +333,7 @@ void MainWindow::on_setButton_clicked()
                         msgBox.setText(name + " of " + QString::number(static_cast<double>(val)) + " is below the minimum of " + QString::number(static_cast<double>(min)) );
                         msgBox.exec();
                         textBox->clear();
-                        response.append("_");
+                        response.append("");
                         return;
                     }
                     response.append(valStr);
@@ -353,7 +356,7 @@ void MainWindow::on_setButton_clicked()
         if (autoMode) {
             response.append( "1," ); // automatic mode
             fillArrayAtNextIndex("Set Point ", ui->setPointTextBox, 10, this->Tmax); response.append(","); // maximum safe temperature is Tmax;
-            response.append("_,");  // percent on
+            response.append("3,");  // percent on
             fillArrayAtNextIndex("Kc", ui->kcTextBox); response.append(",");
             fillArrayAtNextIndex("TauI", ui->tauiTextBox, 0); response.append(",");
             fillArrayAtNextIndex("tauD", ui->taudTextBox, 0); response.append(",");
@@ -361,12 +364,12 @@ void MainWindow::on_setButton_clicked()
             fillArrayAtNextIndex("Fan Speed", ui->A_fanSpeedTextBox, 0, 255); response.append(",");
         } else {
             response.append("0,");  //manual mode
-            response.append("_,");  //setpoint
+            response.append("3,");  //setpoint
             fillArrayAtNextIndex("Percent Heater On", ui->percentOntTextBox, 0, 100); response.append(",");
-            response.append("_,");  // kc
-            response.append("_,");  // taui
-            response.append("_,");  //taud
-            response.append("_,");  //tauf
+            response.append(",");  // kc
+            response.append(",");  // taui
+            response.append(",");  //taud
+            response.append(",");  //tauf
             fillArrayAtNextIndex("Fan Speed", ui->M_fanSpeedTextBox, 0, 255); response.append(",");
         }
 
@@ -375,8 +378,9 @@ void MainWindow::on_setButton_clicked()
         response.append( ui->filterAllCheckBox->isChecked() ? "1," : "0," );
         response.append( ui->posFormCheckBox->isChecked()   ? "1," : "0," );
         response.append( QString::number(static_cast<double>(this->nominalPercentOn)));
-        response.append("]");
-
+        response.append(",");
+        response.append(",,]");
+        qDebug() << "Sending " << response << " to port \n";
         emit this->response(response);
     }
     else{
@@ -437,62 +441,7 @@ void MainWindow::on_portComboBox_activated(int index)
 
 
 
-/**
-*   Called after new data is recieved from the port to parse the string recieved.
-*   fills 'output' of five 'output_size' with the vlues in 'input' string.
-*/
-bool MainWindow::deserializeArray(const char* const input, unsigned int output_size,  std::vector<float> &output)
-{
-    /*
-    Ensure that the input string has the correct format and number of numbers to be parsed
-    */
-    const char*  p = input;
-    unsigned int num_commas     = 0;
-    unsigned int num_brackets   = 0;
-    unsigned int num_values     = 0;
 
-    while (*p)
-    {
-      if (*p == '[') { num_brackets++;
-      } else if ( *p == ']' ) {num_brackets++; num_values++;
-      } else if ( *p == ',' ) {num_commas++; num_values++;
-      } p++;
-    }
-    if (num_brackets != 2) {
-        qDebug() << "(M) Parse error, not valid array\n";
-        return false;
-    }
-    if (num_values != output_size) {
-        qDebug() << "(M) Parse error, input size incorrect\n";
-        return false;
-    }
-
-
-    char* pEnd;
-    p = input + 1;
-    for ( unsigned int i = 0; i < output_size; i ++ )
-    {
-
-        bool is_a_number = false;
-        const char* nc = p; // nc will point to the next comma or the closing bracket
-        while(*nc != ',' && *nc != ']' && *nc)
-        {
-            if ( (int)*nc >= 48 && (int)*nc <= 57 )
-                is_a_number = true;
-            nc++;
-        }
-        float num_ = output[i] = strtof(p, &pEnd); // strtof can returns nan when parsing nans,
-           // strod returns 0 when parsing nans
-        p = pEnd;
-        if ( is_a_number || num_ == NAN)
-            output[i] = num_;
-        while (*p != ',' && *p != ']' && *p)
-            p++;
-        p++;
-   }
-   p = input;
-   return true;
-}
 
 /**
 *   Called when a the mode tabs are changed,
@@ -505,12 +454,12 @@ void MainWindow::on_tabWidget_currentChanged(int index)
     bool autoModeTab = ( index == 1 );  // tab index 1 is the automatic tab
     if (autoModeTab){ // changed from manual to automatic
 
-        double temp       = static_cast<double>(inputs[i_temperature]);
-        double fanSpeed   = static_cast<double>(inputs[i_fanSpeed]);
-        double kc         = static_cast<double>(inputs[i_kc]);
-        double tauI       = static_cast<double>(inputs[i_tauI]);
-        double tauD       = static_cast<double>(inputs[i_tauD]);
-        double tauF       = static_cast<double>(inputs[i_tauF]);
+        double temp       = static_cast<double>(vars.get(i_temperature));
+        double fanSpeed   = static_cast<double>(vars.get(i_fanSpeed));
+        double kc         = static_cast<double>(vars.get(i_kc));
+        double tauI       = static_cast<double>(vars.get(i_tauI));
+        double tauD       = static_cast<double>(vars.get(i_tauD));
+        double tauF       = static_cast<double>(vars.get(i_tauF));
 
         // Fill the automatic textboxes with the last recorded parameters
         ui->kcTextBox->setText(QString::number(kc, 'f', 3));
@@ -520,8 +469,8 @@ void MainWindow::on_tabWidget_currentChanged(int index)
         ui->setPointTextBox->setText(QString::number(temp, 'f', 2));
         ui->A_fanSpeedTextBox->setText(QString::number(fanSpeed, 'f', 1));
     } else {  // changed to the manual tab
-        double percentOn  = static_cast<double>(inputs[i_percentOn]);
-        double fanSpeed   = static_cast<double>(inputs[i_fanSpeed]);
+        double percentOn  = static_cast<double>(vars.get(i_percentOn));
+        double fanSpeed   = static_cast<double>(vars.get(i_fanSpeed));
         // Fill the manual textboxes with the last recorded parameters
         ui->percentOntTextBox->setText(QString::number(percentOn, 'f', 1));
         ui->M_fanSpeedTextBox->setText(QString::number(fanSpeed, 'f', 1));
