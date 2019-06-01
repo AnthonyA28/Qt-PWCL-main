@@ -1,28 +1,27 @@
-
-#define i_autoMode     0 //  for input & output
-#define i_setPoint     1 //  for input & output
-#define i_percentOn    2 //  for input & output
-#define i_kc           3 //  for input & output
-#define i_tauI         4 //  for input & output
-#define i_tauD         5 //  for input & output
-#define i_tauF         6 //  for input & output
-#define i_fanSpeed     7 //  for input & output
-#define i_filterAll    8 //  for input & output
-#define i_positionForm 9 //  for input & output
-#define i_pOnNominal   10 //  for input & output
-#define i_temperature  11 //  for input & output
-#define i_tempFiltered 12 //  for input & output
-#define i_time         13 //  for input & output
-#define numVars 13
+#define i_autoMode     0
+#define i_setPoint     1
+#define i_percentOn    2
+#define i_kc           3
+#define i_tauI         4
+#define i_tauD         5
+#define i_tauF         6
+#define i_fanSpeed     7
+#define i_filterAll    8
+#define i_positionForm 9
+#define i_pOnNominal   10
+#define i_temperature  11
+#define i_tempFiltered 12
+#define i_time         13
+#define NUMVARS 14
+#define BUFFERSIZE 400
 
 class COM
 {
 private:
-    float arr[numVars];
+    float arr[NUMVARS];
 public:
 
-    char buffer[400];
-    const int bufferSize = 400; //FIXME TODO: this is not good
+    char buffer[BUFFERSIZE];
     COM(){}
     void printCurrentValues();
     bool prepare_output();
@@ -31,4 +30,3 @@ public:
     float get(int index);
     void set(int index, float value);
 };
-

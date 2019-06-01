@@ -379,7 +379,7 @@ void MainWindow::on_setButton_clicked()
         response.append( ui->posFormCheckBox->isChecked()   ? "1," : "0," );
         response.append( QString::number(static_cast<double>(this->nominalPercentOn)));
         response.append(",");
-        response.append(",,]");
+        response.append(",,,]");
         qDebug() << "Sending " << response << " to port \n";
         emit this->response(response);
     }

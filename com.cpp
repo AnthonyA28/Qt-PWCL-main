@@ -26,7 +26,7 @@ float COM::get(int index)
 
 void COM::printCurrentValues()
 {
-  for (int i = 0; i < numVars; i ++ ) {
+  for (int i = 0; i < NUMVARS; i ++ ) {
     PRINT_SOURCE;
     PRINT_MESSAGE("\t");
     PRINT_MESSAGE(arr[i]);
@@ -73,10 +73,10 @@ bool COM::prepare_output()
     unsigned int bufIndex = 1;
     bool success = true;
     this->buffer[0] = '[';
-    for ( int i = 0; i < numVars && success; i ++ ) {
-      success = this->fillStr(this->arr[i], this->buffer, &bufIndex, bufferSize);
+    for ( int i = 0; i < NUMVARS && success; i ++ ) {
+      success = this->fillStr(this->arr[i], this->buffer, &bufIndex, BUFFERSIZE);
     }
-    if (success && bufIndex < bufferSize - 2) {
+    if (success && bufIndex < BUFFERSIZE - 2) {
         this->buffer[bufIndex] = ']';
         this->buffer[bufIndex+1] = '\0';
     }
@@ -116,7 +116,7 @@ bool COM::deserialize_array ()
         PRINT_MESSAGE("\n");
         return false;
     }
-    if (numV != numVars) {
+    if (numV != NUMVARS) {
         PRINT_SOURCE;
         PRINT_MESSAGE("Parse error, incorrect array size.. Message: \n");
         PRINT_MESSAGE(this->buffer);
@@ -126,7 +126,7 @@ bool COM::deserialize_array ()
 
    char* pEnd;
    p = this->buffer + 1;
-   for ( unsigned int i = 0; i < numVars; i ++ ) {
+   for ( unsigned int i = 0; i < NUMVARS; i ++ ) {
       bool isNum = false;  // if the string is a number
       const char* nc = p; // nc will point to the next comma or the closing bracket
       /* Handle NANS */

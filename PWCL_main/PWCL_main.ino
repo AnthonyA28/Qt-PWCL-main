@@ -190,6 +190,7 @@ bool filterAll = false; // If not set only the derivative term is filtered
 bool autoEnabled = false;  // true when in automatic mode
 bool positionFlag = false; // set to 1 for the position form of the PID law, to 0 for the velocity form
 
+/******shared between C++ code */
 #define i_autoMode     0
 #define i_setPoint     1
 #define i_percentOn    2
@@ -204,30 +205,58 @@ bool positionFlag = false; // set to 1 for the position form of the PID law, to 
 #define i_temperature  11
 #define i_tempFiltered 12
 #define i_time         13
-#define numVars 13
-#define bufferSize 300
+#define NUMVARS 14
+#define BUFFERSIZE 400
 
 class COM
 {
 private:
-    float arr[numVars];
+    float arr[NUMVARS];
 public:
-    char buffer[bufferSize];
+
+    char buffer[BUFFERSIZE];
     COM(){}
     void printCurrentValues();
     bool prepare_output();
-    bool deserialize_array();
     bool fillStr(float value, char* output, unsigned int* i, unsigned short max);
+    bool deserialize_array ();
     float get(int index);
     void set(int index, float value);
-    void printStream(char* errMsg);
-    void printStream(float value);
 };
+/**********/
 COM com;
 
 
-void checkInput();
-
+void check_input()
+{
+  // checks for input from the port and potentially changes parameters
+  /*  I dont use the serial.readString becuse it will read ANY size input
+  presenting the possibiliity of a buffer overflow. this will read up to a closing bracket
+  or until the input buffer is at max capacity.
+  */
+  if (Serial.available()) {
+    int j = 0;
+    for (unsigned int i = 0; i < BUFFERSIZE - 1 && j < 500; i ++) {
+      char c = Serial.read();
+      if ( c == -1){
+        i -=1;
+        j +=1;
+        continue;
+      }
+      com.buffer[i] = c; // place this character in the input buffer
+      if (c == ']' || c == '\0' ) { // stop reading chracters if we have read the last bracket or a null charcter
+        com.buffer[i+1] = '\0'; // this will null terminate the buffer
+        break;
+      }
+      if (c == '!')
+        shutdown();
+      delay(10);
+    }
+    while (Serial.available())
+      char _ = Serial.read(); // this throws aways any other character in the buffer after the first right bracket
+    com.deserialize_array();
+  }
+}
 
 void setFanPwmFrequency(int pin, int divisor)
 {
@@ -465,38 +494,5 @@ void loop(void)
   }
   fanSpeed = com.get(i_fanSpeed);
   analogWrite(fetPin,(int) fanSpeed);
-
-}
-
-
-void check_input()
-{
-  // checks for input from the port and potentially changes parameters
-  /*  I dont use the serial.readString becuse it will read ANY size input
-  presenting the possibiliity of a buffer overflow. this will read up to a closing bracket
-  or until the input buffer is at max capacity.
-  */
-  if (Serial.available()) {
-    int j = 0;
-    for (unsigned int i = 0; i < bufferSize - 1 && j < 500; i ++) {
-      char c = Serial.read();
-      if ( c == -1){
-        i -=1;
-        j +=1;
-        continue;
-      }
-      com.buffer[i] = c; // place this character in the input buffer
-      if (c == ']' || c == '\0' ) { // stop reading chracters if we have read the last bracket or a null charcter
-        com.buffer[i+1] = '\0'; // this will null terminate the buffer
-        break;
-      }
-      if (c == '!')
-        shutdown();
-      delay(10);
-    }
-    while (Serial.available())
-      char _ = Serial.read(); // this throws aways any other character in the buffer after the first right bracket
-    com.deserialize_array();
-  }
 
 }
