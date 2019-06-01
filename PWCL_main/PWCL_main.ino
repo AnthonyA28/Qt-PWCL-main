@@ -208,7 +208,7 @@ bool positionFlag = false; // set to 1 for the position form of the PID law, to 
 #define i_tempFiltered 12 //  for input & output
 #define i_time         13 //  for input & output
 #define numVars 13
-#define bufferSize 100
+#define bufferSize 500
 
 class VARIABLES
 {
@@ -440,6 +440,7 @@ void loop(void)
   while (millis() < tLoopStart + stepSize) {
     relayCare();
     checkInput(); // we should constantly check for potential input from user (so parameters can change faster )
+    delay(100);
   }
 
   /*

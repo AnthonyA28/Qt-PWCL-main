@@ -23,8 +23,8 @@ void VARIABLES::printCurrentValues()
 */
 bool VARIABLES::fillStr(float value, char* output, unsigned int* i, unsigned short max)
 {
-  Serial.println( "filling  float");
-  Serial.println( value );
+  // Serial.println( "filling  float");
+  // Serial.println( value );
   int whole = value;
   unsigned int decimals = ((value - (float)whole)) * 10000; // TODO: FIXME keep getting some kind of overflow if the precision is larger #p3
 
@@ -86,6 +86,8 @@ bool VARIABLES::prepare_output()
 bool VARIABLES::deserialize_array ()
 {
   const char* const input = this->buffer;
+    Serial.print("deserializing:");
+    Serial.print(this->buffer);
     /* Ensure that the input string has the correct format and number of numbers to be parsed*/
     const char*  p = input;
     unsigned int numB   = 0;   // number of brackets
