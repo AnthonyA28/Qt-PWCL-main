@@ -1098,6 +1098,26 @@ Point [°C]</string>
             </property>
            </widget>
           </item>
+          <item>
+           <widget class="QCheckBox" name="auto_fit_CheckBox">
+            <property name="text">
+             <string>Auto-fit</string>
+            </property>
+            <property name="checked">
+             <bool>true</bool>
+            </property>
+           </widget>
+          </item>
+          <item>
+           <widget class="QCheckBox" name="zoom_xaxis_checkBox">
+            <property name="text">
+             <string>Zoom-x</string>
+            </property>
+            <property name="checked">
+             <bool>true</bool>
+            </property>
+           </widget>
+          </item>
          </layout>
         </item>
        </layout>

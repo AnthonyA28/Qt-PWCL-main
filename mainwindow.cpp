@@ -117,6 +117,10 @@ MainWindow::MainWindow(QWidget *parent) :
 
     // we dont want a legend
     ui->plot->legend->setVisible(false);
+    QCPAxisRect *ar = ui->plot->axisRect(0); // get the default range axis and tell it to zoom and drag relative to right side yaxis
+    ar->setRangeDragAxes(ui->plot->xAxis, ui->plot->yAxis2);
+    ar->setRangeZoomAxes(ui->plot->xAxis, ui->plot->yAxis2);
+
 
 }
 
@@ -165,7 +169,6 @@ void MainWindow::showRequest(const QString &req)
         com.buffer[i] = ba[i];
     }
     if(com.deserialize_array()) {
-//    if (this->deserializeArray(req.toStdString().c_str(), this->numInputs, this->inputs)) {
 
         if (!this->validConnection) {
             this->validConnection = true;  // String was parsed therefore the correct arduino program is uploaded
@@ -277,7 +280,8 @@ void MainWindow::showRequest(const QString &req)
         ui->plot->graph(1)->addData(time, tempFilt);
         if( inAutoMode ) ui->plot->graph(0)->addData(time, setPoint);
         ui->plot->replot( QCustomPlot::rpQueuedReplot );
-        ui->plot->rescaleAxes(); // should be in a button or somethng
+        if (ui->auto_fit_CheckBox->isChecked())
+            ui->plot->rescaleAxes(); // should be in a button or somethng
 
     }
     else{
@@ -565,5 +569,36 @@ void MainWindow::on_actionExport_Excel_File_triggered()
 
     if(!this->excelFileName.isNull()) {    // The user chose a valid filname
         this->xldoc.saveAs(this->excelFileName);
+    }
+}
+
+/**
+ * @brief MainWindow::on_auto_fit_CheckBox_stateChanged
+ * Called when the user clicked the auto-fit checkbox, changes the default settings of the graph to fit the data.
+ * @param arg1
+ * arg1 == true == 1 when checked
+ */
+void MainWindow::on_auto_fit_CheckBox_stateChanged(int arg1)
+{
+    ui->plot->setInteraction(QCP::iRangeDrag, !arg1);
+    ui->plot->setInteraction(QCP::iRangeZoom, !arg1);
+}
+
+/**
+ * @brief MainWindow::on_zoom_xaxis_checkBox_stateChanged
+ * Called when the user clicks the zoom-x checkbox, changes behavior of zooming into the x-axis
+ * @param arg1
+ * arg1 == true ==1 when checked
+ */
+void MainWindow::on_zoom_xaxis_checkBox_stateChanged(int arg1)
+{
+
+    QCPAxisRect *ar = ui->plot->axisRect(0); // get the default range axis and tell it to zoom and drag relative to right side yaxis
+    if (arg1) {
+//// *dont care about dragging  ..      ar->setRangeDragAxes(ui->plot->xAxis, ui->plot->yAxis2);
+        ar->setRangeZoomAxes(ui->plot->xAxis, ui->plot->yAxis2);
+    } else {
+////  *dont care about dragging ..      ar->setRangeDragAxes(ui->plot->xAxis2, ui->plot->yAxis2);
+        ar->setRangeZoomAxes(ui->plot->xAxis2, ui->plot->yAxis2);
     }
 }
