@@ -2,6 +2,7 @@
 // this is being compiled for an aruino
 #define PRINT_SOURCE Serial.print("(A) ")
 #define PRINT_MESSAGE( msg ) Serial.print(msg)
+#define FILL_STR(value, buf)  dtostrf(value,11, 5, buf)
 #else
 // This is being compile for C++
 #include "com.h"
@@ -10,8 +11,8 @@
 #include <iostream>
 #define PRINT_SOURCE std::cout << "(C++) ";
 #define PRINT_MESSAGE( msg ) std::cout << msg
+#define FILL_STR(value, buf) snprintf(buf, 11, "%.5f", value)
 #endif
-
 
 
 void COM::set(int index, float value)
@@ -38,13 +39,17 @@ void COM::printCurrentValues()
 */
 bool COM::fillStr(float value, char* output, unsigned int* i, unsigned short max)
 {
-  int whole = value;
-  unsigned int decimals = ((value - (float)whole)) * 10000; // TODO: FIXME keep getting some kind of overflow if the precision is larger #p3
+  // int whole = value;
+  // unsigned int decimals = ((value - (float)whole)) * 10000; // TODO: FIXME keep getting some kind of overflow if the precision is larger #p3
 
-  char tmp[15];
+  // char tmp[15];
 
-  sprintf(tmp, "%d.%d,", whole, decimals); // (val, minimum width, precision , tmp)
+  // sprintf(tmp, "%d.%d,", whole, decimals); // (val, minimum width, precision , tmp)
+  char tmp[11]; 
+  FILL_STR(value, tmp);
+  tmp[10] =','; // this will replace the last digit with a comma
   int tmpSize = strlen(tmp);
+  
 
 
   /* TODO: The premature null termination can be done in prepare output #p2 */
@@ -153,3 +158,14 @@ bool COM::deserialize_array ()
    }
    p = this->buffer;
 }
+
+
+
+
+// if somehow dostrf is not found 
+//char *dtostrf (double val, signed char width, unsigned char prec, char *sout) {
+//  char fmt[20];
+//  sprintf(fmt, "%%%d.%df", width, prec);
+//  sprintf(sout, fmt, val);
+//  return sout;
+//}
