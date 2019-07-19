@@ -144,7 +144,7 @@
 // PRELIMINARIES
 #include <OneWire.h> //library for DS18B20
 #include <Time.h>
-
+#include "com.h"
 // Soft serial pins
 #define rxPin 8 // connect to green wire of CP210 or to orange wire of FTDI
 #define txPin 7 // connect to white wire of CP210 or to yellow wire of FTDI
@@ -206,27 +206,11 @@ bool positionFlag = false; // set to 1 for the position form of the PID law, to 
 #define i_tempFiltered 12
 #define i_time         13
 #define NUMVARS 14
-#define BUFFERSIZE 400
+#define BUFFERSIZE 500
 
-class COM
-{
-private:
-    float arr[NUMVARS];
-public:
-
-    char buffer[BUFFERSIZE];
-    COM(){}
-    void printCurrentValues();
-    bool prepare_output();
-    bool fillStr(float value, char* output, unsigned int* i, unsigned short max);
-    bool deserialize_array ();
-    float get(int index);
-    void set(int index, float value);
-};
-/**********/
 COM com;
 
-
+char buffer[BUFFERSIZE];
 void check_input()
 {
   // checks for input from the port and potentially changes parameters
@@ -243,9 +227,9 @@ void check_input()
         j +=1;
         continue;
       }
-      com.buffer[i] = c; // place this character in the input buffer
+      buffer[i] = c; // place this character in the input buffer
       if (c == ']' || c == '\0' ) { // stop reading chracters if we have read the last bracket or a null charcter
-        com.buffer[i+1] = '\0'; // this will null terminate the buffer
+        buffer[i+1] = '\0'; // this will null terminate the buffer
         break;
       }
       if (c == '!')
@@ -254,7 +238,7 @@ void check_input()
     }
     while (Serial.available())
       char _ = Serial.read(); // this throws aways any other character in the buffer after the first right bracket
-    com.deserialize_array();
+    com.deserialize_array(buffer);
   }
 }
 
@@ -463,8 +447,8 @@ void loop(void)
   com.set(i_pOnNominal, percentRelayOnNominal);
 
   /* fill the ouput char buffer with the contents of the output array */
-  com.prepare_output();
-  Serial.println(com.buffer); // send the output buffer to the port
+  //// dont need this // Serial.println(buffer); // send the output buffer to the port
+  com.printCurVals();
   while (millis() < tLoopStart + stepSize) {
     relayCare();
     check_input();

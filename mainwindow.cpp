@@ -164,11 +164,13 @@ void MainWindow::showRequest(const QString &req)
         return;
     }
 
-    QByteArray ba = req.toStdString().c_str();
-    for ( int i = 0; i < 300; i ++ ) {
-        com.buffer[i] = ba[i];
-    }
-    if(com.deserialize_array()) {
+
+//    for ( int i = 0; i < 300; i ++ ) {
+//        com.buffer[i] = ba[i];
+//    }
+    QByteArray ba = req.toLocal8Bit();
+    char *c_str = ba.data();
+    if(com.deserialize_array( c_str )) {
 
         if (!this->validConnection) {
             this->validConnection = true;  // String was parsed therefore the correct arduino program is uploaded
