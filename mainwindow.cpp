@@ -32,6 +32,7 @@ MainWindow::MainWindow(QWidget *parent) :
 {
 
     ui->setupUi(this);
+    ui->mainToolBar->close(); // we dont need a toolbar
     // timer is used to repeatedly check for port data until we are connected
     this->timerId = startTimer(250);  // timer is used to repeatedly check for port data until we are connected
     // indicates when we are connected to the port AND the correct arduino program is being run
