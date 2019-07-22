@@ -608,6 +608,7 @@ void MainWindow::on_zoom_xaxis_checkBox_stateChanged(int arg1)
 
 //// *dont care about dragging  ..      ar->setRangeDragAxes(ui->plot->xAxis, ui->plot->yAxis2);
    ar->setRangeZoomAxes(x, y);
+   ar->setRangeDragAxes(ui->plot->xAxis, y);
 }
 
 void MainWindow::on_zoomy_checkBox_stateChanged(int arg1)
