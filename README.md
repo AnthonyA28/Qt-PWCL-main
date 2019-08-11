@@ -26,6 +26,7 @@ Uses the [ QCustomPlot ](http://www.qcustomplot.com/) library for live graphing.
 
 
 ## todo:
+* ouput fanspeed to file
 * Feed forward: 
 	1) manual, Automatic FB, Automatic FB FF
 	Parameters (3) :
