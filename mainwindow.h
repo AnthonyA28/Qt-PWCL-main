@@ -100,7 +100,6 @@ private:
     QFile csvdoc;
     QMediaPlayer* player;
 
-    bool deserializeArray(const char* const input, unsigned int output_size, std::vector<float>& output);
     float Tmax = 60; // maximum safe temperature
 
     float nominalPercentOn = 0;
