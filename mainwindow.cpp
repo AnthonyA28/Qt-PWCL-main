@@ -70,10 +70,7 @@ MainWindow::MainWindow(QWidget *parent) :
 
 
     // Create file titles with the current date and time
-    QDateTime currentTime(QDateTime::currentDateTime());
-    QString dateStr = currentTime.toString("d-MMM--h-m-A");
     this->excelFileName = "Data-Main.xlsx";
-    this->csvFileName   = dateStr + "-Main.csv";
 
     // give the excel file column headers
     this->xldoc.write( 1 , 1, "Time");
@@ -133,17 +130,7 @@ MainWindow::MainWindow(QWidget *parent) :
 */
 MainWindow::~MainWindow()
 {
-    if (this->port.L_isConnected()) {
-        // ensure a backupfile directory exists, create one if it doesnt
-        QDir backupDir("backupFiles");
-        if( !backupDir.exists() )
-             backupDir.mkpath(".");
-        QDir::setCurrent("backupFiles");
-
-        this->csvdoc.copy(this->csvFileName); // create a backup file
-    }
     this->csvdoc.close();
-
     delete player;
     delete ui;
 }
@@ -182,7 +169,13 @@ void MainWindow::showRequest(const QString &req)
             ui->emergencyMessageLabel->clear();
 
             // open the csv file and give it a header
-            this->csvdoc.setFileName(this->csvFileName);
+            QDir backupDir("log_files");
+            if( !backupDir.exists() )
+                 backupDir.mkpath(".");
+            QDir::setCurrent("log_files");
+            QDateTime currentTime(QDateTime::currentDateTime());
+            QString dateStr = currentTime.toString("d-MMM--h-m-A");
+            this->csvdoc.setFileName("..\\log_files\\" + dateStr + "-Main.csv");
             if (this->csvdoc.open(QIODevice::Truncate | QIODevice::WriteOnly | QIODevice::Text)) {
                 QTextStream stream(&this->csvdoc);
                 stream << "Time, Percent on, Temerature, Filtered temperature, Set Point\n";
@@ -522,17 +515,6 @@ void MainWindow::on_filterAllCheckBox_stateChanged(int arg1)
 */
 bool MainWindow::disonnectedPopUpWindow()
 {
-
-    // ensure a backupfile directory exists, create one if it doesnt
-    QDir backupDir("backupFiles");
-    if( !backupDir.exists() )
-         backupDir.mkpath(".");
-    QDir::setCurrent("backupFiles");
-    this->csvdoc.copy(this->csvFileName); // create a backup file
-
-    this->csvdoc.close();
-
-    qDebug() << "(disconnected popup window )\n";
     QMessageBox::critical(this,
                           "Error",
                           "Fatal Error, device disconnected.\n"

@@ -26,7 +26,7 @@ win32:RC_ICONS += gator_icon.ico
 
 greaterThan(QT_MAJOR_VERSION, 4): QT += widgets printsupport
 
-TARGET = qt_main
+TARGET = Main
 TEMPLATE = app
 CONFIG += static
 # The following define makes your compiler emit warnings if you use
