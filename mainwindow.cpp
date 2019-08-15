@@ -66,7 +66,7 @@ MainWindow::MainWindow(QWidget *parent) :
 
     // create the media player
     this->player = new QMediaPlayer;
-    player->setMedia(QUrl::fromLocalFile(execDir+"/audio/alarm.wav"));
+    player->setMedia(QUrl("qrc:/sound/alarm.wav"));
 
 
     // Create file titles with the current date and time
@@ -159,6 +159,7 @@ void MainWindow::showRequest(const QString &req)
     if (req.contains('!')) {
         ui->emergencyMessageLabel->setText(req);
         if(req.contains("overheat")) {
+            qDebug() << "QT overheated ";
             player->setVolume(100);
             player->play();
         }

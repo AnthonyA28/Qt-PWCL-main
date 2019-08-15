@@ -9,7 +9,6 @@ release/
 *.stash
 *.m4a
 *.mp3
-*wav
 *.opus
 Makefile
 Makefile.Release
