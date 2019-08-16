@@ -78,6 +78,7 @@ MainWindow::MainWindow(QWidget *parent) :
     this->xldoc.write( 1 , 3, "Temperature");
     this->xldoc.write( 1 , 4, "Filtered Temperature");
     this->xldoc.write( 1 , 5, "Set Point");
+    this->xldoc.write( 1 , 6, "Fan Speed");
 
     /*
     * Set up the live plot on the GUI/
@@ -178,7 +179,7 @@ void MainWindow::showRequest(const QString &req)
             this->csvdoc.setFileName("..\\log_files\\" + dateStr + "-Main.csv");
             if (this->csvdoc.open(QIODevice::Truncate | QIODevice::WriteOnly | QIODevice::Text)) {
                 QTextStream stream(&this->csvdoc);
-                stream << "Time, Percent on, Temerature, Filtered temperature, Set Point\n";
+                stream << "Time, Percent on, Temerature, Filtered temperature, Set Point, Fan Speed\n";
             }
             else {
                 qDebug() << " Failed to open  csv file  \n";
@@ -229,15 +230,16 @@ void MainWindow::showRequest(const QString &req)
         this->xldoc.write(ui->outputTable->rowCount(), 4,  (qRound(tempFilt*100))/100.0);
         if ( inAutoMode )
             this->xldoc.write(ui->outputTable->rowCount(), 5,  (qRound(setPoint*100))/100.0);
+        this->xldoc.write(ui->outputTable->rowCount(), 6,  (qRound(fanSpeed*100))/100.0);
 
         /*
         *  Update the csv file with the last data read from the port
         */
         char file_output_buffer[200]   = "";
         if (inAutoMode) {  // Only write the setpoint if in automatic mode
-            snprintf(file_output_buffer, sizeof(file_output_buffer),"%6.2f,%6.2f,%6.2f,%6.2f,%6.2f\n",time, percentOn, temp, tempFilt, setPoint);
+            snprintf(file_output_buffer, sizeof(file_output_buffer),"%6.2f,%6.2f,%6.2f,%6.2f,%6.2f,%6.2f\n",time, percentOn, temp, tempFilt, setPoint,fanSpeed);
         } else {
-            snprintf(file_output_buffer, sizeof(file_output_buffer),"%6.2f,%6.2f,%6.2f,%6.2f,\n",time, percentOn, temp, tempFilt);
+            snprintf(file_output_buffer, sizeof(file_output_buffer),"%6.2f,%6.2f,%6.2f,%6.2f,,%6.2f\n",time, percentOn, temp, tempFilt,fanSpeed);
         }
 
         QTextStream stream(&this->csvdoc);
