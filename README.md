@@ -26,6 +26,7 @@ Uses the [ QCustomPlot ](http://www.qcustomplot.com/) library for live graphing.
 
 
 ## todo:
+* ouput fanspeed to file
 * Feed forward: 
 	1) manual, Automatic FB, Automatic FB FF
 	Parameters (3) :
@@ -34,3 +35,5 @@ Uses the [ QCustomPlot ](http://www.qcustomplot.com/) library for live graphing.
  		- T_lag
 
 * Special test, only show score after 59 minutes. 
+* Evidently the export as Excel File option does not work on Ubuntu builds. 
+* remove the toolbar with ui->mainToolBar->close();
