@@ -1,4 +1,4 @@
-# PWCL-main
+# PWCL-Main
 
 ## GUI for an arduino based Process Controller
 
@@ -24,8 +24,8 @@ Uses the [ QCustomPlot ](http://www.qcustomplot.com/) library for live graphing.
 * Feed forward: 
 	1) manual, Automatic FB, Automatic FB FF
 	Parameters (3) :
- 		- K_ff
- 		- T_lead
- 		- T_lag
+ 		* K_ff
+ 		* T_lead
+ 		* T_lag
 
 * Evidently the export as Excel File option does not work on Ubuntu builds. 
