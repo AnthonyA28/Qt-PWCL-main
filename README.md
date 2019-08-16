@@ -20,7 +20,7 @@ Uses the [ QCustomPlot ](http://www.qcustomplot.com/) library for live graphing.
   * Clone the repository. 
   * Open the *qt_PWCL_main.pro* file with Qt creator. 
 
-## todo:
+## TODO:
 * Feed forward: 
 	1) manual, Automatic FB, Automatic FB FF
 	Parameters (3) :
