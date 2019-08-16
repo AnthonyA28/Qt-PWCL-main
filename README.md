@@ -11,7 +11,7 @@ Uses the [ QCustomPlot ](http://www.qcustomplot.com/) library for live graphing.
 
 
 ## Installation
-  Go to releases and download the [latest release] (https://github.com/AnthonyA28/Qt-PWCL-main/releases)
+  Go to releases and download the latest release from https://github.com/AnthonyA28/Qt-PWCL-main/releases/
 
 ## Building from source 
 
