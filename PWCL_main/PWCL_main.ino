@@ -205,10 +205,10 @@ bool positionFlag = false; // set to 1 for the position form of the PID law, to 
 #define i_temperature  11
 #define i_tempFiltered 12
 #define i_time         13
-#define NUMVARS 14
 #define BUFFERSIZE 500
 
-COM com;
+
+COM com(14);
 
 char buffer[BUFFERSIZE];
 void check_input()

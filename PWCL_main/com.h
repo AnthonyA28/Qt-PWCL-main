@@ -14,13 +14,17 @@
 #define PRINT_MESSAGE(msg) std::cout << msg
 #define PRINT_FLOAT(val) printf("%.5f", val);
 #endif
-#define NUMVARS 14
-#define BUFFERSIZE 500
 
 class COM
 {
 
 public:
+
+    COM( unsigned int numVars_)
+    {
+        this->numVars = numVars_;
+        this->arr = new float[this->numVars];
+    }
 
     void set(int index, float value)
     {
@@ -35,23 +39,12 @@ public:
     void printCurVals()
     {
         PRINT_MESSAGE("[");
-        for (int i = 0; i < NUMVARS; i++) {
+        for (int i = 0; i < this->numVars; i++) {
             PRINT_FLOAT(arr[i]);
             PRINT_MESSAGE(", ");
         }
         PRINT_MESSAGE("]\n");
     }
-
-    // STRING StrCurVals()
-    // {
-    //     PRINT_MESSAGE("[");
-    //     for (int i = 0; i < NUMVARS; i++) {
-    //         PRINT_FLOAT(arr[i]);
-    //         PRINT_MESSAGE(", ");
-    //     }
-    //     PRINT_MESSAGE("]\n");
-    // }
-
 
     /***
       parses 'input' (which should be in an array format) for the parameters in the prespecified order
@@ -85,7 +78,7 @@ public:
         PRINT_MESSAGE("\n");
         return false;
     }
-    if (numV != NUMVARS) {
+    if (numV != this->numVars) {
         PRINT_SOURCE;
         PRINT_MESSAGE("Parse error, incorrect array size.. Message: \n");
         PRINT_MESSAGE(paramStr);
@@ -94,37 +87,37 @@ public:
     }
 
    char* pEnd;
-   p = paramStr;
-   for ( unsigned int i = 0; i < NUMVARS; i ++ ) {
-      while(*p == '[' || *p == ' ') p ++ ;
-      bool isNum = false;  // if the string is a number
-      const char* nc = p; // nc will point to the next comma or the closing bracket
-      /* Handle NANS */
-       if ( (*p == 'N' && *(p+1) == 'A' && *(p+2) == 'N')
-         || (*p == 'n' && *(p+1) == 'a' && *(p+2) == 'n') ) {
-         //this->arr[i] != this->arr[i];  // TODO: this probably wont work #p1
-         this->arr[i] = NAN;
-         while( *p != ',' && p ) p ++; p ++; // goto past next comma
-         continue;
-       }
-      while(*nc != ',' && *nc != ']' && *nc) {
-        if ((int)*nc >= 48 && (int)*nc <= 57)
-          isNum = true;
-        nc++;
-      }
-      if (isNum) {
-        this->arr[i] = strtod(p, &pEnd);
-        p = pEnd;
-      }
-      while (*p != ',' && *p != ']' && *p) {
+    p = paramStr;
+    for ( unsigned int i = 0; i < this->numVars; i ++ ) {
+        while(*p == '[' || *p == ' ') p ++ ;
+        bool isNum = false;  // if the string is a number
+        const char* nc = p; // nc will point to the next comma or the closing bracket
+        /* Handle NANS */
+        if ( (*p == 'N' && *(p+1) == 'A' && *(p+2) == 'N')
+        || (*p == 'n' && *(p+1) == 'a' && *(p+2) == 'n') ) {
+            //this->arr[i] != this->arr[i];  // TODO: this probably wont work #p1
+            this->arr[i] = NAN;
+            while( *p != ',' && p ) p ++; p ++; // goto past next comma
+            continue;
+        }
+        while(*nc != ',' && *nc != ']' && *nc) {
+            if ((int)*nc >= 48 && (int)*nc <= 57)
+                {isNum = true;}
+            nc++;
+        }
+        if (isNum) {
+            this->arr[i] = strtod(p, &pEnd);
+            p = pEnd;
+        }
+        while (*p != ',' && *p != ']' && *p)
+            {p++;}
         p++;
-      }
-      p++;
-   }
-   p = paramStr;
-   return true;
+        }
+    p = paramStr;
+    return true;
     }
 
 private:
-	float arr[NUMVARS];
+    unsigned short numVars = 0;
+    float* arr;
 };

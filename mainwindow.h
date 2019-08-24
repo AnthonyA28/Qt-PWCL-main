@@ -84,8 +84,8 @@ private slots:
     void on_zoomy_checkBox_stateChanged(int arg1);
 
 private:
-    COM com;
 
+    COM com = COM(14);
 
     Ui::MainWindow *ui;
 
