@@ -26,6 +26,11 @@ public:
         this->arr = new float[this->numVars];
     }
 
+    ~COM( )
+    {
+        delete this->arr;
+    }
+
     void set(int index, float value)
     {
         arr[index] = value;
