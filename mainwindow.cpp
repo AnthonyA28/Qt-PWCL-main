@@ -43,6 +43,7 @@ MainWindow::MainWindow(QWidget *parent) :
     ui->tabWidget->setCurrentIndex(0);
     ui->tabWidget->setTabEnabled(0,false);
     ui->tabWidget->setTabEnabled(1,false);
+    ui->tabWidget->setTabEnabled(2,false);
 
     /*
     *  Connect functions from the PORT class to functions declared in the MainWIndow class and vice versa.
@@ -168,6 +169,7 @@ void MainWindow::showRequest(const QString &req)
             // enable the tab widgets so the user an input vales
             ui->tabWidget->setTabEnabled(0,true);
             ui->tabWidget->setTabEnabled(1,true);
+            ui->tabWidget->setTabEnabled(2,true);
             ui->emergencyMessageLabel->clear();
 
             // open the csv file and give it a header
@@ -355,9 +357,9 @@ void MainWindow::on_setButton_clicked()
         */
         response = "[";
 
-        bool autoMode = ( ui->tabWidget->currentIndex() ==  1 ); // the first index of the tabwidget is the automatic one
+        int mode = ( ui->tabWidget->currentIndex() ); // the first index of the tabwidget is the automatic one
 
-        if (autoMode) {
+        if (mode==0) {
             response.append(QString::number(i_autoMode)+">"); response.append( "1," ); // automatic mode
             fillArrayAtNextIndex(i_setPoint, "Set Point ", ui->setPointTextBox, 10, this->Tmax);  // maximum safe temperature is Tmax;
             fillArrayAtNextIndex(i_kc, "Kc", ui->kcTextBox); 
@@ -365,20 +367,36 @@ void MainWindow::on_setButton_clicked()
             fillArrayAtNextIndex(i_tauD, "tauD", ui->taudTextBox, 0); 
             fillArrayAtNextIndex(i_tauF, "TauF", ui->taufTextBox, 0); 
             fillArrayAtNextIndex(i_fanSpeed, "Fan Speed", ui->A_fanSpeedTextBox, 0, 255); 
-        } else {
+            response.append(QString::number(i_filterAll)+">");
+            response.append( ui->filterAllCheckBox->isChecked() ? "1," : "0," );
+            response.append(QString::number(i_positionForm)+">");
+            response.append( ui->posFormCheckBox->isChecked()   ? "1," : "0," );
+            response.append(QString::number(i_pOnNominal)+">");
+            response.append( QString::number(static_cast<double>(this->nominalPercentOn)));
+
+        } else if (mode==1) {
             response.append(QString::number(i_autoMode) + ">0,");  //manual mode
             fillArrayAtNextIndex(i_percentOn, "Percent Heater On", ui->percentOntTextBox, 0, 100);
             fillArrayAtNextIndex(i_fanSpeed, "Fan Speed", ui->M_fanSpeedTextBox, 0, 255); 
+            response.append(QString::number(i_filterAll)+">");
+            response.append( ui->filterAllCheckBox->isChecked() ? "1," : "0," );
+            response.append(QString::number(i_positionForm)+">");
+            response.append( ui->posFormCheckBox->isChecked()   ? "1," : "0," );
+            response.append(QString::number(i_pOnNominal)+">");
+            response.append( QString::number(static_cast<double>(this->nominalPercentOn)));
+        } else if (mode==2) {
+            fillArrayAtNextIndex(i_X1, "X1", ui->x1TextBox);
+            fillArrayAtNextIndex(i_X2, "X2", ui->x2TextBox);
+            fillArrayAtNextIndex(i_X3, "X3", ui->x3TextBox);
+            fillArrayAtNextIndex(i_X4, "X4", ui->x4TextBox);
+            fillArrayAtNextIndex(i_X5, "X5", ui->x5TextBox);
+            fillArrayAtNextIndex(i_X6, "X6", ui->x6TextBox);
+            fillArrayAtNextIndex(i_X7, "X7", ui->x7TextBox);
+            fillArrayAtNextIndex(i_X8, "X8", ui->x8TextBox);
+            fillArrayAtNextIndex(i_X9, "X9", ui->x9TextBox);
+            fillArrayAtNextIndex(i_X10, "X10", ui->x10TextBox);
         }
 
-        // these two have a different order in the test program but its okay
-        // todo: consider fixing that #p2
-        response.append(QString::number(i_filterAll)+">");
-        response.append( ui->filterAllCheckBox->isChecked() ? "1," : "0," );
-        response.append(QString::number(i_positionForm)+">");
-        response.append( ui->posFormCheckBox->isChecked()   ? "1," : "0," );
-        response.append(QString::number(i_pOnNominal)+">");
-        response.append( QString::number(static_cast<double>(this->nominalPercentOn)));
         response.append("]");
         qDebug() << "Sending " << response << " to port \n";
         emit this->response(response);

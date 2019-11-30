@@ -13,8 +13,18 @@
 #define i_temperature  11
 #define i_tempFiltered 12
 #define i_time         13
+#define i_X1           14 
+#define i_X2           15 
+#define i_X3           16
+#define i_X4           17
+#define i_X5           18 
+#define i_X6           19
+#define i_X7           20
+#define i_X8           21
+#define i_X9           22
+#define i_X10          23 
 #define BUFFERSIZE 500
-#define NUMPARAMS 14
+#define NUMPARAMS 24
 
 #pragma once
 #if defined(__AVR_ATmega168__) || defined(__AVR_ATmega328P__) || defined(__AVR_ATmega1280__) || defined(__AVR_ATmega2560__)
