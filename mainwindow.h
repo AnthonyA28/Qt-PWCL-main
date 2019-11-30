@@ -34,22 +34,6 @@ using namespace QXlsx;
 #include "PWCL_main\com.h"
 
 
-#define i_autoMode     0
-#define i_setPoint     1
-#define i_percentOn    2
-#define i_kc           3
-#define i_tauI         4
-#define i_tauD         5
-#define i_tauF         6
-#define i_fanSpeed     7
-#define i_filterAll    8
-#define i_positionForm 9
-#define i_pOnNominal   10
-#define i_temperature  11
-#define i_tempFiltered 12
-#define i_time         13
-
-
 namespace Ui {
 class MainWindow;
 }
@@ -85,7 +69,7 @@ private slots:
 
 private:
 
-    COM com = COM(14);
+    COM com = COM();
 
     Ui::MainWindow *ui;
 

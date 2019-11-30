@@ -144,6 +144,7 @@ MainWindow::~MainWindow()
 */
 void MainWindow::showRequest(const QString &req)
 {
+    qDebug() << "request " << req <<"\n";
     if (req.contains('!')) {
         ui->emergencyMessageLabel->setText(req);
         if(req.contains("overheat")) {
@@ -307,7 +308,7 @@ void MainWindow::on_setButton_clicked()
         *  Ensures the value inputted in the textBox is within range min and max
         *  returns '_' if the value is no good. When the arduino recieves '_' it wont change the value.
         */
-        auto fillArrayAtNextIndex = [&response]( QString name, QLineEdit* textBox, float min = NAN, float max = NAN)
+        auto fillArrayAtNextIndex = [&response]( int number, QString name, QLineEdit* textBox, float min = NAN, float max = NAN)
         {
             QString valStr = textBox->text();   // 'valStr' is a string holding what the user inputted in the texbox
             bool isNumerical = false;
@@ -339,11 +340,11 @@ void MainWindow::on_setButton_clicked()
                         response.append("");
                         return;
                     }
-                    response.append(valStr);
+                    response.append(QString::number(number)+">"+valStr+",");
                     return;
                 }
             }
-            response.append("_");
+            response.append(""); //TODO:  handle empty inputs #p1
             return;
         };
 
@@ -357,32 +358,28 @@ void MainWindow::on_setButton_clicked()
         bool autoMode = ( ui->tabWidget->currentIndex() ==  1 ); // the first index of the tabwidget is the automatic one
 
         if (autoMode) {
-            response.append( "1," ); // automatic mode
-            fillArrayAtNextIndex("Set Point ", ui->setPointTextBox, 10, this->Tmax); response.append(","); // maximum safe temperature is Tmax;
-            response.append("3,");  // percent on
-            fillArrayAtNextIndex("Kc", ui->kcTextBox); response.append(",");
-            fillArrayAtNextIndex("TauI", ui->tauiTextBox, 0); response.append(",");
-            fillArrayAtNextIndex("tauD", ui->taudTextBox, 0); response.append(",");
-            fillArrayAtNextIndex("TauF", ui->taufTextBox, 0); response.append(",");
-            fillArrayAtNextIndex("Fan Speed", ui->A_fanSpeedTextBox, 0, 255); response.append(",");
+            response.append(QString::number(i_autoMode)+">"); response.append( "1," ); // automatic mode
+            fillArrayAtNextIndex(i_setPoint, "Set Point ", ui->setPointTextBox, 10, this->Tmax);  // maximum safe temperature is Tmax;
+            fillArrayAtNextIndex(i_kc, "Kc", ui->kcTextBox); 
+            fillArrayAtNextIndex(i_tauI, "TauI", ui->tauiTextBox, 0); 
+            fillArrayAtNextIndex(i_tauD, "tauD", ui->taudTextBox, 0); 
+            fillArrayAtNextIndex(i_tauF, "TauF", ui->taufTextBox, 0); 
+            fillArrayAtNextIndex(i_fanSpeed, "Fan Speed", ui->A_fanSpeedTextBox, 0, 255); 
         } else {
-            response.append("0,");  //manual mode
-            response.append("3,");  //setpoint
-            fillArrayAtNextIndex("Percent Heater On", ui->percentOntTextBox, 0, 100); response.append(",");
-            response.append(",");  // kc
-            response.append(",");  // taui
-            response.append(",");  //taud
-            response.append(",");  //tauf
-            fillArrayAtNextIndex("Fan Speed", ui->M_fanSpeedTextBox, 0, 255); response.append(",");
+            response.append(QString::number(i_autoMode) + ">0,");  //manual mode
+            fillArrayAtNextIndex(i_percentOn, "Percent Heater On", ui->percentOntTextBox, 0, 100);
+            fillArrayAtNextIndex(i_fanSpeed, "Fan Speed", ui->M_fanSpeedTextBox, 0, 255); 
         }
 
         // these two have a different order in the test program but its okay
         // todo: consider fixing that #p2
+        response.append(QString::number(i_filterAll)+">");
         response.append( ui->filterAllCheckBox->isChecked() ? "1," : "0," );
+        response.append(QString::number(i_positionForm)+">");
         response.append( ui->posFormCheckBox->isChecked()   ? "1," : "0," );
+        response.append(QString::number(i_pOnNominal)+">");
         response.append( QString::number(static_cast<double>(this->nominalPercentOn)));
-        response.append(",");
-        response.append(",,,]");
+        response.append("]");
         qDebug() << "Sending " << response << " to port \n";
         emit this->response(response);
     }

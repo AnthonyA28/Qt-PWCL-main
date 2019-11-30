@@ -190,25 +190,10 @@ bool filterAll = false; // If not set only the derivative term is filtered
 bool autoEnabled = false;  // true when in automatic mode
 bool positionFlag = false; // set to 1 for the position form of the PID law, to 0 for the velocity form
 
-/******shared between C++ code */
-#define i_autoMode     0
-#define i_setPoint     1
-#define i_percentOn    2
-#define i_kc           3
-#define i_tauI         4
-#define i_tauD         5
-#define i_tauF         6
-#define i_fanSpeed     7
-#define i_filterAll    8
-#define i_positionForm 9
-#define i_pOnNominal   10
-#define i_temperature  11
-#define i_tempFiltered 12
-#define i_time         13
-#define BUFFERSIZE 500
 
 
-COM com(14);
+
+COM com;
 
 char buffer[BUFFERSIZE];
 void check_input()
@@ -448,7 +433,7 @@ void loop(void)
 
   /* fill the ouput char buffer with the contents of the output array */
   //// dont need this // Serial.println(buffer); // send the output buffer to the port
-  com.printCurVals();
+  com.sendUpdatedValues();
   while (millis() < tLoopStart + stepSize) {
     relayCare();
     check_input();
