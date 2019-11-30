@@ -20,8 +20,8 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 #include "ui_mainwindow.h"
 #include <QTextCursor>
 
-
-
+enum MODE {manual,automatic, custom};
+enum MODE mode;  
 /*
 *   Called when the application is first opened.
 *   Configures main window, log files, and more..
@@ -204,10 +204,11 @@ void MainWindow::showRequest(const QString &req)
         double tauI       = static_cast<double>(com.get(i_tauI));
         double tauD       = static_cast<double>(com.get(i_tauD));
         double tauF       = static_cast<double>(com.get(i_tauF));
-        bool inAutoMode   = static_cast<bool>(com.get(i_autoMode));  // true if we are in automatic mode
+        mode   = static_cast<MODE>(com.get(i_mode));  // true if we are in automatic mode
         bool positionForm = static_cast<bool>(com.get(i_positionForm));
         bool filterAll    = static_cast<bool>(com.get(i_filterAll));
         this->nominalPercentOn = com.get(i_pOnNominal);
+        double x1         = static_cast<double>(com.get(i_X1));
 
         /*
         *  Update the output table with the last parameters read from the port.
@@ -220,7 +221,7 @@ void MainWindow::showRequest(const QString &req)
         ui->outputTable->setItem(ui->outputTable->rowCount()-1, 1, new QTableWidgetItem(QString::number(percentOn,'f',2)));
         ui->outputTable->setItem(ui->outputTable->rowCount()-1, 2, new QTableWidgetItem(QString::number(temp,'f',2)));
         ui->outputTable->setItem(ui->outputTable->rowCount()-1, 3, new QTableWidgetItem(QString::number(tempFilt,'f',2)));
-        if ( inAutoMode) ui->outputTable->setItem(ui->outputTable->rowCount()-1, 4,new QTableWidgetItem(QString::number(setPoint,'f',2)));
+        if ( mode == automatic ) ui->outputTable->setItem(ui->outputTable->rowCount()-1, 4,new QTableWidgetItem(QString::number(setPoint,'f',2)));
         else ui->outputTable->setItem(ui->outputTable->rowCount()-1, 4,new QTableWidgetItem(""));
         ui->outputTable->setItem(ui->outputTable->rowCount()-1, 5, new QTableWidgetItem(QString::number(fanSpeed,'f',0)));
         if (!ui->outputTable->underMouse())
@@ -231,7 +232,7 @@ void MainWindow::showRequest(const QString &req)
         this->xldoc.write(ui->outputTable->rowCount(), 2,  (qRound(percentOn*100))/100.0);
         this->xldoc.write(ui->outputTable->rowCount(), 3,  (qRound(temp*100))/100.0);
         this->xldoc.write(ui->outputTable->rowCount(), 4,  (qRound(tempFilt*100))/100.0);
-        if ( inAutoMode )
+        if ( mode == automatic )
             this->xldoc.write(ui->outputTable->rowCount(), 5,  (qRound(setPoint*100))/100.0);
         this->xldoc.write(ui->outputTable->rowCount(), 6,  (qRound(fanSpeed*100))/100.0);
 
@@ -239,7 +240,7 @@ void MainWindow::showRequest(const QString &req)
         *  Update the csv file with the last data read from the port
         */
         char file_output_buffer[200]   = "";
-        if (inAutoMode) {  // Only write the setpoint if in automatic mode
+        if (mode == automatic) {  // Only write the setpoint if in automatic mode
             snprintf(file_output_buffer, sizeof(file_output_buffer),"%6.2f,%6.2f,%6.2f,%6.2f,%6.2f,%6.2f\n",time, percentOn, temp, tempFilt, setPoint,fanSpeed);
         } else {
             snprintf(file_output_buffer, sizeof(file_output_buffer),"%6.2f,%6.2f,%6.2f,%6.2f,,%6.2f\n",time, percentOn, temp, tempFilt,fanSpeed);
@@ -254,7 +255,7 @@ void MainWindow::showRequest(const QString &req)
         *  Show the current values from the port in the current parameters area
         */
         QString ModeString = ""; // holds a string for current mode ex. "Automatic, velocity form, Filtering all terms"
-        if (inAutoMode) {
+        if (mode == automatic) {
             ui->kcLabel->setNum( kc);
             ui->tauiLabel->setNum( tauI);
             ui->taudLabel->setNum( tauD);
@@ -263,13 +264,20 @@ void MainWindow::showRequest(const QString &req)
             if ( positionForm  ) ModeString.append("Position Form ");
             else ModeString.append("Velocity Form");
             if ( filterAll ) ModeString.append("\nFiltering all terms");
-        } else {
+        } else if(mode == manual) {
             ModeString.append("Manual");
             // When in manual mode, clear the automatic parameters to avoid confusion/
             ui->kcLabel->clear();
             ui->tauiLabel->clear();
             ui->taudLabel->clear();
             ui->taufLabel->clear();
+        } else {
+            ui->kcLabel->clear();
+            ui->tauiLabel->clear();
+            ui->taudLabel->clear();
+            ui->taufLabel->clear();
+            ModeString.append("Custom");
+            ui->x1Label->setNum(x1);
         }
         ui->modeTextLabel->setText(ModeString);
 
@@ -280,7 +288,7 @@ void MainWindow::showRequest(const QString &req)
         ui->plot->graph(3)->addData(time, percentOn);
         ui->plot->graph(2)->addData(time, temp);
         ui->plot->graph(1)->addData(time, tempFilt);
-        if( inAutoMode ) ui->plot->graph(0)->addData(time, setPoint);
+        if( mode == automatic ) ui->plot->graph(0)->addData(time, setPoint);
         ui->plot->replot( QCustomPlot::rpQueuedReplot );
         if (ui->auto_fit_CheckBox->isChecked())
             ui->plot->rescaleAxes(); // should be in a button or somethng
@@ -359,8 +367,20 @@ void MainWindow::on_setButton_clicked()
 
         int mode = ( ui->tabWidget->currentIndex() ); // the first index of the tabwidget is the automatic one
 
-        if (mode==0) {
-            response.append(QString::number(i_autoMode)+">"); response.append( "1," ); // automatic mode
+        
+        if (mode==manual) {
+            response.append(QString::number(i_mode) + ">0,");  //manual mode
+            fillArrayAtNextIndex(i_percentOn, "Percent Heater On", ui->percentOntTextBox, 0, 100);
+            fillArrayAtNextIndex(i_fanSpeed, "Fan Speed", ui->M_fanSpeedTextBox, 0, 255); 
+            response.append(QString::number(i_filterAll)+">");
+            response.append( ui->filterAllCheckBox->isChecked() ? "1," : "0," );
+            response.append(QString::number(i_positionForm)+">");
+            response.append( ui->posFormCheckBox->isChecked()   ? "1," : "0," );
+            response.append(QString::number(i_pOnNominal)+">");
+            response.append( QString::number(static_cast<double>(this->nominalPercentOn)));
+
+        } else if (mode==automatic) {
+            response.append(QString::number(i_mode)+">"); response.append( "1," ); // automatic mode
             fillArrayAtNextIndex(i_setPoint, "Set Point ", ui->setPointTextBox, 10, this->Tmax);  // maximum safe temperature is Tmax;
             fillArrayAtNextIndex(i_kc, "Kc", ui->kcTextBox); 
             fillArrayAtNextIndex(i_tauI, "TauI", ui->tauiTextBox, 0); 
@@ -373,18 +393,8 @@ void MainWindow::on_setButton_clicked()
             response.append( ui->posFormCheckBox->isChecked()   ? "1," : "0," );
             response.append(QString::number(i_pOnNominal)+">");
             response.append( QString::number(static_cast<double>(this->nominalPercentOn)));
-
-        } else if (mode==1) {
-            response.append(QString::number(i_autoMode) + ">0,");  //manual mode
-            fillArrayAtNextIndex(i_percentOn, "Percent Heater On", ui->percentOntTextBox, 0, 100);
-            fillArrayAtNextIndex(i_fanSpeed, "Fan Speed", ui->M_fanSpeedTextBox, 0, 255); 
-            response.append(QString::number(i_filterAll)+">");
-            response.append( ui->filterAllCheckBox->isChecked() ? "1," : "0," );
-            response.append(QString::number(i_positionForm)+">");
-            response.append( ui->posFormCheckBox->isChecked()   ? "1," : "0," );
-            response.append(QString::number(i_pOnNominal)+">");
-            response.append( QString::number(static_cast<double>(this->nominalPercentOn)));
-        } else if (mode==2) {
+        } else if (mode==custom) {
+            response.append(QString::number(i_mode) + ">2,");  //custom mode
             fillArrayAtNextIndex(i_X1, "X1", ui->x1TextBox);
             fillArrayAtNextIndex(i_X2, "X2", ui->x2TextBox);
             fillArrayAtNextIndex(i_X3, "X3", ui->x3TextBox);

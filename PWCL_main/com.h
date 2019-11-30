@@ -1,5 +1,5 @@
 /******shared between C++/Arduino code */
-#define i_autoMode     0
+#define i_mode         0
 #define i_setPoint     1
 #define i_percentOn    2
 #define i_kc           3

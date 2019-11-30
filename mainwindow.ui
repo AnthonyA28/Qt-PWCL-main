@@ -509,6 +509,13 @@
                <widget class="QLineEdit" name="x1TextBox"/>
               </item>
               <item>
+               <widget class="QLabel" name="x1Label">
+                <property name="text">
+                 <string/>
+                </property>
+               </widget>
+              </item>
+              <item>
                <spacer name="horizontalSpacer_11">
                 <property name="orientation">
                  <enum>Qt::Horizontal</enum>
@@ -534,6 +541,13 @@
               </item>
               <item>
                <widget class="QLineEdit" name="x2TextBox"/>
+              </item>
+              <item>
+               <widget class="QLabel" name="x2Label">
+                <property name="text">
+                 <string/>
+                </property>
+               </widget>
               </item>
               <item>
                <spacer name="horizontalSpacer_17">
@@ -563,6 +577,13 @@
                <widget class="QLineEdit" name="x3TextBox"/>
               </item>
               <item>
+               <widget class="QLabel" name="x3Label">
+                <property name="text">
+                 <string/>
+                </property>
+               </widget>
+              </item>
+              <item>
                <spacer name="horizontalSpacer_14">
                 <property name="orientation">
                  <enum>Qt::Horizontal</enum>
@@ -588,6 +609,13 @@
               </item>
               <item>
                <widget class="QLineEdit" name="x4TextBox"/>
+              </item>
+              <item>
+               <widget class="QLabel" name="x4Label">
+                <property name="text">
+                 <string/>
+                </property>
+               </widget>
               </item>
               <item>
                <spacer name="horizontalSpacer_15">
@@ -617,6 +645,13 @@
                <widget class="QLineEdit" name="x5TextBox"/>
               </item>
               <item>
+               <widget class="QLabel" name="x5Label">
+                <property name="text">
+                 <string/>
+                </property>
+               </widget>
+              </item>
+              <item>
                <spacer name="horizontalSpacer_18">
                 <property name="orientation">
                  <enum>Qt::Horizontal</enum>
@@ -642,6 +677,13 @@
               </item>
               <item>
                <widget class="QLineEdit" name="x6TextBox"/>
+              </item>
+              <item>
+               <widget class="QLabel" name="x6Label">
+                <property name="text">
+                 <string/>
+                </property>
+               </widget>
               </item>
               <item>
                <spacer name="horizontalSpacer_19">
@@ -671,6 +713,13 @@
                <widget class="QLineEdit" name="x7TextBox"/>
               </item>
               <item>
+               <widget class="QLabel" name="x7Label">
+                <property name="text">
+                 <string/>
+                </property>
+               </widget>
+              </item>
+              <item>
                <spacer name="horizontalSpacer_12">
                 <property name="orientation">
                  <enum>Qt::Horizontal</enum>
@@ -696,6 +745,13 @@
               </item>
               <item>
                <widget class="QLineEdit" name="x8TextBox"/>
+              </item>
+              <item>
+               <widget class="QLabel" name="x8Label">
+                <property name="text">
+                 <string/>
+                </property>
+               </widget>
               </item>
               <item>
                <spacer name="horizontalSpacer_13">
@@ -725,6 +781,13 @@
                <widget class="QLineEdit" name="x9TextBox"/>
               </item>
               <item>
+               <widget class="QLabel" name="x9Label">
+                <property name="text">
+                 <string/>
+                </property>
+               </widget>
+              </item>
+              <item>
                <spacer name="horizontalSpacer_16">
                 <property name="orientation">
                  <enum>Qt::Horizontal</enum>
@@ -750,6 +813,13 @@
               </item>
               <item>
                <widget class="QLineEdit" name="x10TextBox"/>
+              </item>
+              <item>
+               <widget class="QLabel" name="x10Label">
+                <property name="text">
+                 <string/>
+                </property>
+               </widget>
               </item>
               <item>
                <spacer name="horizontalSpacer_20">

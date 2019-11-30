@@ -187,11 +187,11 @@ unsigned long tLoopStart;
 bool stopTempHigh = 0; // flag ending the run due to high temperature
 float Tmax = 60; // maximum safe temperature
 bool filterAll = false; // If not set only the derivative term is filtered
-bool autoEnabled = false;  // true when in automatic mode
 bool positionFlag = false; // set to 1 for the position form of the PID law, to 0 for the velocity form
 
 
-
+enum MODE {manual,automatic, custom};
+enum MODE mode;  
 
 COM com;
 
@@ -280,7 +280,7 @@ void shutdown()
 {
   digitalWrite(relayPin, LOW); // turn heater off
   analogWrite(fetPin, 255); // turn fans on to max speed
-  autoEnabled = false;
+  mode = manual;
   while (true)
   {
     // delay indefinately
@@ -365,7 +365,7 @@ void loop(void)
   } else {
     error = TsetPoint - temperature;
   }
-  if (autoEnabled) {
+  if (mode == automatic) {
     if (!positionFlag) {
       float percentOnPrevious = percentRelayOn;
       float PropInt = percentOnPrevious + Kc * (error - errorPrev) + Dt * Kc * error / tauI;
@@ -415,8 +415,8 @@ void loop(void)
   }
 
   /* place current values in the output array */
-  com.set(i_autoMode, autoEnabled);
-  if(!autoEnabled){ com.set(i_setPoint, temperature); }  // if its in manual mode it will sent the current temp in place of the setpoin)t
+  com.set(i_mode, mode);
+  if(mode == manual){ com.set(i_setPoint, temperature); }  // if its in manual mode it will sent the current temp in place of the setpoin)t
   else { com.set(i_setPoint, TsetPoint); }
   com.set(i_percentOn, percentRelayOn);
   com.set(i_kc, Kc);
@@ -442,17 +442,17 @@ void loop(void)
   /*
   Here we will change any values that must be changed
   */
-  if ( autoEnabled == com.get(i_autoMode) && autoEnabled){  // not changing mode
+  if ( mode == com.get(i_mode) && mode ==  automatic){  // not changing mode
     TsetPoint = com.get(i_setPoint);   // only set the set point when we are NOT changing the mode
   }
-  else if ( autoEnabled == com.get(i_autoMode)  && !autoEnabled ){   // not changing mode
+  else if ( mode == com.get(i_mode)  && mode != manual  ){   // not changing mode
     percentRelayOn = com.get(i_percentOn);    // only set the percent on when we are NOT chaning th mode
   }
-  else if ( autoEnabled != com.get(i_autoMode) && !autoEnabled) {   // transition from manual to automatic
+  else if ( mode != com.get(i_mode) && mode != automatic) {   // transition  to automatic
     TsetPoint = temperature;
   }
-  autoEnabled = com.get(i_autoMode);
-  if ( autoEnabled){  // if in automatic, set the tuning parameters
+  mode = (MODE)com.get(i_mode);
+  if ( mode == automatic){  // if in automatic, set the tuning parameters
     Kc                    = com.get(i_kc);
     tauI                  = com.get(i_tauI);
     tauD                  = com.get(i_tauD);
