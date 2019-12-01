@@ -208,7 +208,16 @@ void MainWindow::showRequest(const QString &req)
         bool positionForm = static_cast<bool>(com.get(i_positionForm));
         bool filterAll    = static_cast<bool>(com.get(i_filterAll));
         this->nominalPercentOn = com.get(i_pOnNominal);
-        double x1         = static_cast<double>(com.get(i_X1));
+        double x1         = static_cast<double>(com.get(i_x1));
+        double x2         = static_cast<double>(com.get(i_x2));
+        double x3         = static_cast<double>(com.get(i_x3));
+        double x4         = static_cast<double>(com.get(i_x4));
+        double x5         = static_cast<double>(com.get(i_x5));
+        double x6         = static_cast<double>(com.get(i_x6));
+        double x7         = static_cast<double>(com.get(i_x7));
+        double x8         = static_cast<double>(com.get(i_x8));
+        double x9         = static_cast<double>(com.get(i_x9));
+        double x10         = static_cast<double>(com.get(i_x10));
 
         /*
         *  Update the output table with the last parameters read from the port.
@@ -221,7 +230,7 @@ void MainWindow::showRequest(const QString &req)
         ui->outputTable->setItem(ui->outputTable->rowCount()-1, 1, new QTableWidgetItem(QString::number(percentOn,'f',2)));
         ui->outputTable->setItem(ui->outputTable->rowCount()-1, 2, new QTableWidgetItem(QString::number(temp,'f',2)));
         ui->outputTable->setItem(ui->outputTable->rowCount()-1, 3, new QTableWidgetItem(QString::number(tempFilt,'f',2)));
-        if ( mode == automatic ) ui->outputTable->setItem(ui->outputTable->rowCount()-1, 4,new QTableWidgetItem(QString::number(setPoint,'f',2)));
+        if ( mode != manual ) ui->outputTable->setItem(ui->outputTable->rowCount()-1, 4,new QTableWidgetItem(QString::number(setPoint,'f',2)));
         else ui->outputTable->setItem(ui->outputTable->rowCount()-1, 4,new QTableWidgetItem(""));
         ui->outputTable->setItem(ui->outputTable->rowCount()-1, 5, new QTableWidgetItem(QString::number(fanSpeed,'f',0)));
         if (!ui->outputTable->underMouse())
@@ -240,7 +249,7 @@ void MainWindow::showRequest(const QString &req)
         *  Update the csv file with the last data read from the port
         */
         char file_output_buffer[200]   = "";
-        if (mode == automatic) {  // Only write the setpoint if in automatic mode
+        if (mode != automatic) {  // Only write the setpoint if not in manual mode 
             snprintf(file_output_buffer, sizeof(file_output_buffer),"%6.2f,%6.2f,%6.2f,%6.2f,%6.2f,%6.2f\n",time, percentOn, temp, tempFilt, setPoint,fanSpeed);
         } else {
             snprintf(file_output_buffer, sizeof(file_output_buffer),"%6.2f,%6.2f,%6.2f,%6.2f,,%6.2f\n",time, percentOn, temp, tempFilt,fanSpeed);
@@ -271,13 +280,22 @@ void MainWindow::showRequest(const QString &req)
             ui->tauiLabel->clear();
             ui->taudLabel->clear();
             ui->taufLabel->clear();
-        } else {
+        } else if(mode == custom) {
             ui->kcLabel->clear();
             ui->tauiLabel->clear();
             ui->taudLabel->clear();
             ui->taufLabel->clear();
             ModeString.append("Custom");
             ui->x1Label->setNum(x1);
+            ui->x2Label->setNum(x2);
+            ui->x3Label->setNum(x3);
+            ui->x4Label->setNum(x4);
+            ui->x5Label->setNum(x5);
+            ui->x6Label->setNum(x6);
+            ui->x7Label->setNum(x7);
+            ui->x8Label->setNum(x8);
+            ui->x9Label->setNum(x9);
+            ui->x10Label->setNum(x10);
         }
         ui->modeTextLabel->setText(ModeString);
 
@@ -295,7 +313,8 @@ void MainWindow::showRequest(const QString &req)
 
     }
     else{
-        qDebug() << "ERROR Failed to deserialize array \n";
+        qDebug() << "ERROR Failed to deserialize array: \n";
+        qDebug() << "\t" << req << "\n";
         if (!this->validConnection)
             ui->emergencyMessageLabel->setText("Possible incorrect arduino program uploaded.");
     }
@@ -395,16 +414,16 @@ void MainWindow::on_setButton_clicked()
             response.append( QString::number(static_cast<double>(this->nominalPercentOn)));
         } else if (mode==custom) {
             response.append(QString::number(i_mode) + ">2,");  //custom mode
-            fillArrayAtNextIndex(i_X1, "X1", ui->x1TextBox);
-            fillArrayAtNextIndex(i_X2, "X2", ui->x2TextBox);
-            fillArrayAtNextIndex(i_X3, "X3", ui->x3TextBox);
-            fillArrayAtNextIndex(i_X4, "X4", ui->x4TextBox);
-            fillArrayAtNextIndex(i_X5, "X5", ui->x5TextBox);
-            fillArrayAtNextIndex(i_X6, "X6", ui->x6TextBox);
-            fillArrayAtNextIndex(i_X7, "X7", ui->x7TextBox);
-            fillArrayAtNextIndex(i_X8, "X8", ui->x8TextBox);
-            fillArrayAtNextIndex(i_X9, "X9", ui->x9TextBox);
-            fillArrayAtNextIndex(i_X10, "X10", ui->x10TextBox);
+            fillArrayAtNextIndex(i_x1, "X1", ui->x1TextBox);
+            fillArrayAtNextIndex(i_x2, "X2", ui->x2TextBox);
+            fillArrayAtNextIndex(i_x3, "X3", ui->x3TextBox);
+            fillArrayAtNextIndex(i_x4, "X4", ui->x4TextBox);
+            fillArrayAtNextIndex(i_x5, "X5", ui->x5TextBox);
+            fillArrayAtNextIndex(i_x6, "X6", ui->x6TextBox);
+            fillArrayAtNextIndex(i_x7, "X7", ui->x7TextBox);
+            fillArrayAtNextIndex(i_x8, "X8", ui->x8TextBox);
+            fillArrayAtNextIndex(i_x9, "X9", ui->x9TextBox);
+            fillArrayAtNextIndex(i_x10, "X10", ui->x10TextBox);
         }
 
         response.append("]");
@@ -479,8 +498,8 @@ void MainWindow::on_tabWidget_currentChanged(int index)
 {
     if (!this->validConnection) return; // if we havent connected to the correct port then stop
 
-    bool autoModeTab = ( index == 1 );  // tab index 1 is the automatic tab
-    if (autoModeTab){ // changed from manual to automatic
+    enum MODE mode_ = static_cast<MODE>(index); // 0 == manual , 1 == automatic, 2 == custom
+    if (mode_ == automatic){ // changed from manual to automatic
 
         double temp       = static_cast<double>(com.get(i_temperature));
         double fanSpeed   = static_cast<double>(com.get(i_fanSpeed));
@@ -490,18 +509,47 @@ void MainWindow::on_tabWidget_currentChanged(int index)
         double tauF       = static_cast<double>(com.get(i_tauF));
 
         // Fill the automatic textboxes with the last recorded parameters
-        ui->kcTextBox->setText(QString::number(kc, 'f', 3));
-        ui->tauiTextBox->setText(QString::number(tauI, 'f', 3));
-        ui->taufTextBox->setText(QString::number(tauF, 'f', 3));
-        ui->taudTextBox->setText(QString::number(tauD, 'f', 3));
-        ui->setPointTextBox->setText(QString::number(temp, 'f', 2));
+        ui->kcTextBox->setText(QString::number(kc, 'f', PRECISION));
+        ui->tauiTextBox->setText(QString::number(tauI, 'f', PRECISION));
+        ui->taufTextBox->setText(QString::number(tauF, 'f', PRECISION));
+        ui->taudTextBox->setText(QString::number(tauD, 'f', PRECISION));
+        ui->setPointTextBox->setText(QString::number(temp, 'f', PRECISION));
         ui->A_fanSpeedTextBox->setText(QString::number(fanSpeed, 'f', 1));
-    } else {  // changed to the manual tab
+
+    } else if (mode_ == manual) {  // changed to the manual tab
+
         double percentOn  = static_cast<double>(com.get(i_percentOn));
         double fanSpeed   = static_cast<double>(com.get(i_fanSpeed));
+
         // Fill the manual textboxes with the last recorded parameters
-        ui->percentOntTextBox->setText(QString::number(percentOn, 'f', 1));
-        ui->M_fanSpeedTextBox->setText(QString::number(fanSpeed, 'f', 1));
+        ui->percentOntTextBox->setText(QString::number(percentOn, 'f', PRECISION));
+        ui->M_fanSpeedTextBox->setText(QString::number(fanSpeed, 'f', PRECISION));
+
+    } else if( mode_ == custom) {
+
+        double x1         = static_cast<double>(com.get(i_x1));
+        double x2         = static_cast<double>(com.get(i_x2));
+        double x3         = static_cast<double>(com.get(i_x3));
+        double x4         = static_cast<double>(com.get(i_x4));
+        double x5         = static_cast<double>(com.get(i_x5));
+        double x6         = static_cast<double>(com.get(i_x6));
+        double x7         = static_cast<double>(com.get(i_x7));
+        double x8         = static_cast<double>(com.get(i_x8));
+        double x9         = static_cast<double>(com.get(i_x9));
+        double x10        = static_cast<double>(com.get(i_x10));
+
+        // fill the x textboxes with the last recorded parameters
+        ui->x1TextBox->setText(QString::number(x1, 'f', PRECISION));
+        ui->x2TextBox->setText(QString::number(x2, 'f', PRECISION));
+        ui->x3TextBox->setText(QString::number(x3, 'f', PRECISION));
+        ui->x4TextBox->setText(QString::number(x4, 'f', PRECISION));
+        ui->x5TextBox->setText(QString::number(x5, 'f', PRECISION));
+        ui->x6TextBox->setText(QString::number(x6, 'f', PRECISION));
+        ui->x7TextBox->setText(QString::number(x7, 'f', PRECISION));
+        ui->x8TextBox->setText(QString::number(x8, 'f', PRECISION));
+        ui->x9TextBox->setText(QString::number(x9, 'f', PRECISION));
+        ui->x10TextBox->setText(QString::number(x10, 'f', PRECISION));
+
     }
     emit on_setButton_clicked(); // simulate the user presing the set button so new parameters are sent to the port.
 }
@@ -605,7 +653,7 @@ void MainWindow::on_auto_fit_CheckBox_stateChanged(int arg1)
  */
 void MainWindow::on_zoom_xaxis_checkBox_stateChanged(int arg1)
 {
-    Q_UNUSED(arg1);
+    Q_UNUSED(arg1)
 
     QCPAxisRect *ar = ui->plot->axisRect(0); // get the default range axis and tell it to zoom and drag relative to right side yaxis
     QCPAxis *y = ui->plot->yAxis2;

@@ -193,6 +193,19 @@ bool positionFlag = false; // set to 1 for the position form of the PID law, to 
 enum MODE {manual,automatic, custom};
 enum MODE mode;  
 
+
+
+float x1;
+float x2;
+float x3;
+float x4;
+float x5;
+float x6;
+float x7;
+float x8;
+float x9;
+float x10;
+
 COM com;
 
 char buffer[BUFFERSIZE];
@@ -219,7 +232,7 @@ void check_input()
       }
       if (c == '!')
         shutdown();
-      delay(10);
+      delay(30);
     }
     while (Serial.available())
       char _ = Serial.read(); // this throws aways any other character in the buffer after the first right bracket
@@ -365,6 +378,7 @@ void loop(void)
   } else {
     error = TsetPoint - temperature;
   }
+  
   if (mode == automatic) {
     if (!positionFlag) {
       float percentOnPrevious = percentRelayOn;
@@ -407,6 +421,12 @@ void loop(void)
     }
   }
 
+  // CUSTOM CONTROL
+
+  if (mode == custom) {
+  }
+
+
   relayCare();
 
   if (temperature > Tmax) {
@@ -415,33 +435,42 @@ void loop(void)
   }
 
   /* place current values in the output array */
-  com.set(i_mode, mode);
-  if(mode == manual){ com.set(i_setPoint, temperature); }  // if its in manual mode it will sent the current temp in place of the setpoin)t
-  else { com.set(i_setPoint, TsetPoint); }
-  com.set(i_percentOn, percentRelayOn);
-  com.set(i_kc, Kc);
-  com.set(i_tauI, tauI);
-  com.set(i_tauD, tauD);
-  com.set(i_tauF, tauF);
-  com.set(i_fanSpeed, fanSpeed);
-  com.set(i_temperature, temperature);
-  com.set(i_tempFiltered, tempFiltered);
-  com.set(i_time, millis() /60000.0);
-  com.set(i_filterAll, filterAll);
-  com.set(i_positionForm, positionFlag);
-  com.set(i_pOnNominal, percentRelayOnNominal);
+  com.setAndSend(i_mode, mode);
+  if(mode == manual){ com.setAndSend(i_setPoint, temperature); }  // if its in manual mode it will sent the current temp in place of the setpoin)t
+  else { com.setAndSend(i_setPoint, TsetPoint); }
+  com.setAndSend(i_percentOn, percentRelayOn);
+  com.setAndSend(i_kc, Kc);
+  com.setAndSend(i_tauI, tauI);
+  com.setAndSend(i_tauD, tauD);
+  com.setAndSend(i_tauF, tauF);
+  com.setAndSend(i_fanSpeed, fanSpeed);
+  com.setAndSend(i_temperature, temperature);
+  com.setAndSend(i_tempFiltered, tempFiltered);
+  com.setAndSend(i_time, millis() /60000.0);
+  com.setAndSend(i_filterAll, filterAll);
+  com.setAndSend(i_positionForm, positionFlag);
+  com.setAndSend(i_pOnNominal, percentRelayOnNominal);
+  com.setAndSend(i_x1, x1);
+  com.setAndSend(i_x2, x2);
+  com.setAndSend(i_x3, x3);
+  com.setAndSend(i_x4, x4);
+  com.setAndSend(i_x5, x5);
+  com.setAndSend(i_x6, x6);
+  com.setAndSend(i_x7, x7);
+  com.setAndSend(i_x8, x8);
+  com.setAndSend(i_x9, x9);
+  com.setAndSend(i_x10, x10);
 
   /* fill the ouput char buffer with the contents of the output array */
-  //// dont need this // Serial.println(buffer); // send the output buffer to the port
   com.sendUpdatedValues();
   while (millis() < tLoopStart + stepSize) {
     relayCare();
     check_input();
   }
 
-  /*
-  Here we will change any values that must be changed
-  */
+
+  // Change any values that must be changed based off the input from the port. 
+
   if ( mode == com.get(i_mode) && mode ==  automatic){  // not changing mode
     TsetPoint = com.get(i_setPoint);   // only set the set point when we are NOT changing the mode
   }
@@ -451,8 +480,10 @@ void loop(void)
   else if ( mode != com.get(i_mode) && mode != automatic) {   // transition  to automatic
     TsetPoint = temperature;
   }
-  mode = (MODE)com.get(i_mode);
-  if ( mode == automatic){  // if in automatic, set the tuning parameters
+  mode = (MODE)com.get(i_mode); // set the mode 
+
+  // If in automatic mode, set the automatic parameters. 
+  if (mode == automatic) {
     Kc                    = com.get(i_kc);
     tauI                  = com.get(i_tauI);
     tauD                  = com.get(i_tauD);
@@ -461,6 +492,21 @@ void loop(void)
     positionFlag          = com.get(i_positionForm);
     percentRelayOnNominal = com.get(i_pOnNominal);
   }
+  // If in custom mode, set the custom parameters. 
+  if (mode == custom) {
+    x1  = com.get(i_x1);
+    x2  = com.get(i_x2);
+    x3  = com.get(i_x3);
+    x4  = com.get(i_x4);
+    x5  = com.get(i_x5);
+    x6  = com.get(i_x6);
+    x7  = com.get(i_x7);
+    x8  = com.get(i_x8);
+    x9  = com.get(i_x9);
+    x10 = com.get(i_x10);
+  }
+
+
   fanSpeed = com.get(i_fanSpeed);
   analogWrite(fetPin,(int) fanSpeed);
 

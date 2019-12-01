@@ -61,6 +61,13 @@
          </widget>
         </item>
         <item>
+         <widget class="QLabel" name="modeTextLabel">
+          <property name="text">
+           <string/>
+          </property>
+         </widget>
+        </item>
+        <item>
          <widget class="QTabWidget" name="tabWidget">
           <property name="enabled">
            <bool>true</bool>
@@ -516,7 +523,7 @@
                </widget>
               </item>
               <item>
-               <spacer name="horizontalSpacer_11">
+               <spacer name="horizontalSpacer_3">
                 <property name="orientation">
                  <enum>Qt::Horizontal</enum>
                 </property>
@@ -904,13 +911,6 @@
            </widget>
           </item>
          </layout>
-        </item>
-        <item>
-         <widget class="QLabel" name="modeTextLabel">
-          <property name="text">
-           <string/>
-          </property>
-         </widget>
         </item>
         <item>
          <spacer name="verticalSpacer">

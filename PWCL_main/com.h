@@ -13,16 +13,20 @@
 #define i_temperature  11
 #define i_tempFiltered 12
 #define i_time         13
-#define i_X1           14 
-#define i_X2           15 
-#define i_X3           16
-#define i_X4           17
-#define i_X5           18 
-#define i_X6           19
-#define i_X7           20
-#define i_X8           21
-#define i_X9           22
-#define i_X10          23 
+#define i_x1           14 
+#define i_x2           15 
+#define i_x3           16
+#define i_x4           17
+#define i_x5           18 
+#define i_x6           19
+#define i_x7           20
+#define i_x8           21
+#define i_x9           22
+#define i_x10          23 
+
+#define PRECISION 8
+#define ERR         0.000000001
+#define PRECF "%.8f"
 #define BUFFERSIZE 500
 #define NUMPARAMS 24
 
@@ -31,7 +35,7 @@
 // Compile for Arduino
 #define PRINT_SOURCE Serial.print("(A) ")
 #define PRINT(msg) Serial.print(msg)
-#define PRINT_FLOAT(val) Serial.print(val, 8)
+#define PRINT_FLOAT(val) Serial.print(val, PRECISION)
 #define PRINT_INT(val) Serial.print(val)
 #else
 // Compile for C++
@@ -40,7 +44,7 @@
 #include <iostream>
 #define PRINT_SOURCE std::cout << "(C) "
 #define PRINT(msg) std::cout << msg
-#define PRINT_FLOAT(val) printf("%.8f", val)
+#define PRINT_FLOAT(val) printf(PRECF, val)
 #define PRINT_INT(val) printf("%u", val)
 #endif
 
@@ -66,8 +70,21 @@ COM()
     delete this->arrQueu;
 }
 
+/***
+    Set the value in the arrVals to 'value'
+    updates the arrQueu[index] flag so the new value is sent to the port
+    if 'value' and arrVals[index] are the same (within the ERR #defined) 
+    the arrQueu[index] will not be updated
+*/
 void set(int index, float value)
 {
+    if ( fabs(value) - fabs(arrVals[index]) > ERR) {
+        arrVals[index] = value;
+        arrQueu[index] = true; 
+    }
+}
+
+void setAndSend(int index, float value) {
     arrVals[index] = value;
     arrQueu[index] = true; 
 }
@@ -87,6 +104,7 @@ void sendUpdatedValues()
             PRINT(">");
             PRINT_FLOAT(arrVals[i]);
             PRINT(",");
+            arrQueu[i] = false; 
         }
     }
     PRINT("]\n");
