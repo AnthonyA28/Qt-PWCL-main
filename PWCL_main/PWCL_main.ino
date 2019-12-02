@@ -211,28 +211,34 @@ COM com;
 char buffer[BUFFERSIZE];
 void check_input()
 {
-  // checks for input from the port and potentially changes parameters
-  /*  I dont use the serial.readString becuse it will read ANY size input
-  presenting the possibiliity of a buffer overflow. this will read up to a closing bracket
-  or until the input buffer is at max capacity.
+  /*  
+  IF there is data from the port, read UNTIL there is a null chracter, or a closing bracket. 
+  This has the potential for locking up if no terminating charcter ']' or '\0' usu found so be careful. 
+  Dont use delays in here, as that will cause long strings to be chopped up. 
+  Dont use the serial.readString becuse it doesnt work properly (1% of time)   
+  
+    https://forum.arduino.cc/index.php?topic=185757.0
+    "Serial data should be read as fast as it becomes available." (or faster) 
+
   */
   if (Serial.available()) {
-    int j = 0;
-    for (unsigned int i = 0; i < BUFFERSIZE - 1 && j < 500; i ++) {
+    for (unsigned int i = 0; i < BUFFERSIZE - 1; i ++) {
       char c = Serial.read();
       if ( c == -1){
         i -=1;
-        j +=1;
         continue;
       }
       buffer[i] = c; // place this character in the input buffer
+      
+      if ( c == '[' && i > 1) { // handle cases in which input looks like: [0>1,[0>1,>25.375,] by resetting the pointer i to the first character in the buffer      
+        i = 0; 
+      }
       if (c == ']' || c == '\0' ) { // stop reading chracters if we have read the last bracket or a null charcter
         buffer[i+1] = '\0'; // this will null terminate the buffer
         break;
       }
       if (c == '!')
         shutdown();
-      delay(30);
     }
     while (Serial.available())
       char _ = Serial.read(); // this throws aways any other character in the buffer after the first right bracket
