@@ -191,17 +191,19 @@ bool positionFlag = false; // set to 1 for the position form of the PID law, to 
 
 enum MODE {manual,automatic, custom}; //AA enumerate manual=0, automatic=1, custom=2
 enum MODE mode;  
-//AA Extra parameters for custom mode 
-float x1;
-float x2;
-float x3;
-float x4;
-float x5;
-float x6;
-float x7;
-float x8;
-float x9;
-float x10;
+/*AA
+* If you would like to utilize custom variables, replace all instances of the parameter names below with your named parameter
+*/
+float ex_cstm_param_1;
+float ex_cstm_param_2;
+float ex_cstm_param_3;
+float ex_cstm_param_4;
+float ex_cstm_param_5;
+float ex_cstm_param_6;
+float ex_cstm_param_7;
+float ex_cstm_param_8;
+float ex_cstm_param_9;
+float ex_cstm_param10;
 
 COM con; //AA a datastructure used to read and send parameters to the port (see com.h)
 
@@ -461,16 +463,16 @@ void loop(void)
   con.setAndSend(i_filterAll, filterAll);
   con.setAndSend(i_positionForm, positionFlag);
   con.setAndSend(i_pOnNominal, percentRelayOnNominal);
-  con.setAndSend(i_x1, x1);
-  con.setAndSend(i_x2, x2);
-  con.setAndSend(i_x3, x3);
-  con.setAndSend(i_x4, x4);
-  con.setAndSend(i_x5, x5);
-  con.setAndSend(i_x6, x6);
-  con.setAndSend(i_x7, x7);
-  con.setAndSend(i_x8, x8);
-  con.setAndSend(i_x9, x9);
-  con.setAndSend(i_x10, x10);
+  con.setAndSend(i_x1, ex_cstm_param_1);
+  con.setAndSend(i_x2, ex_cstm_param_2);
+  con.setAndSend(i_x3, ex_cstm_param_3);
+  con.setAndSend(i_x4, ex_cstm_param_4);
+  con.setAndSend(i_x5, ex_cstm_param_5);
+  con.setAndSend(i_x6, ex_cstm_param_6);
+  con.setAndSend(i_x7, ex_cstm_param_7);
+  con.setAndSend(i_x8, ex_cstm_param_8);
+  con.setAndSend(i_x9, ex_cstm_param_9);
+  con.setAndSend(i_x10, ex_cstm_param10);
 
   relayCare();
 
@@ -510,16 +512,16 @@ void loop(void)
   }
   //AA If in custom mode, set the custom parameters. 
   if (mode == custom) {
-    x1  = con.get(i_x1);
-    x2  = con.get(i_x2);
-    x3  = con.get(i_x3);
-    x4  = con.get(i_x4);
-    x5  = con.get(i_x5);
-    x6  = con.get(i_x6);
-    x7  = con.get(i_x7);
-    x8  = con.get(i_x8);
-    x9  = con.get(i_x9);
-    x10 = con.get(i_x10);
+    ex_cstm_param_1  = con.get(i_x1);
+    ex_cstm_param_2  = con.get(i_x2);
+    ex_cstm_param_3  = con.get(i_x3);
+    ex_cstm_param_4  = con.get(i_x4);
+    ex_cstm_param_5  = con.get(i_x5);
+    ex_cstm_param_6  = con.get(i_x6);
+    ex_cstm_param_7  = con.get(i_x7);
+    ex_cstm_param_8  = con.get(i_x8);
+    ex_cstm_param_9  = con.get(i_x9);
+    ex_cstm_param10 = con.get(i_x10);
   }
 
   fanSpeed = con.get(i_fanSpeed);
