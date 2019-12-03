@@ -209,8 +209,8 @@ char buffer[BUFFERSIZE]; // a buffer used by COM to store data to and from the p
 
 
 /***AA
-  Checks the port for incoming data and reads incoming data into the buffer
-  If there is not message at the port, this returns immediately  
+*   Checks the port for incoming data and reads incoming data into the buffer
+*   If there is not message at the port, this returns immediately  
 */
 void check_input()
 {
@@ -230,11 +230,11 @@ void check_input()
         continue;
       }
       buffer[bp] = ch; //AA place this character in the input buffer   
-      if ( ch == '[' && i > 1) { //AA handle cases in which input looks like: [0>1,[0>1,>25.375,] by resetting the pointer i to the first character in the buffer      
+      if ( ch == '[' && bp > 1) { //AA handle cases in which input looks like: [0>1,[0>1,>25.375,] by resetting the pointer i to the first character in the buffer      
         bp = 0; 
       }
       if (ch == ']' || ch == '\0' ) { //AA stop reading chracters if we have read the last bracket or a null charcter
-        buffer[i+1] = '\0'; //AA this will null terminate the buffer
+        buffer[bp+1] = '\0'; //AA this will null terminate the buffer
         break;
       }
       if (ch == '!')
