@@ -189,12 +189,9 @@ float Tmax = 60; // maximum safe temperature
 bool filterAll = false; // If not set only the derivative term is filtered
 bool positionFlag = false; // set to 1 for the position form of the PID law, to 0 for the velocity form
 
-
-enum MODE {manual,automatic, custom};
+enum MODE {manual,automatic, custom}; //AA enumerate manual=0, automatic=1, custom=2
 enum MODE mode;  
-
-
-
+//AA Extra parameters for custom mode 
 float x1;
 float x2;
 float x3;
@@ -206,43 +203,46 @@ float x8;
 float x9;
 float x10;
 
-COM com;
+COM con; //AA a datastructure used to read and send parameters to the port (see com.h)
 
-char buffer[BUFFERSIZE];
+char buffer[BUFFERSIZE]; // a buffer used by COM to store data to and from the port 
+
+
+/***AA
+  Checks the port for incoming data and reads incoming data into the buffer
+  If there is not message at the port, this returns immediately  
+*/
 void check_input()
 {
-  /*  
+  /*AA  
   IF there is data from the port, read UNTIL there is a null chracter, or a closing bracket. 
   This has the potential for locking up if no terminating charcter ']' or '\0' usu found so be careful. 
   Dont use delays in here, as that will cause long strings to be chopped up. 
   Dont use the serial.readString becuse it doesnt work properly (1% of time)   
-  
     https://forum.arduino.cc/index.php?topic=185757.0
     "Serial data should be read as fast as it becomes available." (or faster) 
-
   */
   if (Serial.available()) {
-    for (unsigned int i = 0; i < BUFFERSIZE - 1; i ++) {
-      char c = Serial.read();
-      if ( c == -1){
-        i -=1;
+    for (unsigned int bp = 0; bp < BUFFERSIZE - 2; bp ++) { //AA bp is a pointer to the buffer 
+      char ch = Serial.read();
+      if ( ch == -1){
+        bp -=1; //AA subtract so that this cycle through the loop doesnt increment the pointer to the buffer 
         continue;
       }
-      buffer[i] = c; // place this character in the input buffer
-      
-      if ( c == '[' && i > 1) { // handle cases in which input looks like: [0>1,[0>1,>25.375,] by resetting the pointer i to the first character in the buffer      
-        i = 0; 
+      buffer[bp] = ch; //AA place this character in the input buffer   
+      if ( ch == '[' && i > 1) { //AA handle cases in which input looks like: [0>1,[0>1,>25.375,] by resetting the pointer i to the first character in the buffer      
+        bp = 0; 
       }
-      if (c == ']' || c == '\0' ) { // stop reading chracters if we have read the last bracket or a null charcter
-        buffer[i+1] = '\0'; // this will null terminate the buffer
+      if (ch == ']' || ch == '\0' ) { //AA stop reading chracters if we have read the last bracket or a null charcter
+        buffer[i+1] = '\0'; //AA this will null terminate the buffer
         break;
       }
-      if (c == '!')
+      if (ch == '!')
         shutdown();
     }
     while (Serial.available())
-      char _ = Serial.read(); // this throws aways any other character in the buffer after the first right bracket
-    com.deserialize_array(buffer);
+      char _ = Serial.read(); //AA this throws aways any extra characters in the port 
+    con.deserialize_array(buffer);
   }
 }
 
@@ -302,7 +302,7 @@ void shutdown()
   mode = manual;
   while (true)
   {
-    // delay indefinately
+    //AA delay indefinately
     delay(1000);
   }
 }
@@ -346,8 +346,7 @@ void loop(void)
 
 
   startConversionTime = millis();
-  while (millis() - startConversionTime < probeTime)    //wait for probe to finish conversion
-  {
+  while (millis() - startConversionTime < probeTime) {   //wait for probe to finish conversion
     relayCare();
   }
 
@@ -427,9 +426,12 @@ void loop(void)
     }
   }
 
-  // CUSTOM CONTROL
 
+  //AA CUSTOM CONTROL
   if (mode == custom) {
+    /*
+      Add custom tuning code here 
+    */
   }
 
 
@@ -440,80 +442,87 @@ void loop(void)
     shutdown();
   }
 
-  /* place current values in the output array */
-  com.setAndSend(i_mode, mode);
-  if(mode == manual){ com.setAndSend(i_setPoint, temperature); }  // if its in manual mode it will sent the current temp in place of the setpoin)t
-  else { com.setAndSend(i_setPoint, TsetPoint); }
-  com.setAndSend(i_percentOn, percentRelayOn);
-  com.setAndSend(i_kc, Kc);
-  com.setAndSend(i_tauI, tauI);
-  com.setAndSend(i_tauD, tauD);
-  com.setAndSend(i_tauF, tauF);
-  com.setAndSend(i_fanSpeed, fanSpeed);
-  com.setAndSend(i_temperature, temperature);
-  com.setAndSend(i_tempFiltered, tempFiltered);
-  com.setAndSend(i_time, millis() /60000.0);
-  com.setAndSend(i_filterAll, filterAll);
-  com.setAndSend(i_positionForm, positionFlag);
-  com.setAndSend(i_pOnNominal, percentRelayOnNominal);
-  com.setAndSend(i_x1, x1);
-  com.setAndSend(i_x2, x2);
-  com.setAndSend(i_x3, x3);
-  com.setAndSend(i_x4, x4);
-  com.setAndSend(i_x5, x5);
-  com.setAndSend(i_x6, x6);
-  com.setAndSend(i_x7, x7);
-  com.setAndSend(i_x8, x8);
-  com.setAndSend(i_x9, x9);
-  com.setAndSend(i_x10, x10);
+  /*AA
+   Place current values in the output array
+   If you add parameters that must be sent to and fro the interface, ensure you call COM.setAndSend() with it.
+   */
+  con.setAndSend(i_mode, mode);
+  if(mode == manual){ con.setAndSend(i_setPoint, temperature); }  //AA if its in manual mode it will sent the current temp in place of the setpoin)t
+  else { con.setAndSend(i_setPoint, TsetPoint); }
+  con.setAndSend(i_percentOn, percentRelayOn);
+  con.setAndSend(i_kc, Kc);
+  con.setAndSend(i_tauI, tauI);
+  con.setAndSend(i_tauD, tauD);
+  con.setAndSend(i_tauF, tauF);
+  con.setAndSend(i_fanSpeed, fanSpeed);
+  con.setAndSend(i_temperature, temperature);
+  con.setAndSend(i_tempFiltered, tempFiltered);
+  con.setAndSend(i_time, millis() /60000.0);
+  con.setAndSend(i_filterAll, filterAll);
+  con.setAndSend(i_positionForm, positionFlag);
+  con.setAndSend(i_pOnNominal, percentRelayOnNominal);
+  con.setAndSend(i_x1, x1);
+  con.setAndSend(i_x2, x2);
+  con.setAndSend(i_x3, x3);
+  con.setAndSend(i_x4, x4);
+  con.setAndSend(i_x5, x5);
+  con.setAndSend(i_x6, x6);
+  con.setAndSend(i_x7, x7);
+  con.setAndSend(i_x8, x8);
+  con.setAndSend(i_x9, x9);
+  con.setAndSend(i_x10, x10);
 
-  /* fill the ouput char buffer with the contents of the output array */
-  com.sendUpdatedValues();
+  relayCare();
+
+  //AA fill the ouput char buffer with the contents of the output array 
+  con.sendUpdatedValues();
   while (millis() < tLoopStart + stepSize) {
     relayCare();
     check_input();
   }
 
+  relayCare();
 
-  // Change any values that must be changed based off the input from the port. 
-
-  if ( mode == com.get(i_mode) && mode ==  automatic){  // not changing mode
-    TsetPoint = com.get(i_setPoint);   // only set the set point when we are NOT changing the mode
+  /*AA
+   Change any values that must be changed based off the input from the port. 
+   If you add parameters that must be sent to and fro the interface, ensure you call COM.get() with it.
+  */
+  if ( mode == con.get(i_mode) && mode ==  automatic){  //AA not changing mode
+    TsetPoint = con.get(i_setPoint);   //AA only set the set point when we are NOT changing the mode
   }
-  else if ( mode == com.get(i_mode)  && mode != manual  ){   // not changing mode
-    percentRelayOn = com.get(i_percentOn);    // only set the percent on when we are NOT chaning th mode
+  else if ( mode == con.get(i_mode)  && mode != manual  ){   //AA not changing mode
+    percentRelayOn = con.get(i_percentOn);    //AA only set the percent on when we are NOT chaning th mode
   }
-  else if ( mode != com.get(i_mode) && mode != automatic) {   // transition  to automatic
+  else if ( mode != con.get(i_mode) && mode != automatic) {   //AA transition  to automatic
     TsetPoint = temperature;
   }
-  mode = (MODE)com.get(i_mode); // set the mode 
+  mode = (MODE)con.get(i_mode); //AA set the mode 
 
-  // If in automatic mode, set the automatic parameters. 
+  //AA If in automatic mode, set the automatic parameters. 
   if (mode == automatic) {
-    Kc                    = com.get(i_kc);
-    tauI                  = com.get(i_tauI);
-    tauD                  = com.get(i_tauD);
-    tauF                  = com.get(i_tauF);
-    filterAll             = com.get(i_filterAll);
-    positionFlag          = com.get(i_positionForm);
-    percentRelayOnNominal = com.get(i_pOnNominal);
+    Kc                    = con.get(i_kc);
+    tauI                  = con.get(i_tauI);
+    tauD                  = con.get(i_tauD);
+    tauF                  = con.get(i_tauF);
+    filterAll             = con.get(i_filterAll);
+    positionFlag          = con.get(i_positionForm);
+    percentRelayOnNominal = con.get(i_pOnNominal);
   }
-  // If in custom mode, set the custom parameters. 
+  //AA If in custom mode, set the custom parameters. 
   if (mode == custom) {
-    x1  = com.get(i_x1);
-    x2  = com.get(i_x2);
-    x3  = com.get(i_x3);
-    x4  = com.get(i_x4);
-    x5  = com.get(i_x5);
-    x6  = com.get(i_x6);
-    x7  = com.get(i_x7);
-    x8  = com.get(i_x8);
-    x9  = com.get(i_x9);
-    x10 = com.get(i_x10);
+    x1  = con.get(i_x1);
+    x2  = con.get(i_x2);
+    x3  = con.get(i_x3);
+    x4  = con.get(i_x4);
+    x5  = con.get(i_x5);
+    x6  = con.get(i_x6);
+    x7  = con.get(i_x7);
+    x8  = con.get(i_x8);
+    x9  = con.get(i_x9);
+    x10 = con.get(i_x10);
   }
 
-
-  fanSpeed = com.get(i_fanSpeed);
+  fanSpeed = con.get(i_fanSpeed);
   analogWrite(fetPin,(int) fanSpeed);
 
 }
