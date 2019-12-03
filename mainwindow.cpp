@@ -22,7 +22,7 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 enum MODE {manual,automatic, custom};
 enum MODE mode;  
-/*
+/**
 *   Called when the application is first opened.
 *   Configures main window, log files, and more..
 */
@@ -33,18 +33,19 @@ MainWindow::MainWindow(QWidget *parent) :
 
     ui->setupUi(this);
     ui->mainToolBar->close(); // we dont need a toolbar
-    // timer is used to repeatedly check for port data until we are connected
-    this->timerId = startTimer(250);  // timer is used to repeatedly check for port data until we are connected
-    // indicates when we are connected to the port AND the correct arduino program is being run
+    // Timer is used to repeatedly check for port data until we are connected
+    this->timerId = startTimer(250);
+    // Indicates when we are connected to the port AND the correct arduino program is being run
     this->validConnection = false;
-    // have the table resize with the window
+    // Have the table resize with the window
     ui->outputTable->horizontalHeader()->setSectionResizeMode(QHeaderView::Stretch);   // have the table resize with the window
-    // deafault the tab widget on manual, and disable any input (until we are connected)
+    // Default the tab widget on manual, and disable any input (until we are connected)
     ui->tabWidget->setCurrentIndex(0);
     ui->tabWidget->setTabEnabled(0,false);
     ui->tabWidget->setTabEnabled(1,false);
     ui->tabWidget->setTabEnabled(2,false);
 
+    
     /*
     *  Connect functions from the PORT class to functions declared in the MainWIndow class and vice versa.
     */
@@ -65,15 +66,17 @@ MainWindow::MainWindow(QWidget *parent) :
     newDir.cdUp();  // go one directory up so we dont place our output next to the dependencies
     QDir::setCurrent(newDir.path());
 
-    // create the media player
+    /* 
+    *  Create the media player
+    */
     this->player = new QMediaPlayer;
     player->setMedia(QUrl("qrc:/sound/alarm.wav"));
 
 
-    // Create file titles with the current date and time
+    /*
+    *  Create the excel file and specify the column headers 
+    */
     this->excelFileName = "Data-Main.xlsx";
-
-    // give the excel file column headers
     this->xldoc.write( 1 , 1, "Time");
     this->xldoc.write( 1 , 2, "Percent On");
     this->xldoc.write( 1 , 3, "Temperature");
@@ -82,7 +85,7 @@ MainWindow::MainWindow(QWidget *parent) :
     this->xldoc.write( 1 , 6, "Fan Speed");
 
     /*
-    * Set up the live plot on the GUI/
+    * Set up the live plot on the GUI
     * The set point must have a special scatterstyle so it doesnt connect the lines
     */
     ui->plot->addGraph();
@@ -104,7 +107,6 @@ MainWindow::MainWindow(QWidget *parent) :
     ui->plot->addGraph();
     ui->plot->graph(3)->setName("Percent Heater on");
     ui->plot->graph(3)->setPen(QPen(QColor("purple"))); // line color for the first graph
-
 
     ui->plot->xAxis2->setVisible(true);  // show x ticks at top
     ui->plot->xAxis2->setVisible(false); // dont show labels at top
@@ -146,6 +148,10 @@ MainWindow::~MainWindow()
 void MainWindow::showRequest(const QString &req)
 {
     qDebug() << "request " << req <<"\n";
+
+    /*
+    *  If the Message contains a '!' and 'overheat', that means that it overheated, so play the alarm. 
+    */
     if (req.contains('!')) {
         ui->emergencyMessageLabel->setText(req);
         if(req.contains("overheat")) {
@@ -157,22 +163,29 @@ void MainWindow::showRequest(const QString &req)
     }
 
 
-//    for ( int i = 0; i < 300; i ++ ) {
-//        com.buffer[i] = ba[i];
-//    }
-    QByteArray ba = req.toLocal8Bit();
+    QByteArray ba = req.toLocal8Bit(); // Have to change the data type of the request to a C style string in otder to call COM.deserialize array with it 
     char *c_str = ba.data();
+
+    /*
+    *  Deserialize the request (message) from the port and update parameters as needed. 
+    */
     if(com.deserialize_array( c_str )) {
 
+        /*
+        *  If the connection was not made established, then setup the prelimenaries. 
+        */
         if (!this->validConnection) {
             this->validConnection = true;  // String was parsed therefore the correct arduino program is uploaded
-            // enable the tab widgets so the user an input vales
+            // enable the tab widgets so the user can input vales
             ui->tabWidget->setTabEnabled(0,true);
             ui->tabWidget->setTabEnabled(1,true);
             ui->tabWidget->setTabEnabled(2,true);
             ui->emergencyMessageLabel->clear();
 
-            // open the csv file and give it a header
+            /*
+            *  Set up the CSV file 
+            *  The files belongs in '\log_files' 
+            */ 
             QDir backupDir("log_files");
             if( !backupDir.exists() )
                  backupDir.mkpath(".");
