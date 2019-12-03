@@ -71,10 +71,10 @@ COM()
 }
 
 /***
-    Set the value in the arrVals to 'value'
-    updates the arrQueu[index] flag so the new value is sent to the port
-    if 'value' and arrVals[index] are the same (within the ERR #defined) 
-    the arrQueu[index] will not be updated
+*   Set the value represented by 'index' to 'value'
+*   updates the arrQueu[index] flag so the new value is sent to the port
+*   if 'value' and arrVals[index] are the same (within the ERR #defined) 
+*   the arrQueu[index] will not be updated
 */
 void set(int index, float value)
 {
@@ -84,17 +84,29 @@ void set(int index, float value)
     }
 }
 
+
+/***
+*   Set the values represented by 'index' to 'value'
+*   Then send the value to the port regardless of whether it has been changed 
+*/  
 void setAndSend(int index, float value) {
     arrVals[index] = value;
     arrQueu[index] = true; 
 }
 
+
+/***
+*   Retun the value from the port represented by 'index'
+*/
 float get(int index)
 {
     return arrVals[index];
 }
 
 
+/***
+*   Send only the updated values to the port 
+*/
 void sendUpdatedValues()
 {
     PRINT("[");
@@ -111,6 +123,9 @@ void sendUpdatedValues()
 }
 
 
+/***
+*   Show the current values in arrvals (those from the port) 
+*/
 void showCurrentValues()
 {
     PRINT("[");
@@ -121,16 +136,17 @@ void showCurrentValues()
     PRINT("]\n");
 }
 
+
 /***
-  parses 'input' (which should be in an arrValsay format) for the parameters in the prespecified order
-  Ex:
-      if input = [23.89, 324]
-      then
-        arrVals[0] => 23.89
-        arrVals[1] => 324
-      then you could do..
-        COM.get(0);
-      which returns 23.89
+*  parses 'input' (which should be in an arrValsay format) for the parameters in the prespecified order
+*  Ex:
+*      if input = [23.89, 324]
+*      then
+*        arrVals[0] => 23.89
+*        arrVals[1] => 324
+*      then you could do..
+*        COM.get(0);
+*      which returns 23.89
 */
 bool deserialize_array(char* paramStr)
 {
@@ -182,7 +198,7 @@ bool deserialize_array(char* paramStr)
         if (*p == '>') { 
             p++;
             float x = strtod(p, &pEnd);
-            recieve(index, x);
+            recieve(index, x); // todo: this should just use set()
             p = pEnd;
         }
         while (*p != ',' && *p != ']' && *p){
@@ -195,6 +211,7 @@ bool deserialize_array(char* paramStr)
 }
 
 private:
+
 
 
 void recieve(int index, float value) 
