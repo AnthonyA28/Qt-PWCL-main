@@ -432,7 +432,7 @@ void loop(void)
   //AA CUSTOM CONTROL
   if (mode == custom) {
     /*
-      Add custom tuning code here 
+      Add custom code here (utilize the custom parameters)
     */
   }
 
@@ -521,7 +521,7 @@ void loop(void)
     ex_cstm_param_7  = con.get(i_x7);
     ex_cstm_param_8  = con.get(i_x8);
     ex_cstm_param_9  = con.get(i_x9);
-    ex_cstm_param10 = con.get(i_x10);
+    ex_cstm_param10  = con.get(i_x10);
   }
 
   fanSpeed = con.get(i_fanSpeed);
