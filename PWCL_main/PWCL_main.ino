@@ -227,7 +227,12 @@ void check_input()
   if (Serial.available()) {
     for (unsigned int bp = 0; bp < BUFFERSIZE - 2; bp ++) { //AA bp is a pointer to the buffer 
       char ch = Serial.read();
-      if ( ch == -1){
+      if (ch == ']' || ch == '\0' || ch == '\n' ) { //AA stop reading chracters if we have read the last bracket or a null charcter
+        buffer[bp] = ch;
+        buffer[bp+1] = '\0'; //AA this will null terminate the buffer
+        break;
+      }
+      if ( ch == -1 ){
         bp -=1; //AA subtract so that this cycle through the loop doesnt increment the pointer to the buffer 
         continue;
       }
@@ -235,10 +240,7 @@ void check_input()
       if ( ch == '[' && bp > 1) { //AA handle cases in which input looks like: [0>1,[0>1,>25.375,] by resetting the pointer i to the first character in the buffer      
         bp = 0; 
       }
-      if (ch == ']' || ch == '\0' ) { //AA stop reading chracters if we have read the last bracket or a null charcter
-        buffer[bp+1] = '\0'; //AA this will null terminate the buffer
-        break;
-      }
+      
       if (ch == '!')
         shutdown();
     }
@@ -489,13 +491,13 @@ void loop(void)
    Change any values that must be changed based off the input from the port. 
    If you add parameters that must be sent to and fro the interface, ensure you call COM.get() with it.
   */
-  if ( mode == con.get(i_mode) && mode ==  automatic){  //AA not changing mode
+  if ( mode == (MODE)con.get(i_mode) && mode ==  automatic){  //AA not changing mode
     TsetPoint = con.get(i_setPoint);   //AA only set the set point when we are NOT changing the mode
   }
-  else if ( mode == con.get(i_mode)  && mode != manual  ){   //AA not changing mode
+  else if ( mode == (MODE)con.get(i_mode)  && mode == manual  ){   //AA not changing mode
     percentRelayOn = con.get(i_percentOn);    //AA only set the percent on when we are NOT chaning th mode
   }
-  else if ( mode != con.get(i_mode) && mode != automatic) {   //AA transition  to automatic
+  else if ( mode != (MODE)con.get(i_mode) && mode != automatic) {   //AA transition  to automatic
     TsetPoint = temperature;
   }
   mode = (MODE)con.get(i_mode); //AA set the mode 
