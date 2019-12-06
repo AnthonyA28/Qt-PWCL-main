@@ -24,9 +24,9 @@
 #define i_x9           22
 #define i_x10          23 
 
-#define PRECISION 8
-#define ERR         0.000000001
-#define PRECF "%.8f"
+#define PRECISION 4
+#define ERR         0.000001
+#define PRECF "%.4f"
 #define BUFFERSIZE 500
 #define NUMPARAMS 24
 
@@ -150,10 +150,15 @@ void showCurrentValues()
 */
 bool deserialize_array(char* paramStr)
 {
+  if( *paramStr == '\n' || *paramStr == '\0' ){return false;}
     /* Ensure that the input string has the correct format and number of numbers to be parsed*/
     const char*  p = paramStr;
     unsigned int numB   = 0;   // number of brackets
     unsigned int numV   = 0;   // number of values
+//
+//     PRINT("recieved");
+//     PRINT(paramStr);
+//     PRINT("()\n");
 
     while (*p) {
       if (*p == '[') { numB++;
@@ -161,13 +166,13 @@ bool deserialize_array(char* paramStr)
       } else if ( *p == ',' ) {numV++;
       } p++;
     }
-    if (numB != 2) {
-        PRINT_SOURCE;
-        PRINT("Parse error: Invalid Message: \n");
-        PRINT(paramStr);
-        PRINT("\n");
-        return false;
-    }
+//    if (numB != 2) {
+//        PRINT_SOURCE;
+//        PRINT("Parse error: Invalid Message: \n");
+//        PRINT(paramStr);
+//        PRINT("\n");
+//        return false;
+//    }
 
     char* pEnd;
     p = paramStr;
@@ -216,6 +221,7 @@ private:
 
 void recieve(int index, float value) 
 {
+  
     if(index>=NUMPARAMS) {
         PRINT("ERROR: invalid value change");
         return;

@@ -193,6 +193,7 @@ enum MODE {manual,automatic, custom}; //AA enumerate manual=0, automatic=1, cust
 enum MODE mode;  
 /*AA
 * If you would like to utilize custom variables, replace all instances of the parameter names below with your named parameter
+* // USE 20 Params!
 */
 float ex_cstm_param_1;
 float ex_cstm_param_2;
@@ -224,20 +225,20 @@ void check_input()
     https://forum.arduino.cc/index.php?topic=185757.0
     "Serial data should be read as fast as it becomes available." (or faster) 
   */
+
   if (Serial.available()) {
-    for (unsigned int bp = 0; bp < BUFFERSIZE - 2; bp ++) { //AA bp is a pointer to the buffer 
+    for (unsigned int bp = 0; bp < BUFFERSIZE; bp ++) { //AA bp is a pointer to the buffer 
       char ch = Serial.read();
-      if (ch == ']' || ch == '\0' || ch == '\n' ) { //AA stop reading chracters if we have read the last bracket or a null charcter
-        buffer[bp] = ch;
-        buffer[bp+1] = '\0'; //AA this will null terminate the buffer
-        break;
-      }
+      
       if ( ch == -1 ){
         bp -=1; //AA subtract so that this cycle through the loop doesnt increment the pointer to the buffer 
         continue;
-      }
+      }   
       buffer[bp] = ch; //AA place this character in the input buffer   
-      if ( ch == '[' && bp > 1) { //AA handle cases in which input looks like: [0>1,[0>1,>25.375,] by resetting the pointer i to the first character in the buffer      
+      if (ch == ']' || ch == '\0' || ch == '\n' ) { //AA stop reading chracters if we have read the last bracket or a null charcter  
+        break;
+      }
+      if ( ch == '[' ) { //AA handle cases in which input looks like: [0>1,[0>1,>25.375,] by resetting the pointer i to the first character in the buffer      
         bp = 0; 
       }
       
@@ -245,8 +246,12 @@ void check_input()
         shutdown();
     }
     while (Serial.available())
-      char _ = Serial.read(); //AA this throws aways any extra characters in the port 
+     char _ = Serial.read(); //AA this throws aways any extra characters in the port 
     con.deserialize_array(buffer);
+      for (unsigned int bp = 0; bp < BUFFERSIZE ; bp ++)
+  {
+    buffer[bp]='\0';
+  }
   }
 }
 
@@ -433,6 +438,7 @@ void loop(void)
 
   //AA CUSTOM CONTROL
   if (mode == custom) {
+    
     /*
       Add custom code here (utilize the custom parameters)
     */
