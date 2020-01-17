@@ -522,7 +522,7 @@
               <item>
                <widget class="QLabel" name="label_16">
                 <property name="text">
-                 <string>X1</string>
+                 <string> X1</string>
                 </property>
                </widget>
               </item>
@@ -556,7 +556,7 @@
               <item>
                <widget class="QLabel" name="label_17">
                 <property name="text">
-                 <string>X2</string>
+                 <string> X2</string>
                 </property>
                </widget>
               </item>
@@ -590,7 +590,7 @@
               <item>
                <widget class="QLabel" name="label_18">
                 <property name="text">
-                 <string>X3</string>
+                 <string> X3</string>
                 </property>
                </widget>
               </item>
@@ -624,7 +624,7 @@
               <item>
                <widget class="QLabel" name="label_19">
                 <property name="text">
-                 <string>X4</string>
+                 <string> X4</string>
                 </property>
                </widget>
               </item>
@@ -658,7 +658,7 @@
               <item>
                <widget class="QLabel" name="label_20">
                 <property name="text">
-                 <string>X5</string>
+                 <string> X5</string>
                 </property>
                </widget>
               </item>
@@ -692,7 +692,7 @@
               <item>
                <widget class="QLabel" name="label_21">
                 <property name="text">
-                 <string>X6</string>
+                 <string> X6</string>
                 </property>
                </widget>
               </item>
@@ -726,7 +726,7 @@
               <item>
                <widget class="QLabel" name="label_22">
                 <property name="text">
-                 <string>X7</string>
+                 <string> X7</string>
                 </property>
                </widget>
               </item>
@@ -760,7 +760,7 @@
               <item>
                <widget class="QLabel" name="label_23">
                 <property name="text">
-                 <string>X8</string>
+                 <string> X8</string>
                 </property>
                </widget>
               </item>
@@ -794,7 +794,7 @@
               <item>
                <widget class="QLabel" name="label_24">
                 <property name="text">
-                 <string>X9</string>
+                 <string> X9</string>
                 </property>
                </widget>
               </item>
@@ -1333,7 +1333,7 @@ Point [°C]</string>
      <x>0</x>
      <y>0</y>
      <width>991</width>
-     <height>21</height>
+     <height>22</height>
     </rect>
    </property>
    <widget class="QMenu" name="menuFile">
