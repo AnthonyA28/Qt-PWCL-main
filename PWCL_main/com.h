@@ -113,7 +113,7 @@ void sendUpdatedValues()
     for (int i = 0; i < NUMPARAMS; i ++ ) {
         if (arrQueu[i]) {
             PRINT_INT(i);
-            PRINT(">");
+            PRINT("=");
             PRINT_FLOAT(arrVals[i]);
             PRINT(",");
             arrQueu[i] = false; 
@@ -155,10 +155,6 @@ bool deserialize_array(char* paramStr)
     const char*  p = paramStr;
     unsigned int numB   = 0;   // number of brackets
     unsigned int numV   = 0;   // number of values
-//
-//     PRINT("recieved");
-//     PRINT(paramStr);
-//     PRINT("()\n");
 
     while (*p) {
       if (*p == '[') { numB++;
@@ -166,13 +162,7 @@ bool deserialize_array(char* paramStr)
       } else if ( *p == ',' ) {numV++;
       } p++;
     }
-//    if (numB != 2) {
-//        PRINT_SOURCE;
-//        PRINT("Parse error: Invalid Message: \n");
-//        PRINT(paramStr);
-//        PRINT("\n");
-//        return false;
-//    }
+
 
     char* pEnd;
     p = paramStr;
@@ -200,7 +190,7 @@ bool deserialize_array(char* paramStr)
             p = pEnd;
         }
         /* Check if the next character is an equal sign*/
-        if (*p == '>') { 
+        if (*p == '=') { 
             p++;
             float x = strtod(p, &pEnd);
             recieve(index, x); // todo: this should just use set()

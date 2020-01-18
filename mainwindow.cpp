@@ -147,7 +147,6 @@ MainWindow::~MainWindow()
 */
 void MainWindow::showRequest(const QString &req)
 {
-    qDebug() << "request " << req <<"\n";
 
     /*
     *  If the Message contains a '!' and 'overheat', that means that it overheated, so play the alarm. 
@@ -382,7 +381,7 @@ void MainWindow::on_setButton_clicked()
                         response.append("");
                         return;
                     }
-                    response.append(QString::number(number)+">"+valStr+",");
+                    response.append(QString::number(number)+"="+valStr+",");
                     return;
                 }
             }
@@ -401,32 +400,32 @@ void MainWindow::on_setButton_clicked()
 
         
         if (mode==manual) {
-            response.append(QString::number(i_mode) + ">0,");  //manual mode
+            response.append(QString::number(i_mode) + "=0,");  //manual mode
             fillArrayAtNextIndex(i_percentOn, "Percent Heater On", ui->percentOntTextBox, 0, 100);
             fillArrayAtNextIndex(i_fanSpeed, "Fan Speed", ui->M_fanSpeedTextBox, 0, 255); 
-            response.append(QString::number(i_filterAll)+">");
+            response.append(QString::number(i_filterAll)+"=");
             response.append( ui->filterAllCheckBox->isChecked() ? "1," : "0," );
-            response.append(QString::number(i_positionForm)+">");
+            response.append(QString::number(i_positionForm)+"=");
             response.append( ui->posFormCheckBox->isChecked()   ? "1," : "0," );
-            response.append(QString::number(i_pOnNominal)+">");
+            response.append(QString::number(i_pOnNominal)+"=");
             response.append( QString::number(static_cast<double>(this->nominalPercentOn)));
 
         } else if (mode==automatic) {
-            response.append(QString::number(i_mode)+">"); response.append( "1," ); // automatic mode
+            response.append(QString::number(i_mode)+"="); response.append( "1," ); // automatic mode
             fillArrayAtNextIndex(i_setPoint, "Set Point ", ui->setPointTextBox, 10, this->Tmax);  // maximum safe temperature is Tmax;
             fillArrayAtNextIndex(i_kc, "Kc", ui->kcTextBox); 
             fillArrayAtNextIndex(i_tauI, "TauI", ui->tauiTextBox, 0); 
             fillArrayAtNextIndex(i_tauD, "tauD", ui->taudTextBox, 0); 
             fillArrayAtNextIndex(i_tauF, "TauF", ui->taufTextBox, 0); 
             fillArrayAtNextIndex(i_fanSpeed, "Fan Speed", ui->A_fanSpeedTextBox, 0, 255); 
-            response.append(QString::number(i_filterAll)+">");
+            response.append(QString::number(i_filterAll)+"=");
             response.append( ui->filterAllCheckBox->isChecked() ? "1," : "0," );
-            response.append(QString::number(i_positionForm)+">");
+            response.append(QString::number(i_positionForm)+"=");
             response.append( ui->posFormCheckBox->isChecked()   ? "1," : "0," );
-            response.append(QString::number(i_pOnNominal)+">");
+            response.append(QString::number(i_pOnNominal)+"=");
             response.append( QString::number(static_cast<double>(this->nominalPercentOn)));
         } else if (mode==custom) {
-            response.append(QString::number(i_mode) + ">2,");  //custom mode
+            response.append(QString::number(i_mode) + "=2,");  //custom mode
             fillArrayAtNextIndex(i_x1, "X1", ui->x1TextBox);
             fillArrayAtNextIndex(i_x2, "X2", ui->x2TextBox);
             fillArrayAtNextIndex(i_x3, "X3", ui->x3TextBox);
