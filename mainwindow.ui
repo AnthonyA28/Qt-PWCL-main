@@ -874,7 +874,7 @@
             </font>
            </property>
            <property name="textAlignment">
-            <set>AlignCenter</set>
+            <set>AlignLeading|AlignVCenter</set>
            </property>
           </column>
           <column>
