@@ -189,6 +189,7 @@ float Tmax = 60; // maximum safe temperature
 bool filterAll = false; // If not set only the derivative term is filtered
 bool autoEnabled = false;  // true when in automatic mode
 bool positionFlag = false; // set to 1 for the position form of the PID law, to 0 for the velocity form
+bool T_sensorOK = true;
 
 /******shared between C++ code */
 #define i_autoMode     0
@@ -424,10 +425,6 @@ void loop(void)
 
   relayCare();
 
-  if (temperature > Tmax) {
-    Serial.println("Shutting down due to overheat!");
-    shutdown();
-  }
 
   /* place current values in the output array */
   com.set(i_autoMode, autoEnabled);
@@ -446,9 +443,25 @@ void loop(void)
   com.set(i_positionForm, positionFlag);
   com.set(i_pOnNominal, percentRelayOnNominal);
 
-  /* fill the ouput char buffer with the contents of the output array */
-  //// dont need this // Serial.println(buffer); // send the output buffer to the port
-  com.printCurVals();
+  /* Check if temperature is within realistic measurement range. */
+  if(temperature < 80.0 && temperature > 0.0){
+    T_sensorOK = true;
+    com.printCurVals(); // show current parameters if the temperature is within realistic range
+  } else { // the probe is malfunctioning because the reading is unrealistic
+    if( T_sensorOK ) {
+      T_sensorOK = false;
+    } else {
+      com.printCurVals(); // show current parameters if the temperature is within realistic range
+      Serial.println("Shutting down due to issue with temperature probe! Check that no wire got loose.");
+      shutdown();   
+    }
+  }
+  /* Check if temperautre outside of safe range and within realistic measurements */
+  if (temperature > Tmax && T_sensorOK) {
+    Serial.println("Shutting down due to overheat!");
+    shutdown();
+  }
+
   while (millis() < tLoopStart + stepSize) {
     relayCare();
     check_input();
