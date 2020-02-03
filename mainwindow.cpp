@@ -32,6 +32,7 @@ MainWindow::MainWindow(QWidget *parent) :
 {
 
     ui->setupUi(this);
+
     ui->mainToolBar->close(); // we dont need a toolbar
     // timer is used to repeatedly check for port data until we are connected
     this->timerId = startTimer(250);  // timer is used to repeatedly check for port data until we are connected
@@ -39,6 +40,7 @@ MainWindow::MainWindow(QWidget *parent) :
     this->validConnection = false;
     // have the table resize with the window
     ui->outputTable->horizontalHeader()->setSectionResizeMode(QHeaderView::Stretch);   // have the table resize with the window
+    ui->outputTable->horizontalHeader()->setDefaultAlignment(Qt::AlignLeft);
     // deafault the tab widget on manual, and disable any input (until we are connected)
     ui->tabWidget->setCurrentIndex(0);
     ui->tabWidget->setTabEnabled(0,false);
