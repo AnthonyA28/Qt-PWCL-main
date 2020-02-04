@@ -91,6 +91,7 @@ private:
 
     int timerId; // for setting up and destroying a timer used to frquently check if port is connected until connected
     void timerEvent(QTimerEvent *event);
+    void closeEvent(QCloseEvent* event);
     PORT port;
     bool validConnection;
 

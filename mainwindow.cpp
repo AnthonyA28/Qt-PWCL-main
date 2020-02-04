@@ -125,7 +125,27 @@ MainWindow::MainWindow(QWidget *parent) :
 
 }
 
-
+void MainWindow::closeEvent( QCloseEvent* event )
+{
+    if( port.L_isConnected() ) {
+        qDebug() << "The port is connected, so the program will not close rn\n";
+        QMessageBox msgBox;
+        msgBox.setText("There is an active connection.");
+        msgBox.setInformativeText("Are you sure you want to end this session?");
+        msgBox.setStandardButtons(QMessageBox::Yes | QMessageBox::No);
+        msgBox.setDefaultButton(QMessageBox::No);
+        int ret = msgBox.exec();
+        if( ret == QMessageBox::Yes ){
+            qDebug() << "Closing the program\n" ;
+            event->accept();
+        } else {
+            event->ignore();
+        }
+    } else {
+        qDebug() << "Closing the program\n" ;
+        event->accept();
+    }
+}
 
 /**
 *   Called when the window is closed.
