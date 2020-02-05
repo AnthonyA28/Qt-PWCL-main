@@ -278,6 +278,8 @@ void MainWindow::showRequest(const QString &req)
             ui->tauiLabel->setNum( tauI);
             ui->taudLabel->setNum( tauD);
             ui->taufLabel->setNum( tauF);
+            ui->setpointLabel->setNum( setPoint );
+            ui->fanspeedLabel_A->setNum( fanSpeed );
             ModeString.append("Automatic\n");
             if ( positionForm  ) ModeString.append("Position Form ");
             else ModeString.append("Velocity Form");
