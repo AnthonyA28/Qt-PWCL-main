@@ -67,7 +67,7 @@
                </font>
               </property>
               <property name="text">
-               <string>TextLabel</string>
+               <string>Manual</string>
               </property>
              </widget>
             </item>
