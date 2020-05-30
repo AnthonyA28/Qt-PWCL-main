@@ -25,15 +25,6 @@ Uses the [ QCustomPlot ](http://www.qcustomplot.com/) library for live graphing.
   * Open the *qt_PWCL_main.pro* file with Qt creator. 
 
 
-## todo:
-* ouput fanspeed to file
-* Feed forward: 
-	1) manual, Automatic FB, Automatic FB FF
-	Parameters (3) :
- 		- K_ff
- 		- T_lead
- 		- T_lag
-
-* Special test, only show score after 59 minutes. 
+## To do:
 * Evidently the export as Excel File option does not work on Ubuntu builds. 
-* remove the toolbar with ui->mainToolBar->close();
+
