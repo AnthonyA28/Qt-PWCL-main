@@ -1,3 +1,9 @@
+
+/*
+  The following preprocessor directives allow for a few fuctions to be used by both the arduino and the C++ code.
+  PRINT_MESSAGE() will resolve to std::cout << msg, if we are compiling for the C++ code
+  and it will resolve to Serial.print(msg) if we are compiling for the Arduino.
+*/
 #pragma once
 #if defined(__AVR_ATmega168__) || defined(__AVR_ATmega328P__) || defined(__AVR_ATmega1280__) || defined(__AVR_ATmega2560__)
 // Compile for Arduino
@@ -17,6 +23,20 @@
 #define NUMVARS 14
 #define BUFFERSIZE 500
 
+/*
+    A class used to communicate through the port.
+    It allows for the messages to be serialized (turned into strings)
+    and deserialized (translated from strings into usable data)
+
+    The actual data is stored in an array of floats named 'arr'
+    See the PWCL_main.ino file to see which index represetns which variable.
+    For example:
+      #define i_autoMode     0
+      This means that index 0 in the 'arr' will store the value of autoMode
+      if arr[0] is 0 then autoMode is false and we are in manual mode.
+      if arr[0] is 1 then autoMode is true and we are in automatic mode.
+
+*/
 class COM
 {
 
@@ -32,6 +52,10 @@ public:
         return arr[index];
     }
 
+    /***
+      Prints the current values in the array 'arr' in the format:
+      [value_1, value_2, ... value_n]
+    */
     void printCurVals()
     {
         PRINT_MESSAGE("[");

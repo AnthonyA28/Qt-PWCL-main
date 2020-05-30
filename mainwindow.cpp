@@ -15,6 +15,18 @@ You should have received a copy of the GNU General Public License
 along with this program.  If not, see <http://www.gnu.org/licenses/>.
 */
 
+/****** mainwindow.cpp
+
+    The source code for the mainwindow class
+    Includes:
+        Constructor
+        Desctructor
+        Functions for events - such as buttons being clicked
+        and miscelaneous functions used.
+    Most of the functions here are called when a specified event occurs.
+        These events are triggered by the user doing something in the user-interface window.
+        Example: on_setButton_clicked() is the function called when the user clicks the setButton.
+******/
 
 #include "mainwindow.h"
 #include "ui_mainwindow.h"
@@ -125,6 +137,10 @@ MainWindow::MainWindow(QWidget *parent) :
 
 }
 
+/**
+*   Called when the window is closed.
+*   Creates and saves a backup file of logged data.
+*/
 void MainWindow::closeEvent( QCloseEvent* event )
 {
     if( port.L_isConnected() ) {
