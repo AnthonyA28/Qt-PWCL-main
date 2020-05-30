@@ -192,6 +192,10 @@ bool positionFlag = false; // set to 1 for the position form of the PID law, to 
 bool T_sensorOK = true;
 
 /******shared between C++ code */
+/*
+    These are indicies into the 'com' object array which tell what variable is stored at a given index
+    For example, since i_fanSpeed = 7, then arr[7] will hold the fan speed variable.
+*/
 #define i_autoMode     0
 #define i_setPoint     1
 #define i_percentOn    2
@@ -209,21 +213,27 @@ bool T_sensorOK = true;
 #define NUMVARS 14
 #define BUFFERSIZE 500
 
-COM com;
+COM com; // AJA, Create a com object which will be used to communicate with the serial port.
 
+/***
+    Checks the serial port frequenetly to see if new input has come in.
+    com.deserialize_array(buffer);
+    com.deserialize_array(buffer);
+    If new input is available, then it will be parse by the com object with com.deserialize_array(input) .
+*/
 char buffer[BUFFERSIZE];
 void check_input()
 {
-  // checks for input from the port and potentially changes parameters
   /*  I dont use the serial.readString becuse it will read ANY size input
   presenting the possibiliity of a buffer overflow. this will read up to a closing bracket
   or until the input buffer is at max capacity.
   */
   if (Serial.available()) {
-    int j = 0;
+    int j = 0; // this counter is just to make sure that we dont go into an infinite loop
+    /* Iterate through the entire buffer */
     for (unsigned int i = 0; i < BUFFERSIZE - 1 && j < 500; i ++) {
       char c = Serial.read();
-      if ( c == -1){
+      if ( c == -1){ // Serial.read() returns -1 if nothing is available.
         i -=1;
         j +=1;
         continue;
@@ -453,7 +463,7 @@ void loop(void)
     } else {
       com.printCurVals(); // show current parameters if the temperature is within realistic range
       Serial.println("Shutting down due to issue with temperature probe! Check that no wire got loose.");
-      shutdown();   
+      shutdown();
     }
   }
   /* Check if temperautre outside of safe range and within realistic measurements */
