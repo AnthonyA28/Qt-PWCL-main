@@ -1,30 +1,23 @@
 # PWCL-main
 
-## GUI for an arduino based Process Controller
+## GUI for an Arduino based Process Controller
 
 Provides a graphical user interface for changing parameters and logging/graphing data from an Arduino based process controller. 
+
+Uses the Qt API https://www.qt.io/.
 
 Uses the [QXlsx library](https://github.com/j2doll/QXlsx) for logging data to Excel. 
 
 Uses the [ QCustomPlot ](http://www.qcustomplot.com/) library for live graphing. 
 
-
-
 ## Installation
-  * Download the latest release from the releases tab. 
-  * unzip the files into any directory you prefer. 
-  * Do **NOT** move the executables (main.exe, test.exe, game.exe) outside of the folder they are in by default. They must be in the same folder as the *.dll* files.  
-  * (optional but recommended) create shortcuts to each of the executables by right clicking on each and clicking create shortcut.
-  * Now double click on one of the executables, or a shortcut to it, to start the program. 
+  * Go to the [releases page](https://github.com/AnthonyA28/Qt-PWCL-main/releases), download the installer and follow the directions in the installer. 
 
 ## Building from source 
 
-   Qt version 5 or greator is required. Tested in Qt 5.9.2.
+   Qt version 5 or later is required. Tested in  Qt 5.12.
 
   * Clone the repository. 
   * Open the *qt_PWCL_main.pro* file with Qt creator. 
 
-
-## To do:
-* Evidently the export as Excel File option does not work on Ubuntu builds. 
 
