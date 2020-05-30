@@ -1,0 +1,15 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<Package>
+    <DisplayName>Portable Wet Control Lab</DisplayName>
+    <Description>A program to control an Arduino based process controler.</Description>
+    <Version>3.0.0-1</Version>
+    <ReleaseDate>2019-08-05</ReleaseDate>
+    <Licenses>
+        <License name="GNU GENERAL PUBLIC LICENSE Version 3" file="GNU GPL v3.txt" />
+    </Licenses>
+    <Default>true</Default>
+    <Script>installscript.qs</Script>
+    <UserInterfaces>
+        <UserInterface>readmecheckboxform.ui</UserInterface>
+    </UserInterfaces>
+</Package>

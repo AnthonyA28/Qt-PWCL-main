@@ -1,0 +1,12 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<Installer>
+    <Name>Portable Wet Control Lab</Name>
+    <Version>3.0.0</Version>
+    <Title>Portable Wet Control Lab</Title>
+    <Publisher>Anthony Arrowood</Publisher>
+    <!-- Directory name is used in component.xml -->
+    <StartMenuDir>Protable Wet Control Lab</StartMenuDir>
+    <TargetDir>@HomeDir@/Desktop/Portable_Wet_Control_Lab</TargetDir>
+    <MaintenanceToolName>PWCL_Installer</MaintenanceToolName>
+    <!-- <WizardStyle>Classic</WizardStyle> -->
+</Installer>
