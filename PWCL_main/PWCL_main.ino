@@ -384,13 +384,20 @@ void loop(void)
 
   relayCare();
 
-  // AUTOMATIC CONTROL
-  errorPrev = error;
-  if (filterAll) {
-    error = TsetPoint - tempFiltered;
-  } else {
-    error = TsetPoint - temperature;
+  // MANUAL OR AUTOMATIC CONTROL
+  if (!autoEnabled){
+    error = 0;  //Set error for manual mode to 0 so errorPrev when switched to auto is 0
+  }else{
+    errorPrev = error;
+    if (filterAll) {
+     error = TsetPoint - tempFiltered;       //only place where error is calculated
+    } else {
+     error = TsetPoint - temperature;
+    }
   }
+
+  // AUTOMATIC CONTROL
+
   if (autoEnabled) {
     if (!positionFlag) {
       float percentOnPrevious = percentRelayOn;
